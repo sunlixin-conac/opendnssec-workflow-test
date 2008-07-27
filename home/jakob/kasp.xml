@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<kasp>
+	<zone>
+		<name>opendnssec.org</name>
+
+		<signatures>
+			<resign unit="hours">2</resign>
+			<refresh unit="days">3</refresh>
+			<validity>
+					<default unit="days">7</default>
+					<nsec unit="days">14</nsec>
+			</validity>
+			<jitter unit="hours">12</jitter>
+			<clockskew unit="seconds">300</clockskew>
+		</signatures>
+
+		<denial>
+			<nsec3>
+				<opt-out>yes</opt-out>
+				<salt>160</salt>
+				<iterations>10</iterations>
+				<ttl unit="seconds">3600</ttl>
+			</nsec3>
+		</denial>		
+
+		<keys>
+			<ksk>
+				<algorithm length="2048">RSA</algorithm>
+				<lifetime unit="years">1</lifetime>
+				<repository>pkcs11:token=SCA6000</repository>
+				<overlap>2</overlap>
+				<ttl unit="seconds">3600</ttl>
+				<rfc5011>yes</rfc5011>
+			</ksk>
+
+			<zsk>
+				<algorithm length="1024">RSA</algorithm>
+				<lifetime unit="weeks">2</lifetime>
+				<repository>pkcs11:token=Softy</repository>
+				<ttl unit="seconds">3600</ttl>
+			</zsk>
+		</keys>
+	</zone>
+</kasp>
