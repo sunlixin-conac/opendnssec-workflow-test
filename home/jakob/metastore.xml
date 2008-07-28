@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<metastore>
+	<key id="1234">
+		<zone>opendnssec.org</zone>
+		<algorithm length="2048">RSA-SHA1</algorithm>
+		<usage>KSK</usage>
+		<state>active</state>
+		<history>
+			<state timestamp="2008-06-01T00:00:00Z">generated</state>
+			<state timestamp="2008-06-02T00:00:00Z">published</state>
+			<state timestamp="2008-06-03T00:00:00Z">active</state>
+		</history>
+		<location>pcks11:token=SCA6000;object=id1234</location>
+		
+		<!-- should we store both the active and revoked keytag? -->
+		<!-- should we store the fingerprint (DS)? -->
+		<!-- should we store the actual pubkey-->
+
+		<ttl unit="seconds">3600</ttl>
+	</key>
+	
+	<nsec3param>
+		<opt-out>yes</opt-out>
+		<salt>
+			<length>160</length>
+			<value>vea8vaa0Gu</value>
+		</salt>
+		<iterations>10</iterations>
+		<ttl unit="seconds">3600</ttl>		
+	</nsec3param>
+</metastore>

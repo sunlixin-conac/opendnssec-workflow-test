@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- $Id$ -->
+
 <kasp>
 	<zone>
 		<name>opendnssec.org</name>
@@ -26,7 +28,7 @@
 
 		<keys>
 			<ksk>
-				<algorithm length="2048">RSA</algorithm>
+				<algorithm length="2048">RSA-SHA1</algorithm>
 				<lifetime unit="years">1</lifetime>
 				<repository>pkcs11:token=SCA6000</repository>
 				<overlap>2</overlap>
