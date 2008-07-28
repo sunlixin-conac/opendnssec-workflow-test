@@ -7,13 +7,17 @@
 		<zone>opendnssec.org</zone>
 		<algorithm length="2048">RSA-SHA1</algorithm>
 		<usage>KSK</usage>
+
 		<state>active</state>
 		<history>
 			<state timestamp="2008-06-01T00:00:00Z">generated</state>
 			<state timestamp="2008-06-02T00:00:00Z">published</state>
 			<state timestamp="2008-06-03T00:00:00Z">active</state>
 		</history>
-		<location>pcks11:token=SCA6000;object=id1234</location>
+
+		<location>
+			<uri>pcks11:token=SCA6000;object=id1234</uri>
+		</location>
 		
 		<!-- should we store both the active and revoked keytag? -->
 		<!-- should we store the fingerprint (DS)? -->
