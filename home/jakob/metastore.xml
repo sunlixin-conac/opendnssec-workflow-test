@@ -19,9 +19,23 @@
 			<uri>pcks11:token=SCA6000;object=id1234</uri>
 		</location>
 		
-		<!-- should we store both the active and revoked keytag? -->
+		<keytag>
+			<original>10001</original>
+			<revoked>10002</revoked>
+		</keytag>
+
 		<!-- should we store the fingerprint (DS)? -->
-		<!-- should we store the actual pubkey-->
+		<digest type="SHA-1">F8B041B6D67FBFA23D056A1E78991B7FACC732BF</digest>
+		<digest type="SHA-256">D8F70BCABCDAE8AECB01705F04933DBC04B19E3597A6C82152653D8F5F665C80</digest>
+		
+		<!-- should we store the actual pubkey? -->
+		<pubkey>BEAAAAOxk8MkNJoYcPbG2AqKLAeBtuds5ig/bkAtVBaQEF4bsOSt1iS/
+			KmCbyzy0Uca5Qq9yPKmGlOKJdvziXm9+vHqkfihEyVoavMmNZdW8IYg9
+			ONUQfWAkC0c/NQ26GAHvLABGc9u3q3KNhqwP8nZ0xvxfz2TVDS3HjbTg
+			xDqZQWt+B/wgkhDLM2KgoujI59/Yh+yio4sV7PIiIMgf+yW+6wFGGzhK
+			7Mr4Y2QzgaMHUKK37OWZxn19dx5sARgKxxFsJCmvzs5iXIoZrZs0Y7J0
+			4h1Pfj6SdDZsdpnRjCQD0jhGxIGpOzhWUI//C7ilJAbhbpVQ10p++63b
+			1awqyG3HP03j</pubkey>
 
 		<ttl unit="seconds">3600</ttl>
 	</key>
