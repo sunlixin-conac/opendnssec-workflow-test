@@ -22,11 +22,13 @@
 			<nsec3>
 				<resalt unit="days">100</resalt>
 				<opt-out>yes</opt-out>
-				<algorithm>SHA-1</algorithm>
-				<iterations>10</iterations>
-				<salt>
-					<length>160</length>
-				</salt>
+				<hash>
+					<algorithm>SHA-1</algorithm>
+					<iterations>10</iterations>					
+					<salt>
+						<length>160</length>
+					</salt>
+				</hash>
 				<ttl unit="seconds">3600</ttl>
 			</nsec3>
 		</denial>		

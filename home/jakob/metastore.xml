@@ -56,12 +56,16 @@
 		</history>
 
 		<opt-out>yes</opt-out>
-		<algorithm>SHA-1</algorithm>
-		<iterations>10</iterations>
-		<salt>
-			<length>160</length>
-			<value>vea8vaa0Gu</value>
-		</salt>
+		
+		<hash>
+			<algorithm>SHA-1</algorithm>
+			<iterations>10</iterations>					
+			<salt>
+				<length>160</length>
+				<value>vea8vaa0Gu</value>
+			</salt>
+		</hash>
+		
 		<ttl unit="seconds">3600</ttl>		
 	</nsec3chain>
 </metastore>
