@@ -5,15 +5,19 @@
 <metastore>
 	<key id="1234">
 		<zone>opendnssec.org</zone>
-		<algorithm length="2048">RSA-SHA1</algorithm>
-		<usage>KSK</usage>
 
 		<state>active</state>
 		<history>
 			<state timestamp="2008-06-01T00:00:00Z">generated</state>
 			<state timestamp="2008-06-02T00:00:00Z">published</state>
 			<state timestamp="2008-06-03T00:00:00Z">active</state>
+			<!-- retired -->
+			<!-- revoked -->
+			<!-- removed -->
 		</history>
+
+		<algorithm length="2048">RSA-SHA1</algorithm>
+		<usage>KSK</usage>
 
 		<location>
 			<uri>pcks11:token=SCA6000;object=id1234</uri>
@@ -40,13 +44,24 @@
 		<ttl unit="seconds">3600</ttl>
 	</key>
 	
-	<nsec3param>
+	<nsec3chain>
+		<zone>opendnssec.org</zone>
+
+		<state timestamp="2008-06-01T00:00:00Z">active</state>
+		<history>
+			<state timestamp="2008-06-01T00:00:00Z">generated</state>
+			<state timestamp="2008-06-02T00:00:00Z">published</state>
+			<state timestamp="2008-06-03T00:00:00Z">active</state>
+			<!-- removed -->
+		</history>
+
 		<opt-out>yes</opt-out>
+		<algorithm>SHA-1</algorithm>
+		<iterations>10</iterations>
 		<salt>
 			<length>160</length>
 			<value>vea8vaa0Gu</value>
 		</salt>
-		<iterations>10</iterations>
 		<ttl unit="seconds">3600</ttl>		
-	</nsec3param>
+	</nsec3chain>
 </metastore>
