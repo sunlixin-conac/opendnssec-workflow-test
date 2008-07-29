@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<signer-config>
+	
+	<signatures>
+		<resign unit="hours">2</resign>
+		<refresh unit="days">3</refresh>
+		<validity>
+				<default unit="days">7</default>
+				<nsec unit="days">14</nsec>
+		</validity>
+		<jitter unit="hours">12</jitter>
+		<clockskew unit="seconds">300</clockskew>
+
+		<ksk>
+			<location>
+				<uri>pcks11:token=SCA6000;object=id1001</uri>
+			</location>
+			<location>
+				<uri>pcks11:token=SCA6000;object=id1002</uri>
+			</location>
+		</ksk>
+		<zsk>
+			<location>
+				<uri>pcks11:token=Softy;object=id2001</uri>
+			</location>
+			<location>
+				<uri>pcks11:token=Softy;object=id2002</uri>
+			</location>
+		</zsk>
+	</signatures>
+
+	<publish>
+		<key id="1234">
+			<name>opendnssec.org</name>
+			<ttl unit="seconds">3600</ttl>
+			<flags>256</flags>
+			<protocol></protocol>
+			<algorithm></algorithm>
+			<pubkey>BEAAAAOxk8MkNJoYcPbG2AqKLAeBtuds5ig/bkAtVBaQEF4bsOSt1iS/
+					KmCbyzy0Uca5Qq9yPKmGlOKJdvziXm9+vHqkfihEyVoavMmNZdW8IYg9
+					ONUQfWAkC0c/NQ26GAHvLABGc9u3q3KNhqwP8nZ0xvxfz2TVDS3HjbTg
+					xDqZQWt+B/wgkhDLM2KgoujI59/Yh+yio4sV7PIiIMgf+yW+6wFGGzhK
+					7Mr4Y2QzgaMHUKK37OWZxn19dx5sARgKxxFsJCmvzs5iXIoZrZs0Y7J0
+					4h1Pfj6SdDZsdpnRjCQD0jhGxIGpOzhWUI//C7ilJAbhbpVQ10p++63b
+					1awqyG3HP03j</pubkey>
+		</key>
+		
+	</publish>
+	
+	<denial>
+		<!-- <nsec/> -->
+		
+		<nsec3param id="4242"/>
+
+		<nsec3chain id="4242">
+			<zone>opendnssec.org</zone>
+	
+			<opt-out>yes</opt-out>
+	
+			<hash>
+				<algorithm>SHA-1</algorithm>
+				<iterations>10</iterations>					
+				<salt>
+					<length>160</length>
+					<value>vea8vaa0Gu</value>
+				</salt>
+			</hash>
+	
+			<ttl unit="seconds">3600</ttl>		
+		</nsec3chain>
+	</denial>
+	
+</signer-config>
