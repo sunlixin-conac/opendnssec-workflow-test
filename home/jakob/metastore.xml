@@ -44,7 +44,7 @@
 		<ttl unit="seconds">3600</ttl>
 	</key>
 	
-	<nsec3chain>
+	<nsec3chain id="4242">
 		<zone>opendnssec.org</zone>
 
 		<state timestamp="2008-06-01T00:00:00Z">active</state>
