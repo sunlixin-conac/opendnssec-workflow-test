@@ -3,6 +3,19 @@
 <!-- $Id$ -->
 
 <metastore>
+	<key id="1001">
+		<state>generated</state>
+		<history>
+			<state timestamp="2008-06-01T00:00:00Z">generated</state>
+		</history>
+
+		<algorithm length="2048">RSA-SHA1</algorithm>
+
+		<location>
+			<uri>pcks11:token=SCA6000;object=id1001</uri>
+		</location>
+	</key>
+
 	<key id="1234">
 		<zone>opendnssec.org</zone>
 
