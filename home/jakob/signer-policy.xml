@@ -2,7 +2,7 @@
 
 <!-- $Id$ -->
 
-<kasp>
+<signer-policy>
 	<zone>
 		<name>opendnssec.org</name>
 
@@ -55,4 +55,4 @@
 			</zsk>
 		</keys>
 	</zone>
-</kasp>
+</signer-policy>
