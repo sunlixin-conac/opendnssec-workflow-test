@@ -44,6 +44,11 @@
 		<ttl unit="seconds">3600</ttl>
 	</key>
 	
+	<!-- <key>...</key> -->
+	<!-- <key>...</key> -->
+	<!-- <key>...</key> -->
+	<!-- <key>...</key> -->
+	
 	<nsec3chain id="4242">
 		<zone>opendnssec.org</zone>
 
@@ -68,4 +73,9 @@
 		
 		<ttl unit="seconds">3600</ttl>		
 	</nsec3chain>
+	
+	<!-- <nsec3chain id="XXX">...</nsec3chain> -->
+	<!-- <nsec3chain id="XXX">...</nsec3chain> -->
+	<!-- <nsec3chain id="XXX">...</nsec3chain> -->
+	
 </metastore>

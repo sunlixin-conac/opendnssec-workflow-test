@@ -48,10 +48,13 @@
 					1awqyG3HP03j</pubkey>
 		</key>
 		
+		<!-- <key>...</key> -->
+		<!-- <key>...</key> -->
+		<!-- <key>...</key> -->
 	</publish>
 	
 	<denial>
-		<!-- <nsec/> -->
+		<!-- optionally <nsec/> -->
 		
 		<nsec3param id="4242"/>
 
