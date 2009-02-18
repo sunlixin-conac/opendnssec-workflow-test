@@ -14,7 +14,6 @@
 					<nsec unit="days">14</nsec>
 			</validity>
 			<jitter unit="hours">12</jitter>
-			<clockskew unit="seconds">300</clockskew>
 	
 			<!-- should KSK and ZSK be something like <key> instead?
 			     will we ever want to sign with a non-published key? -->
