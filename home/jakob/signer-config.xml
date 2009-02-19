@@ -53,8 +53,8 @@
 	   			<protocol>3</protocol>
 	   			<algorithm>5</algorithm>
 			
-				<!-- PKCS#11 label -->
-				<label>key42:opendnssec.org</label>
+				<!-- key locator is usually matched against PKCS#11 CKA_ID -->
+				<locator>key42:opendnssec.org</locator>
 			</key>		
 		</keystore>
 		
