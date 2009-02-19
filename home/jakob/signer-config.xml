@@ -6,6 +6,10 @@
 	<zone>
 		<name>opendnssec.org</name>
 
+		<adapter>
+			<!-- do we specify the adapter here? -->
+		</adapter>
+
 		<signatures>
 			<resign unit="hours">2</resign>
 			<refresh unit="days">3</refresh>
