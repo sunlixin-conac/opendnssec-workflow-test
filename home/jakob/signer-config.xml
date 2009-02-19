@@ -29,7 +29,7 @@
 	   		<key id="1234">
 	   			<name>opendnssec.org</name>
 	   			<ttl unit="seconds">3600</ttl>
-	   			<flags>256</flags>
+	   			<flags>257</flags>
 	   			<protocol>3</protocol>
 	   			<algorithm>5</algorithm>
 			
@@ -44,6 +44,17 @@
 	   					7Mr4Y2QzgaMHUKK37OWZxn19dx5sARgKxxFsJCmvzs5iXIoZrZs0Y7J0
 	   					4h1Pfj6SdDZsdpnRjCQD0jhGxIGpOzhWUI//C7ilJAbhbpVQ10p++63b
 	   					1awqyG3HP03j</pubkey>
+			</key>	
+				
+	   		<key id="4567">
+	   			<name>opendnssec.org</name>
+	   			<ttl unit="seconds">3600</ttl>
+	   			<flags>256</flags>
+	   			<protocol>3</protocol>
+	   			<algorithm>5</algorithm>
+			
+				<!-- PKCS#11 label -->
+				<label>key42:opendnssec.org</label>
 			</key>		
 		</keystore>
 		
