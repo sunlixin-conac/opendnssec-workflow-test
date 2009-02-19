@@ -5,7 +5,7 @@
 <signer-config>
 	<zone>
 		<name>opendnssec.org</name>
-	
+
 		<signatures>
 			<resign unit="hours">2</resign>
 			<refresh unit="days">3</refresh>
@@ -15,39 +15,33 @@
 			</validity>
 			<jitter unit="hours">12</jitter>
 	
-			<!-- should KSK and ZSK be something like <key> instead?
-			     will we ever want to sign with a non-published key? -->
-			<ksk>
-				<digest type="SHA1">6e98dc5e9b305d5a19981245572ae3dd59fbd2d6</digest>
-				<digest type="SHA1">dd88611b3ac9bf96c2d0f9828b87f2cb857fac2e</digest>
-			</ksk>
-			<zsk>
-				<digest type="SHA1">da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</digest>
-				<digest type="SHA1">b6b8a2faef953de1a294f04f231212a3e5e69b26</digest>
-			</zsk>
+			<ksk keyref="1234"/>
+			<zsk keyref="4567"/>
 		</signatures>
-	
-		<publish>
-			<!-- should this be <dnskey> instead? -->
-			<key id="1234">
-				<name>opendnssec.org</name>
-				<ttl unit="seconds">3600</ttl>
-				<flags>256</flags>
-				<protocol></protocol>
-				<algorithm></algorithm>
-				<pubkey>BEAAAAOxk8MkNJoYcPbG2AqKLAeBtuds5ig/bkAtVBaQEF4bsOSt1iS/
-						KmCbyzy0Uca5Qq9yPKmGlOKJdvziXm9+vHqkfihEyVoavMmNZdW8IYg9
-						ONUQfWAkC0c/NQ26GAHvLABGc9u3q3KNhqwP8nZ0xvxfz2TVDS3HjbTg
-						xDqZQWt+B/wgkhDLM2KgoujI59/Yh+yio4sV7PIiIMgf+yW+6wFGGzhK
-						7Mr4Y2QzgaMHUKK37OWZxn19dx5sARgKxxFsJCmvzs5iXIoZrZs0Y7J0
-						4h1Pfj6SdDZsdpnRjCQD0jhGxIGpOzhWUI//C7ilJAbhbpVQ10p++63b
-						1awqyG3HP03j</pubkey>
-			</key>
+		
+		<publish keyref="1234"/>
+		
+		<keystore>
+	   		<key id="1234">
+	   			<name>opendnssec.org</name>
+	   			<ttl unit="seconds">3600</ttl>
+	   			<flags>256</flags>
+	   			<protocol>3</protocol>
+	   			<algorithm>5</algorithm>
 			
-			<!-- <key>...</key> -->
-			<!-- <key>...</key> -->
-			<!-- <key>...</key> -->
-		</publish>
+				<!-- PKCS#11 label -->
+				<label>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</label>
+				
+				<!-- explicit public key as base64 (optional?) -->
+	   			<pubkey>BEAAAAOxk8MkNJoYcPbG2AqKLAeBtuds5ig/bkAtVBaQEF4bsOSt1iS/
+	   					KmCbyzy0Uca5Qq9yPKmGlOKJdvziXm9+vHqkfihEyVoavMmNZdW8IYg9
+	   					ONUQfWAkC0c/NQ26GAHvLABGc9u3q3KNhqwP8nZ0xvxfz2TVDS3HjbTg
+	   					xDqZQWt+B/wgkhDLM2KgoujI59/Yh+yio4sV7PIiIMgf+yW+6wFGGzhK
+	   					7Mr4Y2QzgaMHUKK37OWZxn19dx5sARgKxxFsJCmvzs5iXIoZrZs0Y7J0
+	   					4h1Pfj6SdDZsdpnRjCQD0jhGxIGpOzhWUI//C7ilJAbhbpVQ10p++63b
+	   					1awqyG3HP03j</pubkey>
+			</key>		
+		</keystore>
 		
 		<denial>
 			<!-- optionally <nsec/> -->
