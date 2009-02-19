@@ -71,10 +71,7 @@
 				<hash>
 					<algorithm>SHA-1</algorithm>
 					<iterations>10</iterations>					
-					<salt>
-						<length>160</length>
-						<value>vea8vaa0Gu</value>
-					</salt>
+					<salt>vea8vaa0Gu</salt>
 				</hash>
 		
 				<ttl unit="seconds">3600</ttl>		
