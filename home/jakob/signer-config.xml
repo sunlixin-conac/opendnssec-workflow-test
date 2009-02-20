@@ -6,18 +6,19 @@
 	<zone>
 		<name>opendnssec.org</name>
 
-		<adapter>
-			<!-- do we specify the adapter here? -->
-		</adapter>
+		<adapters>
+			<input type="file"/>
+			<output type="file"/>
+		</adapters>
 
 		<signatures>
-			<resign unit="hours">2</resign>
-			<refresh unit="days">3</refresh>
+			<resign unit="seconds">2880</resign> 
+			<refresh unit="seconds">259200</refresh>
 			<validity>
-					<default unit="days">7</default>
-					<nsec unit="days">14</nsec>
+					<default unit="seconds">604800</default>
+					<nsec unit="seconds">1209600</nsec>
 			</validity>
-			<jitter unit="hours">12</jitter>
+			<jitter unit="seconds">86400</jitter>
 	
 			<ksk keyref="1234"/>
 			<zsk keyref="4567"/>
