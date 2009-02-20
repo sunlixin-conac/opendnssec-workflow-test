@@ -52,23 +52,21 @@
 		</keystore>
 		
 		<denial>
-			<!-- optionally <nsec/> -->
+			<nsec>
+				<ttl unit="seconds">3600</ttl>		
+			</nsec>
 			
-			<nsec3param id="4242"/>
-	
-			<nsec3chain id="4242">
-				<zone>opendnssec.org</zone>
-		
-				<opt-out>yes</opt-out>
-		
+			<!-- ... or ... -->
+
+			<nsec3>
+				<ttl unit="seconds">3600</ttl>
+				<out-out/>		
 				<hash>
 					<algorithm>SHA-1</algorithm>
 					<iterations>10</iterations>					
-					<salt>vea8vaa0Gu</salt>
+					<salt>656d6d6b7469736169646f677461</salt>
 				</hash>
-		
-				<ttl unit="seconds">3600</ttl>		
-			</nsec3chain>
+			</nsec3>
 		</denial>
 	</zone>
 	
