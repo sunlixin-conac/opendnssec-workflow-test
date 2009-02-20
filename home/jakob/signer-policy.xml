@@ -2,12 +2,10 @@
 
 <!-- $Id$ -->
 
-<signer-policy>
-	<zone>
-		<name>opendnssec.org</name>
-
+<kasp>
+	<policy name="default">
 		<signatures>
-			<!-- unit eq { years, weeks, days, hours, minutes, seconds } -->
+			<!-- all intervals will be xs:duration -->
 			<resign unit="hours">2</resign>
 			<refresh unit="days">3</refresh>
 			<validity>
@@ -38,27 +36,25 @@
 			<ksk>
 				<algorithm length="2048">RSA-SHA1</algorithm>
 				<lifetime unit="years">1</lifetime>
-				<repository>
-					<uri>pkcs11:token=SCA6000</uri>
-				</repository>
 				<overlap>2</overlap>
 				<ttl unit="seconds">3600</ttl>
 				<rfc5011>yes</rfc5011>
+				<repository>sca6000-1</repository>
 			</ksk>
 
 			<zsk>
 				<algorithm length="1024">RSA</algorithm>
 				<lifetime unit="weeks">2</lifetime>
-				<repository>
-					<uri>pkcs11:token=Sofry</uri>
-				</repository>
 				<ttl unit="seconds">3600</ttl>
+				<repository>SoftHSM-01</repository>
 			</zsk>
 		</keys>
-	</zone>
+	</policy>
 	
-	<!-- <zone>...</zone> -->
-	<!-- <zone>...</zone> -->
-	<!-- <zone>...</zone> -->
+	<zone name="opendnssec.org" policy="default"/>
 	
-</signer-policy>
+	<!-- <zone ... /> -->
+	<!-- <zone ... /> -->
+	<!-- <zone ... /> -->
+	
+</kasp>
