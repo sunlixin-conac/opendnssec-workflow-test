@@ -7,6 +7,7 @@
 		<name>opendnssec.org</name>
 
 		<signatures>
+			<!-- unit eq { years, weeks, days, hours, minutes, seconds } -->
 			<resign unit="hours">2</resign>
 			<refresh unit="days">3</refresh>
 			<validity>
