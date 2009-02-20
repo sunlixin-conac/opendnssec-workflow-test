@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<kasp>
+	<policy name="default">
+		<signatures>
+			<!-- all intervals will be xs:duration -->
+			<resign unit="hours">2</resign>
+			<refresh unit="days">3</refresh>
+			<validity>
+					<default unit="days">7</default>
+					<nsec unit="days">14</nsec>
+			</validity>
+			<jitter unit="hours">12</jitter>
+			<clockskew unit="seconds">300</clockskew>
+		</signatures>
+
+		<denial>
+			<!-- <nsec/> -->
+			<nsec3>
+				<resalt unit="days">100</resalt>
+				<opt-out>yes</opt-out>
+				<hash>
+					<algorithm>SHA-1</algorithm>
+					<iterations>10</iterations>					
+					<salt>
+						<length>160</length>
+					</salt>
+				</hash>
+				<ttl unit="seconds">3600</ttl>
+			</nsec3>
+		</denial>		
+
+		<keys>
+			<ksk>
+				<algorithm length="2048">RSA-SHA1</algorithm>
+				<lifetime unit="years">1</lifetime>
+				<overlap>2</overlap>
+				<ttl unit="seconds">3600</ttl>
+				<rfc5011>yes</rfc5011>
+				<repository>sca6000-1</repository>
+			</ksk>
+
+			<zsk>
+				<algorithm length="1024">RSA</algorithm>
+				<lifetime unit="weeks">2</lifetime>
+				<ttl unit="seconds">3600</ttl>
+				<repository>SoftHSM-01</repository>
+			</zsk>
+		</keys>
+	</policy>
+	
+	<zone name="opendnssec.org" policy="default"/>
+	
+	<!-- <zone ... /> -->
+	<!-- <zone ... /> -->
+	<!-- <zone ... /> -->
+	
+</kasp>
