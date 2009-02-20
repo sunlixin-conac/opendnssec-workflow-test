@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<signconf zone="opendnssec.org">
+
+	<adapters>
+		<input type="file"/>
+		<output type="file"/>
+	</adapters>
+
+	<signatures>
+		<resign>PT2H</resign> 
+		<refresh>P3D</refresh>
+		<validity>
+				<default>P7D</default>
+				<nsec>P14D</nsec>
+		</validity>
+		<jitter>PT12H</jitter>
+		<clockskew>PT300S</clockskew>
+
+		<ksk keyid="1234"/>
+		<zsk keyid="4567"/>
+	</signatures>
+	
+	<publish keyid="1234"/>
+	
+	<keystore>
+   		<key id="1234">
+   			<name>opendnssec.org</name>
+   			<ttl>PT3600S</ttl>
+   			<flags>257</flags>
+   			<protocol>3</protocol>
+   			<algorithm>5</algorithm>
+		
+			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
+			<locator>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</locator>
+		</key>	
+			
+   		<key id="4567">
+   			<name>opendnssec.org</name>
+   			<ttl>PT3600S</ttl>
+   			<flags>256</flags>
+   			<protocol>3</protocol>
+   			<algorithm>5</algorithm>
+		
+			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
+			<locator>key42:opendnssec.org</locator>
+		</key>		
+	</keystore>
+	
+	<denial>
+		<ttl>PT3600S</ttl>		
+
+		<nsec/>
+		
+		<!-- ... or ... -->
+
+		<nsec3>
+			<out-out/>		
+			<hash>
+				<algorithm>1</algorithm>
+				<iterations>10</iterations>					
+				<salt>656d6d6b7469736169646f677461</salt>
+			</hash>
+		</nsec3>
+	</denial>
+	
+</signconf>
