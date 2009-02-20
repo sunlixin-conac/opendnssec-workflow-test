@@ -5,47 +5,51 @@
 <kasp>
 	<policy name="default">
 		<signatures>
-			<!-- all intervals will be xs:duration -->
-			<resign unit="hours">2</resign>
-			<refresh unit="days">3</refresh>
+			<!-- all intervals are xs:duration -->
+			<resign>>PT2H</resign>
+			<refresh>P3D</refresh>
 			<validity>
-					<default unit="days">7</default>
-					<nsec unit="days">14</nsec>
+					<default>P7D</default>
+					<nsec>P14D</nsec>
 			</validity>
-			<jitter unit="hours">12</jitter>
-			<clockskew unit="seconds">300</clockskew>
+			<jitter>PT12H</jitter>
+			<clockskew>PT300S</clockskew>
 		</signatures>
 
 		<denial>
-			<!-- <nsec/> -->
+			<ttl>PT3600S</ttl>
+			
+			<nsec/>
+
+			<!-- ... or ... -->
+			
 			<nsec3>
-				<resalt unit="days">100</resalt>
-				<opt-out>yes</opt-out>
+				<resalt>P100D</resalt>
+				<opt-out/>
 				<hash>
-					<algorithm>SHA-1</algorithm>
+					<algorithm>1</algorithm>
 					<iterations>10</iterations>					
 					<salt>
 						<length>160</length>
 					</salt>
 				</hash>
-				<ttl unit="seconds">3600</ttl>
 			</nsec3>
 		</denial>		
 
 		<keys>
 			<ksk>
-				<algorithm length="2048">RSA-SHA1</algorithm>
-				<lifetime unit="years">1</lifetime>
+				<algorithm length="2048">5</algorithm>
+				<lifetime>P1Y</lifetime>
 				<overlap>2</overlap>
-				<ttl unit="seconds">3600</ttl>
+				<ttl>PT3600S</ttl>
 				<rfc5011>yes</rfc5011>
 				<repository>sca6000-1</repository>
 			</ksk>
 
 			<zsk>
 				<algorithm length="1024">RSA</algorithm>
-				<lifetime unit="weeks">2</lifetime>
-				<ttl unit="seconds">3600</ttl>
+				<lifetime>P14D</lifetime>
+				<ttl>PT3600S</ttl>
 				<repository>SoftHSM-01</repository>
 			</zsk>
 		</keys>
