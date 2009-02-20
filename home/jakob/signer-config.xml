@@ -19,12 +19,13 @@
 					<nsec unit="seconds">1209600</nsec>
 			</validity>
 			<jitter unit="seconds">86400</jitter>
+			<clockskew unit="seconds">300</clockskew>
 	
-			<ksk keyref="1234"/>
-			<zsk keyref="4567"/>
+			<ksk keyid="1234"/>
+			<zsk keyid="4567"/>
 		</signatures>
 		
-		<publish keyref="1234"/>
+		<publish keyid="1234"/>
 		
 		<keystore>
 	   		<key id="1234">
@@ -36,15 +37,6 @@
 			
 				<!-- key locator is usually matched against PKCS#11 CKA_ID -->
 				<locator>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</locator>
-				
-				<!-- explicit public key as base64 (optional?) -->
-	   			<pubkey>BEAAAAOxk8MkNJoYcPbG2AqKLAeBtuds5ig/bkAtVBaQEF4bsOSt1iS/
-	   					KmCbyzy0Uca5Qq9yPKmGlOKJdvziXm9+vHqkfihEyVoavMmNZdW8IYg9
-	   					ONUQfWAkC0c/NQ26GAHvLABGc9u3q3KNhqwP8nZ0xvxfz2TVDS3HjbTg
-	   					xDqZQWt+B/wgkhDLM2KgoujI59/Yh+yio4sV7PIiIMgf+yW+6wFGGzhK
-	   					7Mr4Y2QzgaMHUKK37OWZxn19dx5sARgKxxFsJCmvzs5iXIoZrZs0Y7J0
-	   					4h1Pfj6SdDZsdpnRjCQD0jhGxIGpOzhWUI//C7ilJAbhbpVQ10p++63b
-	   					1awqyG3HP03j</pubkey>
 			</key>	
 				
 	   		<key id="4567">
