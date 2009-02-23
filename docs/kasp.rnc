@@ -1,0 +1,60 @@
+# $Id$
+
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+start = element kasp {
+		element policy {
+			attribute name { xsd:string },
+			element signatures {
+				element resign { xsd:duration },
+				element refresh { xsd:duration },
+				element validity {
+					element default { xsd:duration },
+					element denial { xsd:duration }
+				},
+				element jitter { xsd:duration },
+				element clockskew { xsd:duration }
+			},
+			element denial {
+				element ttl { xsd:duration },
+				(nsec | nsec3)
+			},
+			element keys {
+				element ksk {
+					anykey,
+					element overlap { xsd:positiveInteger },
+					element rfc5011 { empty }?
+				}*,
+				element zsk {
+					anykey
+				}*
+			}
+		}+,
+		element zone {
+			attribute name { xsd:string },
+			attribute policy { xsd:string },
+			empty
+		}*
+	}
+
+nsec = element nsec { empty }
+
+nsec3 = element nsec3 {
+		element opt-out { empty }?,
+		element resalt { xsd:duration },
+		element hash {
+			element algorithm { xsd:positiveInteger },
+			element iterations { xsd:positiveInteger },
+			element salt {
+				element length { xsd:positiveInteger }
+			}
+		}
+	}
+
+anykey = element algorithm {
+		attribute length { xsd:positiveInteger }?,
+		xsd:positiveInteger
+	},
+	element lifetime { xsd:duration },
+	element ttl { xsd:duration },
+	element repository { xsd:string }

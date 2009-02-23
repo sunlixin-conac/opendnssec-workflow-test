@@ -1,0 +1,72 @@
+# $Id$
+
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+start =
+	element signconf {
+		attribute zone { xsd:string },
+
+		element adapters {
+			element input { adapter },
+			element output { adapter }
+		},
+		
+		element signatures {
+			element resign { xsd:duration },
+			element refresh { xsd:duration },
+			element validity {
+				element default { xsd:duration },
+				element denial { xsd:duration }
+			},
+			element jitter { xsd:duration },
+			element clockskew { xsd:duration },
+			
+			element ksk {
+				attribute keyid { xsd:positiveInteger },
+				empty
+			}*,
+
+			element zsk {
+				attribute keyid { xsd:positiveInteger },
+				empty
+			}*
+		},
+		
+		element publish {
+			attribute keyid { xsd:positiveInteger},
+			empty
+		}*,
+		
+		element keystore {
+			element key {
+				attribute id { xsd:positiveInteger },
+				element name { xsd:string },
+				element ttl { xsd:duration },
+				element flags { xsd:positiveInteger },
+				element protocol { xsd:positiveInteger },
+				element algorithm { xsd:positiveInteger },
+				element locator { xsd:string }
+			}+
+		},
+
+		element denial {
+			element ttl { xsd:duration },
+			(nsec | nsec3)
+		}
+	}
+	
+adapter =
+	attribute type { xsd:string },
+	empty
+
+	
+nsec = element nsec { empty }
+
+nsec3 = element nsec3 {
+		element opt-out { empty }?,
+		element hash {
+			element algorithm { xsd:positiveInteger },
+			element iterations { xsd:positiveInteger },
+			element salt { xsd:string }
+		}
+	}
