@@ -7,18 +7,26 @@ TRANG=	 	java -jar trang.jar
 XMLLINT=	xmllint
 
 
-SCHEMAS=	kasp.rng zonelist.rng signconf.rng
+RNG=		kasp.rng zonelist.rng signconf.rng
+XSD=		kasp.xsd zonelist.xsd signconf.xsd
+
 
 
 .SUFFIXES: .rnc .rng .xsd
 
+all: rng xsd
 
-all: $(SCHEMAS)
+rng: $(RNG)
 
-regress: $(SCHEMAS)
-	${XMLLINT} --noout --relaxng kasp.rng kasp.xml
+xsd: $(XSD)
+
+regress: $(RNG)
+	${XMLLINT} --noout --relaxng kasp.rng     kasp.xml
 	${XMLLINT} --noout --relaxng zonelist.rng zonelist.xml
 	${XMLLINT} --noout --relaxng signconf.rng signconf.xml
 
 .rnc.rng:
+	${TRANG} $< $@
+
+.rnc.xsd:
 	${TRANG} $< $@
