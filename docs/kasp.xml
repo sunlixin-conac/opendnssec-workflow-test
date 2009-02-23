@@ -10,7 +10,7 @@
 			<refresh>P3D</refresh>
 			<validity>
 					<default>P7D</default>
-					<nsec>P14D</nsec>
+					<denial>P14D</denial>
 			</validity>
 			<jitter>PT12H</jitter>
 			<clockskew>PT300S</clockskew>
@@ -18,14 +18,12 @@
 
 		<denial>
 			<ttl>PT3600S</ttl>
-			
-			<nsec/>
 
-			<!-- ... or ... -->
-			
+			<!-- <nsec/> -->
+						
 			<nsec3>
-				<resalt>P100D</resalt>
 				<opt-out/>
+				<resalt>P100D</resalt>
 				<hash>
 					<algorithm>1</algorithm>
 					<iterations>10</iterations>					
@@ -40,14 +38,14 @@
 			<ksk>
 				<algorithm length="2048">5</algorithm>
 				<lifetime>P1Y</lifetime>
-				<overlap>2</overlap>
 				<ttl>PT3600S</ttl>
-				<rfc5011>yes</rfc5011>
 				<repository>sca6000-1</repository>
+				<overlap>2</overlap>
+				<rfc5011/>
 			</ksk>
 
 			<zsk>
-				<algorithm length="1024">RSA</algorithm>
+				<algorithm length="1024">5</algorithm>
 				<lifetime>P14D</lifetime>
 				<ttl>PT3600S</ttl>
 				<repository>SoftHSM-01</repository>

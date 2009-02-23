@@ -14,7 +14,7 @@
 		<refresh>P3D</refresh>
 		<validity>
 				<default>P7D</default>
-				<nsec>P14D</nsec>
+				<denial>P14D</denial>
 		</validity>
 		<jitter>PT12H</jitter>
 		<clockskew>PT300S</clockskew>
@@ -52,12 +52,10 @@
 	<denial>
 		<ttl>PT3600S</ttl>		
 
-		<nsec/>
-		
-		<!-- ... or ... -->
+		<!-- <nsec/> -->
 
 		<nsec3>
-			<out-out/>		
+			<opt-out/>		
 			<hash>
 				<algorithm>1</algorithm>
 				<iterations>10</iterations>					
