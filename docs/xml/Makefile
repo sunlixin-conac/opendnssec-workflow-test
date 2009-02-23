@@ -1,6 +1,12 @@
 # $Id$
 
-TRANG=	 	trang.jar
+# fetch trang from http://code.google.com/p/jing-trang/
+TRANG=	 	java -jar trang.jar
+
+# xmllint is part of Libxml2, http://www.xmlsoft.org/
+XMLLINT=	xmllint
+
+
 SCHEMAS=	kasp.rng zonelist.rng signconf.rng
 
 
@@ -10,9 +16,9 @@ SCHEMAS=	kasp.rng zonelist.rng signconf.rng
 all: $(SCHEMAS)
 
 regress: $(SCHEMAS)
-	xmllint --noout --relaxng kasp.rng kasp.xml
-	xmllint --noout --relaxng zonelist.rng zonelist.xml
-	xmllint --noout --relaxng signconf.rng signconf.xml
+	${XMLLINT} --noout --relaxng kasp.rng kasp.xml
+	${XMLLINT} --noout --relaxng zonelist.rng zonelist.xml
+	${XMLLINT} --noout --relaxng signconf.rng signconf.xml
 
 .rnc.rng:
-	java -jar ${TRANG} $< $@
+	${TRANG} $< $@
