@@ -6,7 +6,7 @@
 	<policy name="default">
 		<signatures>
 			<!-- all intervals are xs:duration -->
-			<resign>>PT2H</resign>
+			<resign>PT2H</resign>
 			<refresh>P3D</refresh>
 			<validity>
 					<default>P7D</default>
