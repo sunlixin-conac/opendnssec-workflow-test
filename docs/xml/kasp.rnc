@@ -5,27 +5,50 @@ datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 start = element kasp {
 		element policy {
 			attribute name { xsd:string },
+
 			element signatures {
+				# how often should the zone be (re)signed?
 				element resign { xsd:duration },
+				
+				# how often should existing signatures be refreshed?
 				element refresh { xsd:duration },
+				
+				# for how long should we sign?
 				element validity {
 					element default { xsd:duration },
 					element denial { xsd:duration }
 				},
+				
+				# how much should we jitter the signature expiration time?
+				# (e.g. decrease the expiration time by X)
 				element jitter { xsd:duration },
-				element clockskew { xsd:duration }
+				
+				# how much should we predate the signature inception time?
+				element clockskew { xsd:duration }	
 			},
+
 			element denial {
+				# TTL for authenticated denial of existence?
 				element ttl { xsd:duration },
-				(nsec | nsec3)
+				
+				# use NSEC or NSEC3?
+				(nsec | nsec3)	
 			},
+			
 			element keys {
-				element ksk {
+				element ksk {				
+					# generic key policy, see below
 					anykey,
+					
+					# how many concurrent KSKs should be used?
 					element overlap { xsd:positiveInteger },
+					
+					# use RFC 5011 for key rollover?
 					element rfc5011 { empty }?
 				}*,
+
 				element zsk {
+					# generic key policy, see below
 					anykey
 				}*
 			}
@@ -40,8 +63,14 @@ start = element kasp {
 nsec = element nsec { empty }
 
 nsec3 = element nsec3 {
+		# use global NSEC3 opt-out?
 		element opt-out { empty }?,
+		
+		# how often should we resalt?
+		# (e.g. create new NSEC3 chains)
 		element resalt { xsd:duration },
+		
+		# NSEC3 hash parameters
 		element hash {
 			element algorithm { xsd:positiveInteger },
 			element iterations { xsd:positiveInteger },
