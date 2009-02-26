@@ -5,6 +5,6 @@ datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 element zonelist {
 	element zone {
 		attribute name { text },
-		element timestamp { xsd:dateTime }?
+		element lastUpdate { xsd:dateTime }?
 	}*
 }
