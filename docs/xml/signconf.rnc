@@ -12,7 +12,7 @@ start =
 		},
 		
 		element signatures {
-			element resign { xsd:duration },
+			element re-sign { xsd:duration },
 			element refresh { xsd:duration },
 			element validity {
 				element default { xsd:duration },

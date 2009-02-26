@@ -8,7 +8,7 @@
 			<ttl>PT3600S</ttl>
 			
 			<!-- all intervals are xs:duration -->
-			<resign>PT2H</resign>
+			<re-sign>PT2H</re-sign>
 			<refresh>P3D</refresh>
 			<validity>
 					<default>P7D</default>

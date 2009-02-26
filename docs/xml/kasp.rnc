@@ -13,7 +13,7 @@ start = element kasp {
 				ttl?,
 				
 				# how often should the zone be (re)signed?
-				element resign { xsd:duration },
+				element re-sign { xsd:duration },
 				
 				# how often should existing signatures be refreshed?
 				element refresh { xsd:duration },

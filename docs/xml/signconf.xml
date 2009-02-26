@@ -10,7 +10,7 @@
 	</adapters>
 
 	<signatures>
-		<resign>PT2H</resign> 
+		<re-sign>PT2H</re-sign> 
 		<refresh>P3D</refresh>
 		<validity>
 				<default>P7D</default>
