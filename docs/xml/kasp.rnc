@@ -7,6 +7,9 @@ start = element kasp {
 			attribute name { xsd:string },
 
 			element signatures {
+				# TTL for RRSIGs?	
+				ttl,
+				
 				# how often should the zone be (re)signed?
 				element resign { xsd:duration },
 				
@@ -24,20 +27,20 @@ start = element kasp {
 				element jitter { xsd:duration },
 				
 				# how much should we predate the signature inception time?
-				element clockskew { xsd:duration }	
+				element clockskew { xsd:duration }
 			},
 
 			element denial {
 				# TTL for authenticated denial of existence?
-				element ttl { xsd:duration },
+				ttl,
 				
 				# use NSEC or NSEC3?
 				(nsec | nsec3)	
 			},
 			
 			element keys {
-				# TTL for DNSKEYs?				
-				element ttl { xsd:duration },
+				# TTL for DNSKEYs?		
+				ttl,
 	
 				element ksk {				
 					# generic key policy, see below
@@ -89,3 +92,5 @@ anykey = element algorithm {
 	},
 	element lifetime { xsd:duration },
 	element repository { xsd:string }
+
+ttl = element ttl { xsd:duration }

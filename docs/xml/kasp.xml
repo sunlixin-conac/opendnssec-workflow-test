@@ -5,6 +5,8 @@
 <kasp>
 	<policy name="default">
 		<signatures>
+			<ttl>PT3600S</ttl>
+			
 			<!-- all intervals are xs:duration -->
 			<resign>PT2H</resign>
 			<refresh>P3D</refresh>
