@@ -2,12 +2,17 @@
 
 <!-- $Id$ -->
 
+<!-- all intervals are xs:duration -->
+
 <kasp>
+	
+	<rollover>
+	  <Ir>PT3600S</Ir>
+	</rollover>
+	
 	<policy name="default">
-		<signatures>
-			<ttl>PT3600S</ttl>
-			
-			<!-- all intervals are xs:duration -->
+	    <description>A default policy that will amaze you and your friends</description>
+		<signatures> 
 			<re-sign>PT2H</re-sign>
 			<refresh>P3D</refresh>
 			<validity>
@@ -16,34 +21,33 @@
 			</validity>
 			<jitter>PT12H</jitter>
 			<clockskew>PT300S</clockskew>
+			<ttl>PT3600S</ttl>
 		</signatures>
 
 		<denial>
-			<ttl>PT3600S</ttl>
-
-			<!-- <nsec/> -->
-						
+			<ttl>PT3600S</ttl>						
 			<nsec3>
 				<opt-out/>
-				<resalt>P100D</resalt>
+				<re-salt>P100D</re-salt>
 				<hash>
 					<algorithm>1</algorithm>
 					<iterations>10</iterations>					
-					<salt>
-						<length>160</length>
-					</salt>
+					<salt length="160"/>
 				</hash>
 			</nsec3>
 		</denial>		
 
 		<keys>
-			<ttl>PT3600S</ttl>
+		    <ttl>PT3600S</ttl>
+		    <St>PT3600S</St>
+			<Sp>PT3600S</Sp>
 			
+			<!-- Parameters that are different for zsks and ksks -->
 			<ksk>
 				<algorithm length="2048">5</algorithm>
 				<lifetime>P1Y</lifetime>
 				<repository>sca6000-1</repository>
-				<overlap>2</overlap>
+				<Ne>2</Ne>
 				<rfc5011/>
 			</ksk>
 
@@ -51,8 +55,28 @@
 				<algorithm length="1024">5</algorithm>
 				<lifetime>P14D</lifetime>
 				<repository>SoftHSM-01</repository>
+				<Ne>2</Ne>
 			</zsk>
 		</keys>
+		
+		<soa>
+		  <ttl>PT3600S</ttl>
+		  <SOAmin>PT3600S</SOAmin>
+		</soa>
+		
+		<nameservers>
+		  <Dp>PT9999S</Dp>
+		</nameservers>
+		
+		<parent>
+		  <TTLds>PT3600S</TTLds>
+		  <Dr>PT9999S</Dr>
+		  <Dp>PT9999S</Dp> 
+		  <soa>
+		    <ttl>PT3600S</ttl>
+		    <SOAmin>PT3600S</SOAmin>
+		  </soa>
+		</parent>
 	</policy>
 	
 	<zone name="opendnssec.org" policy="default"/>
