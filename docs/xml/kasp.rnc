@@ -44,6 +44,12 @@ start = element kasp {
 				# TTL for DNSKEYs?		
 				ttl?,
 	
+				# Key retirement safety factor
+				element St { xsd:duration }?,
+
+				# Key publication safety factor
+				element Sp { xsd:duration }?,
+
 				element ksk {				
 					# generic key policy, see below
 					anykey,
