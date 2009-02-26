@@ -10,11 +10,11 @@ start = element kasp {
 		# Interval between runs of the key rollover procedure
 		element Ir { xsd:duration }
 	},
-	
+
 	element policy {
 		attribute name { xsd:string },
 		element description { xsd:string },
-	  
+
 		# signatures: hold parameters related to signatures
 		# These will go in the signature category in the DB
 		# Most of these will be passed to the signer without
@@ -22,23 +22,23 @@ start = element kasp {
 		element signatures {
 			# how often should the zone be (re)signed?
 			element re-sign { xsd:duration },
-			
+
 			# how often should existing signatures be refreshed?
 			element refresh { xsd:duration },
-			
+
 			# for how long should we sign?
 			element validity {
 				element default { xsd:duration },
 				element denial { xsd:duration }
 			},
-			
+
 			# how much should we jitter the signature expiration time?
 			# (e.g. decrease the expiration time by X)
 			element jitter { xsd:duration },
-			
+
 			# how much should we predate the signature inception time?
 			element clockskew { xsd:duration },
-			
+
 			# TTL for RRSIGs
 			ttl
 		},
@@ -46,35 +46,35 @@ start = element kasp {
 		element denial {
 			# TTL for authenticated denial of existence?
 			ttl,
-			
+
 			# use NSEC or NSEC3?
-			(nsec | nsec3)	
+			(nsec | nsec3)
 		},
-		  
+
 		element keys {
-			# TTL for DNSKEYs	  
+			# TTL for DNSKEYs
 			ttl,
-			
+
 			# key retirement safety factor
 			element St { xsd:duration },
-			
+
 			# key publication safety factor
 			element Sp { xsd:duration },
-	  
-			element ksk {		
+
+			element ksk {
 				# generic key policy, see below
 				anykey,
-				
+
 				# use RFC 5011 for key rollover?
 				element rfc5011 { empty }?
 			}*,
-	
+
 			element zsk {
 				# generic key policy, see below
 				anykey
 			}*
 		},
-		  
+
 		# Parameters for the SOA that the key rollover uses
 		# Really these should come from the registry system
 		# that builds the unsigned zone.
@@ -82,11 +82,11 @@ start = element kasp {
 		element soa {
 			# TTL of the SOA RR
 			ttl,
-		       
+
 			# SOA minimum
 			element SOAmin { xsd:duration }
 		},
-		  
+
 		# Parameters about the nameserver infrastructure that serves these zones
 		# NOTE: This assumes that all zones with the same policy have the
 		# same nameservers or at least nameservers with the same parameters!
@@ -94,7 +94,7 @@ start = element kasp {
 			# Propagation delay between nameservers
 			element Dp { xsd:duration }
 		},
-		
+
 		# Parameters about the parent that rollover needs to know
 		# These might be guesses or obtained by querying the parent zone
 		# NOTE: This assumes that all zones with the same policy have
@@ -102,18 +102,18 @@ start = element kasp {
 		element parent {
 			# TTL of DS in parent
 			element TTLds { xsd:duration },
-			
+
 			# Time between submitting a DS to the parent and its publication
 			element Dr { xsd:duration },
-			
+
 			# Propagation delay in the parent
 			element Dp { xsd:duration },
-			
+
 			# Parents SOA
 			element soa {
 				# TTL of the SOA RR
 				ttl,
-			
+
 				# SOA minimum
 				element SOAmin { xsd:duration }
 			}
@@ -132,11 +132,11 @@ nsec = element nsec { empty }
 nsec3 = element nsec3 {
 	# use global NSEC3 opt-out?
 	element opt-out { empty }?,
-	
+
 	# how often should we resalt?
 	# (e.g. create new NSEC3 chains)
 	element re-salt { xsd:duration },
-	
+
 	# NSEC3 hash parameters
 	element hash {
 		element algorithm { xsd:positiveInteger },
@@ -154,7 +154,7 @@ anykey = element algorithm {
 	},
 	element lifetime { xsd:duration },
 	element repository { xsd:string },
-  
+
 	# Number of emergency keys
 	element Ne { xsd:positiveInteger }
 
