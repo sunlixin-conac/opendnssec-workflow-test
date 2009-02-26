@@ -8,7 +8,7 @@ start = element kasp {
 
 			element signatures {
 				# TTL for RRSIGs?	
-				ttl,
+				ttl?,
 				
 				# how often should the zone be (re)signed?
 				element resign { xsd:duration },
@@ -32,7 +32,7 @@ start = element kasp {
 
 			element denial {
 				# TTL for authenticated denial of existence?
-				ttl,
+				ttl?,
 				
 				# use NSEC or NSEC3?
 				(nsec | nsec3)	
@@ -40,7 +40,7 @@ start = element kasp {
 			
 			element keys {
 				# TTL for DNSKEYs?		
-				ttl,
+				ttl?,
 	
 				element ksk {				
 					# generic key policy, see below
