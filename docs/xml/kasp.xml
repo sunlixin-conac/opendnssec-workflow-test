@@ -7,7 +7,7 @@
 <kasp>
 	
 	<rollover>
-	  <Ir>PT3600S</Ir>
+	  <interval>PT3600S</interval>
 	</rollover>
 	
 	<policy name="default">
@@ -38,16 +38,16 @@
 		</denial>		
 
 		<keys>
-		    <ttl>PT3600S</ttl>
-		    <St>PT3600S</St>
-			<Sp>PT3600S</Sp>
+		  <ttl>PT3600S</ttl>
+		  <retire-safety>PT3600S</retire-safety>
+			<publish-safety>PT3600S</publish-safety>
 			
 			<!-- Parameters that are different for zsks and ksks -->
 			<ksk>
 				<algorithm length="2048">5</algorithm>
 				<lifetime>P1Y</lifetime>
 				<repository>sca6000-1</repository>
-				<Ne>2</Ne>
+				<emergency>2</emergency>
 				<rfc5011/>
 			</ksk>
 
@@ -55,26 +55,26 @@
 				<algorithm length="1024">5</algorithm>
 				<lifetime>P14D</lifetime>
 				<repository>SoftHSM-01</repository>
-				<Ne>2</Ne>
+				<emergency>2</emergency>
 			</zsk>
 		</keys>
 		
 		<soa>
 		  <ttl>PT3600S</ttl>
-		  <SOAmin>PT3600S</SOAmin>
+		  <min>PT3600S</min>
 		</soa>
 		
 		<nameservers>
-		  <Dp>PT9999S</Dp>
+		  <propagation-delay>PT9999S</propagation-delay>
 		</nameservers>
 		
 		<parent>
 		  <TTLds>PT3600S</TTLds>
-		  <Dr>PT9999S</Dr>
-		  <Dp>PT9999S</Dp> 
+		  <ds-delay>PT9999S</ds-delay>
+		  <propagation-delay>PT9999S</propagation-delay> 
 		  <soa>
 		    <ttl>PT3600S</ttl>
-		    <SOAmin>PT3600S</SOAmin>
+		    <min>PT3600S</min>
 		  </soa>
 		</parent>
 	</policy>
