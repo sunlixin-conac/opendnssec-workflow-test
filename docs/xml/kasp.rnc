@@ -88,11 +88,20 @@ nsec3 = element nsec3 {
 		}
 	}
 
-anykey = element algorithm {
+anykey =
+	# Key algorithm
+	element algorithm {
 		attribute length { xsd:positiveInteger }?,
 		xsd:positiveInteger
 	},
+	
+	# Key lifetime
 	element lifetime { xsd:duration },
-	element repository { xsd:string }
+	
+	# Repository identifier
+	element repository { xsd:string },
+
+	# Number of emergency keys
+	element Ne { xsd:positiveInteger }?
 
 ttl = element ttl { xsd:duration }
