@@ -4,162 +4,158 @@ datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
 start = element kasp {
 
-    # Parameters about the key rollover procedure itself
-    # Applies to all policies
-    element rollover {
-      # Interval between runs of the key rollover procedure
-      element Ir { xsd:duration }
-    },
-    
-    element policy {
-      attribute name { xsd:string },
-      element description { xsd:string },
-      
-      # signatures: hold parameters related to signatures
-      # These will go in the signature category in the DB
-      # Most of these will be passed to the signer without
-      # processing
-      element signatures {
-        # how often should the zone be (re)signed?
-        element re-sign { xsd:duration },
-        
-        # how often should existing signatures be refreshed?
-        element refresh { xsd:duration },
-        
-        # for how long should we sign?
-        element validity {
-          element default { xsd:duration },
-          element denial { xsd:duration }
-        },
-        
-        # how much should we jitter the signature expiration time?
-        # (e.g. decrease the expiration time by X)
-        element jitter { xsd:duration },
-        
-        # how much should we predate the signature inception time?
-        element clockskew { xsd:duration },
-        
-        #TTL to be used for RRSIG RRs
-        ttl
-        
-        #
-      },
+	# Parameters about the key rollover procedure itself
+	# Applies to all policies
+	element rollover {
+		# Interval between runs of the key rollover procedure
+		element Ir { xsd:duration }
+	},
+	
+	element policy {
+		attribute name { xsd:string },
+		element description { xsd:string },
+	  
+		# signatures: hold parameters related to signatures
+		# These will go in the signature category in the DB
+		# Most of these will be passed to the signer without
+		# processing
+		element signatures {
+			# how often should the zone be (re)signed?
+			element re-sign { xsd:duration },
+			
+			# how often should existing signatures be refreshed?
+			element refresh { xsd:duration },
+			
+			# for how long should we sign?
+			element validity {
+				element default { xsd:duration },
+				element denial { xsd:duration }
+			},
+			
+			# how much should we jitter the signature expiration time?
+			# (e.g. decrease the expiration time by X)
+			element jitter { xsd:duration },
+			
+			# how much should we predate the signature inception time?
+			element clockskew { xsd:duration },
+			
+			# TTL for RRSIGs
+			ttl
+		},
 
-      element denial {
-        # TTL for authenticated denial of existence?
-        ttl,
-        
-        # use NSEC or NSEC3?
-        (nsec | nsec3)  
-      },
-      
-      element keys {
-        # TTL for DNSKEYs?        
-        ttl,
-        
-        #Key retirement safety factor
-        element St { xsd:duration },
-        
-        #Key publication safety factor
-        element Sp { xsd:duration },
-  
-        element ksk {       
-          # generic key policy, see below
-          anykey,
-          
-          # use RFC 5011 for key rollover?
-          element rfc5011 { empty }?
-        }*,
+		element denial {
+			# TTL for authenticated denial of existence?
+			ttl,
+			
+			# use NSEC or NSEC3?
+			(nsec | nsec3)	
+		},
+		  
+		element keys {
+			# TTL for DNSKEYs	  
+			ttl,
+			
+			# key retirement safety factor
+			element St { xsd:duration },
+			
+			# key publication safety factor
+			element Sp { xsd:duration },
+	  
+			element ksk {		
+				# generic key policy, see below
+				anykey,
+				
+				# use RFC 5011 for key rollover?
+				element rfc5011 { empty }?
+			}*,
+	
+			element zsk {
+				# generic key policy, see below
+				anykey
+			}*
+		},
+		  
+		# Parameters for the SOA that the key rollover uses
+		# Really these should come from the registry system
+		# that builds the unsigned zone.
+		# But they have to get here somehow...
+		element soa {
+			# TTL of the SOA RR
+			ttl,
+		       
+			# SOA minimum
+			element SOAmin { xsd:duration }
+		},
+		  
+		# Parameters about the nameserver infrastructure that serves these zones
+		# NOTE: This assumes that all zones with the same policy have the
+		# same nameservers or at least nameservers with the same parameters!
+		element nameservers {
+			# Propagation delay between nameservers
+			element Dp { xsd:duration }
+		},
+		
+		# Parameters about the parent that rollover needs to know
+		# These might be guesses or obtained by querying the parent zone
+		# NOTE: This assumes that all zones with the same policy have
+		# the same parent or at least parents with the same parameters!
+		element parent {
+			# TTL of DS in parent
+			element TTLds { xsd:duration },
+			
+			# Time between submitting a DS to the parent and its publication
+			element Dr { xsd:duration },
+			
+			# Propagation delay in the parent
+			element Dp { xsd:duration },
+			
+			# Parents SOA
+			element soa {
+				# TTL of the SOA RR
+				ttl,
+			
+				# SOA minimum
+				element SOAmin { xsd:duration }
+			}
+		}
+	}+,
 
-        element zsk {
-          # generic key policy, see below
-          anykey
-        }*
-      },
-      
-      # Parameters for the SOA that the key rollover uses
-      # Really these should come from the registry system
-      # that builds the unsigned zone.
-      # But they have to get here somehow...
-      element soa {
-        #TTL of the SOA RR
-        ttl,
-        
-        #SOA minimum
-        element SOAmin { xsd:duration }
-      },
-      
-      # Parameters about the nameserver infrastructure that serves these zone
-      # NOTE: This assumes that all zones with the same policy have
-      # the same nameservers or at least nameservers with the same parameters!
-      element nameservers {
-        #Dp Propagation delay
-        element Dp { xsd:duration }
-      },
-      
-      # Parameters about the parent that rollover needs to know
-      # These might be guesses or obtained by querying the parent zone
-      # NOTE: This assumes that all zones with the same policy have
-      # the same parent or at least parents with the same parameters!
-      element parent {
-        #TTLds TTL of DS in parent
-        element TTLds { xsd:duration },
-        
-        #Dr Time between submitting a DS to the parent and its publication
-        element Dr { xsd:duration },
-        
-        #Dp - Propagation delay in the parent
-        element Dp { xsd:duration },
-        
-        # Parents SOA
-        element soa {
-          #TTL of the SOA RR
-          ttl,
-
-          #SOA minimum
-          element SOAmin { xsd:duration }
-        }
-      }
-      
-
-    }+,
-    element zone {
-      attribute name { xsd:string },
-      attribute policy { xsd:string },
-      empty
-    }*
+	element zone {
+		attribute name { xsd:string },
+		attribute policy { xsd:string },
+		empty
+	}*
   }
 
 nsec = element nsec { empty }
 
 nsec3 = element nsec3 {
-    # use global NSEC3 opt-out?
-    element opt-out { empty }?,
-    
-    # how often should we resalt?
-    # (e.g. create new NSEC3 chains)
-    element re-salt { xsd:duration },
-    
-    # NSEC3 hash parameters
-    element hash {
-      element algorithm { xsd:positiveInteger },
-      element iterations { xsd:positiveInteger },
-      element salt {
-        attribute length { xsd:positiveInteger },
-        empty
-      }
-    }
+	# use global NSEC3 opt-out?
+	element opt-out { empty }?,
+	
+	# how often should we resalt?
+	# (e.g. create new NSEC3 chains)
+	element re-salt { xsd:duration },
+	
+	# NSEC3 hash parameters
+	element hash {
+		element algorithm { xsd:positiveInteger },
+		element iterations { xsd:positiveInteger },
+		element salt {
+			attribute length { xsd:positiveInteger },
+     			empty
+		}
+	}
   }
 
 anykey = element algorithm {
-    attribute length { xsd:positiveInteger }?,
-    xsd:positiveInteger
-  },
-  element lifetime { xsd:duration },
-  element repository { xsd:string },
+		attribute length { xsd:positiveInteger }?,
+		xsd:positiveInteger
+	},
+	element lifetime { xsd:duration },
+	element repository { xsd:string },
   
-  # Number of emergency keys
-  element Ne { xsd:positiveInteger }
-  
-  
+	# Number of emergency keys
+	element Ne { xsd:positiveInteger }
+
 ttl = element ttl { xsd:duration }
