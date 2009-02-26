@@ -8,6 +8,10 @@ start = element kasp {
 
 			element description { xsd:string }?,
 
+			# signatures: hold parameters related to signatures
+			# These will go in the signature category in the DB
+			# Most of these will be passed to the signer without
+			# processing
 			element signatures {
 				# TTL for RRSIGs?	
 				ttl?,
