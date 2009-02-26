@@ -36,6 +36,9 @@ start = element kasp {
 			},
 			
 			element keys {
+				# TTL for DNSKEYs?				
+				element ttl { xsd:duration },
+	
 				element ksk {				
 					# generic key policy, see below
 					anykey,
@@ -85,5 +88,4 @@ anykey = element algorithm {
 		xsd:positiveInteger
 	},
 	element lifetime { xsd:duration },
-	element ttl { xsd:duration },
 	element repository { xsd:string }

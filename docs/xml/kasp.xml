@@ -35,10 +35,11 @@
 		</denial>		
 
 		<keys>
+			<ttl>PT3600S</ttl>
+			
 			<ksk>
 				<algorithm length="2048">5</algorithm>
 				<lifetime>P1Y</lifetime>
-				<ttl>PT3600S</ttl>
 				<repository>sca6000-1</repository>
 				<overlap>2</overlap>
 				<rfc5011/>
@@ -47,7 +48,6 @@
 			<zsk>
 				<algorithm length="1024">5</algorithm>
 				<lifetime>P14D</lifetime>
-				<ttl>PT3600S</ttl>
 				<repository>SoftHSM-01</repository>
 			</zsk>
 		</keys>
