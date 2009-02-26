@@ -14,7 +14,7 @@ XSD=		kasp.xsd zonelist.xsd signconf.xsd
 
 .SUFFIXES: .rnc .rng .xsd
 
-all: rng xsd
+all: rng regress
 
 rng: $(RNG)
 
