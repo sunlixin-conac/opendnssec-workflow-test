@@ -16,6 +16,9 @@ XSD=		kasp.xsd zonelist.xsd signconf.xsd
 
 all: rng regress
 
+clean:
+	rm -f $(RNG) $(XSD)
+
 rng: $(RNG)
 
 xsd: $(XSD)
