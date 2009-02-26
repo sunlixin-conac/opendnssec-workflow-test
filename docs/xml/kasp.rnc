@@ -6,6 +6,8 @@ start = element kasp {
 		element policy {
 			attribute name { xsd:string },
 
+			element description { xsd:string }?,
+
 			element signatures {
 				# TTL for RRSIGs?	
 				ttl?,
