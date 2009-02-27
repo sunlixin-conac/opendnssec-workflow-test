@@ -22,18 +22,18 @@ start =
 			element clockskew { xsd:duration },
 			
 			element ksk {
-				attribute keyid { xsd:positiveInteger },
+				keyid,
 				empty
 			}*,
 
 			element zsk {
-				attribute keyid { xsd:positiveInteger },
+				keyid,
 				empty
 			}*
 		},
 		
 		element publish {
-			attribute keyid { xsd:positiveInteger},
+			keyid,
 			empty
 		}*,
 		
@@ -59,7 +59,9 @@ adapter =
 	attribute type { xsd:string },
 	empty
 
-	
+
+keyid = attribute keyid { xsd:positiveInteger}
+
 nsec = element nsec { empty }
 
 nsec3 = element nsec3 {
