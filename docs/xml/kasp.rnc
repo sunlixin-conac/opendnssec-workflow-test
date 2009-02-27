@@ -75,35 +75,26 @@ start = element kasp {
 			}*
 		},
 
-		# Parameters for the SOA that the key rollover uses
-		# Really these should come from the registry system
-		# that builds the unsigned zone.
-		# But they have to get here somehow...
-		soa,
+		element zone {
+			# Expected propagation delay in child publication
+			propagationDelay,
 
-		# Parameters about the nameserver infrastructure that serves these zones
-		# NOTE: This assumes that all zones with the same policy have the
-		# same nameservers or at least nameservers with the same parameters!
-		element nameservers {
-			# Propagation delay between nameservers
-			propagationDelay
+			# Expected zone SOA parameters
+			soa	
 		},
 
-		# Parameters about the parent that rollover needs to know
-		# These might be guesses or obtained by querying the parent zone
+		# Excepted paren parameters for key rollover usage.
+		# These might be guess or obtained by querying the parent zone
 		# NOTE: This assumes that all zones with the same policy have
 		# the same parent or at least parents with the same parameters!
 		element parent {
-			# TTL of DS in parent (informational)
-			element TTLds { xsd:duration },
+			# Expected TTL of DS in parent
+			element ttlDS { xsd:duration },
 
-			# Time between submitting a DS to the parent and its publication
-			element dsDelay { xsd:duration },
-
-			# Propagation delay in the parent
+			# Expected propagation delay in parent publication
 			propagationDelay,
 
-			# Parents SOA
+			# Expected parent SOA parameters
 			soa
 		}
 	}+,

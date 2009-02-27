@@ -59,18 +59,16 @@
 			</zsk>
 		</keys>
 		
-		<soa>
-		  <ttl>PT3600S</ttl>
-		  <min>PT3600S</min>
-		</soa>
-		
-		<nameservers>
-		  <propagationDelay>PT9999S</propagationDelay>
-		</nameservers>
+		<zone>
+		  <propagationDelay>PT9999S</propagationDelay>			
+		  <soa>
+		    <ttl>PT3600S</ttl>
+		    <min>PT3600S</min>
+		  </soa>
+		</zone>
 		
 		<parent>
-		  <TTLds>PT3600S</TTLds>
-		  <dsDelay>PT9999S</dsDelay>
+		  <ttlDS>PT3600S</ttlDS>
 		  <propagationDelay>PT9999S</propagationDelay> 
 		  <soa>
 		    <ttl>PT3600S</ttl>
