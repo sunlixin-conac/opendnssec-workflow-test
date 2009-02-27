@@ -21,6 +21,8 @@ start =
 			element jitter { xsd:duration },
 			element clockskew { xsd:duration },
 
+			ttl,
+
 			element ksk {
 				keyid,
 				empty

@@ -19,6 +19,8 @@
 		<jitter>PT12H</jitter>
 		<clockskew>PT300S</clockskew>
 
+		<ttl>PT3600S</ttl> 
+
 		<ksk keyid="1234"/>
 		<zsk keyid="4567"/>
 	</signatures>
