@@ -38,9 +38,9 @@ start =
 		}+,
 		
 		element keystore {
+			ttl,
 			element key {
 				attribute id { xsd:positiveInteger },
-				ttl,
 				element flags { xsd:positiveInteger },
 				element algorithm { xsd:positiveInteger },
 				element locator { xsd:string }

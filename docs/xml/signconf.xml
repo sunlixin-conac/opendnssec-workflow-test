@@ -26,8 +26,9 @@
 	<publish keyid="1234"/>
 	
 	<keystore>
+		<ttl>PT3600S</ttl>
+
    		<key id="1234">
-   			<ttl>PT3600S</ttl>
    			<flags>257</flags>
    			<algorithm>5</algorithm>
 		
@@ -36,7 +37,6 @@
 		</key>	
 			
    		<key id="4567">
-   			<ttl>PT3600S</ttl>
    			<flags>256</flags>
    			<algorithm>5</algorithm>
 		
