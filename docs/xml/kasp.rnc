@@ -133,7 +133,8 @@ nsec3 = element nsec3 {
 
 soa = element soa {
 		ttl,
-		element min { xsd:duration }
+		element min { xsd:duration },
+		element serial { "counter" | "unixtime" | "datecounter" }?
 	}
 
 anykey = element algorithm {

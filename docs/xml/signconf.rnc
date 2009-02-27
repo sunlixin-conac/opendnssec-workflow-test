@@ -69,7 +69,8 @@ ttl = element ttl { xsd:duration }
 
 soa = element soa {
 		ttl,
-		element min { xsd:duration }
+		element min { xsd:duration },
+		element serial { "counter" | "unixtime" | "datecounter" }?
 	}
 
 nsec = element nsec { empty }

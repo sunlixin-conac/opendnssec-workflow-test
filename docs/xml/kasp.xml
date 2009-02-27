@@ -73,6 +73,7 @@
 		  <soa>
 		    <ttl>PT3600S</ttl>
 		    <min>PT3600S</min>
+			<serial>unixtime</serial>
 		  </soa>
 		</parent>
 	</policy>
