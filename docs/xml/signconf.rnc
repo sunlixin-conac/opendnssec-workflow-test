@@ -12,7 +12,7 @@ start =
 		},
 		
 		element signatures {
-			element re-sign { xsd:duration },
+			element reSign { xsd:duration },
 			element refresh { xsd:duration },
 			element validity {
 				element default { xsd:duration },
@@ -63,7 +63,7 @@ adapter =
 nsec = element nsec { empty }
 
 nsec3 = element nsec3 {
-		element opt-out { empty }?,
+		element optOut { empty }?,
 		element hash {
 			element algorithm { xsd:positiveInteger },
 			element iterations { xsd:positiveInteger },

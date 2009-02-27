@@ -10,7 +10,7 @@
 	</adapters>
 
 	<signatures>
-		<re-sign>PT2H</re-sign> 
+		<reSign>PT2H</reSign> 
 		<refresh>P3D</refresh>
 		<validity>
 				<default>P7D</default>
@@ -52,10 +52,8 @@
 	<denial>
 		<ttl>PT3600S</ttl>		
 
-		<!-- <nsec/> -->
-
 		<nsec3>
-			<opt-out/>		
+			<optOut/>		
 			<hash>
 				<algorithm>1</algorithm>
 				<iterations>10</iterations>					
