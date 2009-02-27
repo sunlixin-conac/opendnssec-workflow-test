@@ -10,7 +10,7 @@ start =
 			element input { adapter },
 			element output { adapter }
 		},
-		
+
 		element signatures {
 			element reSign { xsd:duration },
 			element refresh { xsd:duration },
@@ -20,7 +20,7 @@ start =
 			},
 			element jitter { xsd:duration },
 			element clockskew { xsd:duration },
-			
+
 			element ksk {
 				keyid,
 				empty
@@ -31,18 +31,18 @@ start =
 				empty
 			}+
 		},
-		
+
 		element publish {
 			keyid,
 			empty
 		}+,
-		
+
 		element keystore {
 			ttl,
 			element key {
 				attribute id { xsd:positiveInteger },
 				element flags { xsd:positiveInteger },
-				element algorithm { xsd:positiveInteger },
+				algorithm,
 				element locator { xsd:string }
 			}+
 		},
@@ -52,13 +52,14 @@ start =
 			(nsec | nsec3)
 		}
 	}
-	
+
 adapter =
 	attribute type { xsd:string },
 	empty
 
-
 keyid = attribute keyid { xsd:positiveInteger}
+
+algorithm = element algorithm { xsd:positiveInteger }
 
 ttl = element ttl { xsd:duration }
 
@@ -67,7 +68,7 @@ nsec = element nsec { empty }
 nsec3 = element nsec3 {
 		element optOut { empty }?,
 		element hash {
-			element algorithm { xsd:positiveInteger },
+			algorithm,
 			element iterations { xsd:positiveInteger },
 			element salt { xsd:string }
 		}
