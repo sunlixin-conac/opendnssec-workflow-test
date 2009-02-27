@@ -13,7 +13,7 @@
 	<policy name="default">
 	    <description>A default policy that will amaze you and your friends</description>
 		<signatures> 
-			<re-sign>PT2H</re-sign>
+			<reSign>PT2H</reSign>
 			<refresh>P3D</refresh>
 			<validity>
 					<default>P7D</default>
@@ -27,8 +27,8 @@
 		<denial>
 			<ttl>PT3600S</ttl>						
 			<nsec3>
-				<opt-out/>
-				<re-salt>P100D</re-salt>
+				<optOut/>
+				<reSalt>P100D</reSalt>
 				<hash>
 					<algorithm>1</algorithm>
 					<iterations>10</iterations>					
@@ -39,8 +39,8 @@
 
 		<keys>
 		  <ttl>PT3600S</ttl>
-		  <retire-safety>PT3600S</retire-safety>
-			<publish-safety>PT3600S</publish-safety>
+		  <retireSafety>PT3600S</retireSafety>
+			<publishSafety>PT3600S</publishSafety>
 			
 			<!-- Parameters that are different for zsks and ksks -->
 			<ksk>
@@ -65,13 +65,13 @@
 		</soa>
 		
 		<nameservers>
-		  <propagation-delay>PT9999S</propagation-delay>
+		  <propagationDelay>PT9999S</propagationDelay>
 		</nameservers>
 		
 		<parent>
 		  <TTLds>PT3600S</TTLds>
-		  <ds-delay>PT9999S</ds-delay>
-		  <propagation-delay>PT9999S</propagation-delay> 
+		  <dsDelay>PT9999S</dsDelay>
+		  <propagationDelay>PT9999S</propagationDelay> 
 		  <soa>
 		    <ttl>PT3600S</ttl>
 		    <min>PT3600S</min>

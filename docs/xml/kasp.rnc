@@ -21,7 +21,7 @@ start = element kasp {
 		# processing
 		element signatures {
 			# how often should the zone be (re)signed?
-			element re-sign { xsd:duration },
+			element reSign { xsd:duration },
 
 			# how often should existing signatures be refreshed?
 			element refresh { xsd:duration },
@@ -56,10 +56,10 @@ start = element kasp {
 			ttl,
 
 			# key retirement safety factor
-			element retire-safety { xsd:duration },
+			element retireSafety { xsd:duration },
 
 			# key publication safety factor
-			element publish-safety { xsd:duration },
+			element publishSafety { xsd:duration },
 
 			element ksk {
 				# generic key policy, see below
@@ -79,20 +79,14 @@ start = element kasp {
 		# Really these should come from the registry system
 		# that builds the unsigned zone.
 		# But they have to get here somehow...
-		element soa {
-			# TTL of the SOA RR
-			ttl,
-
-			# SOA minimum
-			element min { xsd:duration }
-		},
+		soa,
 
 		# Parameters about the nameserver infrastructure that serves these zones
 		# NOTE: This assumes that all zones with the same policy have the
 		# same nameservers or at least nameservers with the same parameters!
 		element nameservers {
 			# Propagation delay between nameservers
-			element propagation-delay { xsd:duration }
+			propagationDelay
 		},
 
 		# Parameters about the parent that rollover needs to know
@@ -100,23 +94,17 @@ start = element kasp {
 		# NOTE: This assumes that all zones with the same policy have
 		# the same parent or at least parents with the same parameters!
 		element parent {
-			# TTL of DS in parent
+			# TTL of DS in parent (informational)
 			element TTLds { xsd:duration },
 
 			# Time between submitting a DS to the parent and its publication
-			element ds-delay { xsd:duration },
+			element dsDelay { xsd:duration },
 
 			# Propagation delay in the parent
-			element propagation-delay { xsd:duration },
+			propagationDelay,
 
 			# Parents SOA
-			element soa {
-				# TTL of the SOA RR
-				ttl,
-
-				# SOA minimum
-				element min { xsd:duration }
-			}
+			soa
 		}
 	}+,
 
@@ -131,11 +119,11 @@ nsec = element nsec { empty }
 
 nsec3 = element nsec3 {
 	# use global NSEC3 opt-out?
-	element opt-out { empty }?,
+	element optOut { empty }?,
 
 	# how often should we resalt?
 	# (e.g. create new NSEC3 chains)
-	element re-salt { xsd:duration },
+	element reSalt { xsd:duration },
 
 	# NSEC3 hash parameters
 	element hash {
@@ -152,6 +140,11 @@ nsec3 = element nsec3 {
 	}
   }
 
+soa = element soa {
+		ttl,
+		element min { xsd:duration }
+	}
+
 anykey = element algorithm {
 		attribute length { xsd:positiveInteger }?,
 		xsd:positiveInteger
@@ -165,3 +158,5 @@ anykey = element algorithm {
 	element emergency { xsd:positiveInteger }
 
 ttl = element ttl { xsd:duration }
+
+propagationDelay = element propagationDelay { xsd:duration }
