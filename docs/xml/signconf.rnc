@@ -40,10 +40,8 @@ start =
 		element keystore {
 			element key {
 				attribute id { xsd:positiveInteger },
-				element name { xsd:string },
 				ttl,
 				element flags { xsd:positiveInteger },
-				element protocol { xsd:positiveInteger },
 				element algorithm { xsd:positiveInteger },
 				element locator { xsd:string }
 			}+

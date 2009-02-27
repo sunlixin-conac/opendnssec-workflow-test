@@ -27,10 +27,8 @@
 	
 	<keystore>
    		<key id="1234">
-   			<name>opendnssec.org</name>
    			<ttl>PT3600S</ttl>
    			<flags>257</flags>
-   			<protocol>3</protocol>
    			<algorithm>5</algorithm>
 		
 			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
@@ -38,10 +36,8 @@
 		</key>	
 			
    		<key id="4567">
-   			<name>opendnssec.org</name>
    			<ttl>PT3600S</ttl>
    			<flags>256</flags>
-   			<protocol>3</protocol>
    			<algorithm>5</algorithm>
 		
 			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
