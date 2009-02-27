@@ -24,18 +24,18 @@ start =
 			element ksk {
 				keyid,
 				empty
-			}*,
+			}+,
 
 			element zsk {
 				keyid,
 				empty
-			}*
+			}+
 		},
 		
 		element publish {
 			keyid,
 			empty
-		}*,
+		}+,
 		
 		element keystore {
 			element key {
