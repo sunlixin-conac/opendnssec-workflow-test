@@ -41,7 +41,7 @@ start =
 			element key {
 				attribute id { xsd:positiveInteger },
 				element name { xsd:string },
-				element ttl { xsd:duration },
+				ttl,
 				element flags { xsd:positiveInteger },
 				element protocol { xsd:positiveInteger },
 				element algorithm { xsd:positiveInteger },
@@ -50,7 +50,7 @@ start =
 		},
 
 		element denial {
-			element ttl { xsd:duration },
+			ttl,
 			(nsec | nsec3)
 		}
 	}
@@ -61,6 +61,8 @@ adapter =
 
 
 keyid = attribute keyid { xsd:positiveInteger}
+
+ttl = element ttl { xsd:duration }
 
 nsec = element nsec { empty }
 
