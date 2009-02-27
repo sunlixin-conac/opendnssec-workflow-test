@@ -52,7 +52,9 @@ start =
 		element denial {
 			ttl,
 			(nsec | nsec3)
-		}
+		},
+		
+		soa
 	}
 
 adapter =
@@ -64,6 +66,11 @@ keyid = attribute keyid { xsd:positiveInteger}
 algorithm = element algorithm { xsd:positiveInteger }
 
 ttl = element ttl { xsd:duration }
+
+soa = element soa {
+		ttl,
+		element min { xsd:duration }
+	}
 
 nsec = element nsec { empty }
 
