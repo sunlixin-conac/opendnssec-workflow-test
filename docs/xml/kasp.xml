@@ -84,4 +84,11 @@
 			<output type="file"/>
 		</adapters>
 	</zone>
+
+	<zone name="opendnssec.se" policy="default">
+		<adapters>
+			<input type="file"/>
+			<output type="file"/>
+		</adapters>
+	</zone>
 </kasp>
