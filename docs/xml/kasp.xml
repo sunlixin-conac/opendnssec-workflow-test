@@ -64,6 +64,7 @@
 		  <soa>
 		    <ttl>PT3600S</ttl>
 		    <min>PT3600S</min>
+			<serial>unixtime</serial>
 		  </soa>
 		</zone>
 		
@@ -73,12 +74,11 @@
 		  <soa>
 		    <ttl>PT3600S</ttl>
 		    <min>PT3600S</min>
-			<serial>unixtime</serial>
 		  </soa>
 		</parent>
 	</policy>
 	
-	<zone name="opendnssec.org" policy="default"/>
+	<zone name="opendnssec.org" policy="default" in_adapter="file" out_adapter="file"/>
 	
 	<!-- <zone ... /> -->
 	<!-- <zone ... /> -->
