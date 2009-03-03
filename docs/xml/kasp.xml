@@ -78,10 +78,10 @@
 		</parent>
 	</policy>
 	
-	<zone name="opendnssec.org" policy="default" in_adapter="file" out_adapter="file"/>
-	
-	<!-- <zone ... /> -->
-	<!-- <zone ... /> -->
-	<!-- <zone ... /> -->
-	
+	<zone name="opendnssec.org" policy="default">
+		<adapters>
+			<input type="file"/>
+			<output type="file"/>
+		</adapters>
+	</zone>
 </kasp>
