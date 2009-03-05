@@ -20,32 +20,39 @@
 		<clockskew>PT300S</clockskew>
 
 		<ttl>PT3600S</ttl> 
-
-		<ksk keyid="1234"/>
-		<zsk keyid="4567"/>
 	</signatures>
-	
-	<publish keyid="1234"/>
-	
-	<keystore>
+		
+	<keys>
 		<ttl>PT3600S</ttl>
 
-   		<key id="1234">
+   		<key>
    			<flags>257</flags>
    			<algorithm>5</algorithm>
 		
 			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
 			<locator>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</locator>
+			
+			<!-- this key should sign the DNSKEY RRset -->
+			<ksk/>
+			
+			<!-- this key should be published in the zonefile -->
+			<publish/>
 		</key>	
 			
-   		<key id="4567">
+   		<key>
    			<flags>256</flags>
    			<algorithm>5</algorithm>
 		
 			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
 			<locator>key42:opendnssec.org</locator>
+
+			<!-- this key should sign all non-DNSKEY RRsets -->
+			<zsk/>
+
+			<!-- this key should be published in the zonefile -->
+			<publish/>
 		</key>		
-	</keystore>
+	</keys>
 	
 	<denial>
 		<ttl>PT3600S</ttl>		

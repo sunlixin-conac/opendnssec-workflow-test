@@ -21,31 +21,19 @@ start =
 			element jitter { xsd:duration },
 			element clockskew { xsd:duration },
 
-			ttl,
-
-			element ksk {
-				keyid,
-				empty
-			}+,
-
-			element zsk {
-				keyid,
-				empty
-			}+
+			ttl
 		},
 
-		element publish {
-			keyid,
-			empty
-		}+,
-
-		element keystore {
+		element keys {
 			ttl,
 			element key {
-				attribute id { xsd:positiveInteger },
 				element flags { xsd:positiveInteger },
 				algorithm,
-				element locator { xsd:string }
+				element locator { xsd:string },
+				
+				element ksk { empty }?,
+				element zsk { empty }?,
+				element publish { empty }?
 			}+
 		},
 
