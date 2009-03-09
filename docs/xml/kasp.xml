@@ -2,8 +2,6 @@
 
 <!-- $Id$ -->
 
-<!-- all intervals are xs:duration -->
-
 <kasp>
 	
 	<rollover>
