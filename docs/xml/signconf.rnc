@@ -30,9 +30,13 @@ start =
 				element flags { xsd:positiveInteger },
 				algorithm,
 				element locator { xsd:string },
-				
-				element ksk { empty }?,
-				element zsk { empty }?,
+
+				element sign {
+					(element include { text }+ |
+					 element exclude { text }+ |
+					 empty)
+				},
+	
 				element publish { empty }?
 			}+
 		},

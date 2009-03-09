@@ -32,8 +32,8 @@
 			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
 			<locator>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</locator>
 			
-			<!-- this key should sign the DNSKEY RRset -->
-			<ksk/>
+			<!-- this key should sign the DNSKEY RRset only -->
+			<sign><include>DNSKEY</include></sign>
 			
 			<!-- this key should be published in the zonefile -->
 			<publish/>
@@ -47,7 +47,7 @@
 			<locator>key42:opendnssec.org</locator>
 
 			<!-- this key should sign all non-DNSKEY RRsets -->
-			<zsk/>
+			<sign><exclude>DNSKEY</exclude></sign>
 
 			<!-- this key should be published in the zonefile -->
 			<publish/>
@@ -72,5 +72,5 @@
 		<min>PT3600S</min>
 		<serial>unixtime</serial>
 	</soa>
-	
+
 </signconf>
