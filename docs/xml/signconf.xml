@@ -2,75 +2,77 @@
 
 <!-- $Id$ -->
 
-<signconf zone="opendnssec.org">
+<signconf>
+	<zone name="opendnssec.org">
 
-	<adapters>
-		<input type="file"/>
-		<output type="file"/>
-	</adapters>
-
-	<signatures>
-		<reSign>PT2H</reSign> 
-		<refresh>P3D</refresh>
-		<validity>
-				<default>P7D</default>
-				<denial>P14D</denial>
-		</validity>
-		<jitter>PT12H</jitter>
-		<clockskew>PT300S</clockskew>
-
-		<ttl>PT3600S</ttl> 
-	</signatures>
-		
-	<keys>
-		<ttl>PT3600S</ttl>
-
-   		<key>
-   			<flags>257</flags>
-   			<algorithm>5</algorithm>
-		
-			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
-			<locator>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</locator>
-			
-			<!-- this key should sign the DNSKEY RRset only -->
-			<sign><include>DNSKEY</include></sign>
-			
-			<!-- this key should be published in the zonefile -->
-			<publish/>
-		</key>	
-			
-   		<key>
-   			<flags>256</flags>
-   			<algorithm>5</algorithm>
-		
-			<!-- key locator is usually matched against PKCS#11 CKA_ID -->
-			<locator>key42:opendnssec.org</locator>
-
-			<!-- this key should sign all non-DNSKEY RRsets -->
-			<sign><exclude>DNSKEY</exclude></sign>
-
-			<!-- this key should be published in the zonefile -->
-			<publish/>
-		</key>		
-	</keys>
+		<adapters>
+			<input type="file"/>
+			<output type="file"/>
+		</adapters>
 	
-	<denial>
-		<ttl>PT3600S</ttl>		
-
-		<nsec3>
-			<optOut/>		
-			<hash>
-				<algorithm>1</algorithm>
-				<iterations>10</iterations>					
-				<salt>656d6d6b7469736169646f677461</salt>
-			</hash>
-		</nsec3>
-	</denial>
+		<signatures>
+			<reSign>PT2H</reSign> 
+			<refresh>P3D</refresh>
+			<validity>
+					<default>P7D</default>
+					<denial>P14D</denial>
+			</validity>
+			<jitter>PT12H</jitter>
+			<clockskew>PT300S</clockskew>
 	
-	<soa>
-		<ttl>PT3600S</ttl>
-		<min>PT3600S</min>
-		<serial>unixtime</serial>
-	</soa>
-
+			<ttl>PT3600S</ttl> 
+		</signatures>
+			
+		<keys>
+			<ttl>PT3600S</ttl>
+	
+			<key>
+				<flags>257</flags>
+				<algorithm>5</algorithm>
+			
+				<!-- key locator is usually matched against PKCS#11 CKA_ID -->
+				<locator>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</locator>
+				
+				<!-- this key should sign the DNSKEY RRset only -->
+				<sign><include>DNSKEY</include></sign>
+				
+				<!-- this key should be published in the zonefile -->
+				<publish/>
+			</key>	
+	
+			<key>
+				<flags>256</flags>
+				<algorithm>5</algorithm>
+	
+				<!-- key locator is usually matched against PKCS#11 CKA_ID -->
+				<locator>key42:opendnssec.org</locator>
+	
+				<!-- this key should sign all non-DNSKEY RRsets -->
+				<sign><exclude>DNSKEY</exclude></sign>
+	
+				<!-- this key should be published in the zonefile -->
+				<publish/>
+			</key>		
+		</keys>
+		
+		<denial>
+			<ttl>PT3600S</ttl>		
+	
+			<nsec3>
+				<optOut/>		
+				<hash>
+					<algorithm>1</algorithm>
+					<iterations>10</iterations>					
+					<salt>656d6d6b7469736169646f677461</salt>
+				</hash>
+			</nsec3>
+		</denial>
+		
+		<soa>
+			<ttl>PT3600S</ttl>
+			<min>PT3600S</min>
+			<serial>unixtime</serial>
+		</soa>
+	
+	</zone>
 </signconf>

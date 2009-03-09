@@ -2,9 +2,10 @@
 
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
-start =
-	element signconf {
-		attribute zone { xsd:string },
+start = element signconf { zone }
+
+zone = element zone {
+		attribute name { xsd:string },
 
 		element adapters {
 			element input { adapter },
@@ -47,7 +48,7 @@ start =
 		},
 		
 		soa
-	}
+	}+
 
 adapter =
 	attribute type { xsd:string },
