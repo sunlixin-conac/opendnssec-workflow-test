@@ -30,7 +30,7 @@
 				<flags>257</flags>
 				<algorithm>5</algorithm>
 			
-				<!-- key locator is usually matched against PKCS#11 CKA_ID -->
+				<!-- key locator is usually matched against PKCS#11 CKA_LABEL -->
 				<locator>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</locator>
 				
 				<!-- this key should sign the DNSKEY RRset only -->
@@ -44,7 +44,7 @@
 				<flags>256</flags>
 				<algorithm>5</algorithm>
 	
-				<!-- key locator is usually matched against PKCS#11 CKA_ID -->
+				<!-- key locator is usually matched against PKCS#11 CKA_LABEL -->
 				<locator>key42:opendnssec.org</locator>
 	
 				<!-- this key should sign all non-DNSKEY RRsets -->
