@@ -6,6 +6,8 @@
 	
 	<rollover>
 	  <interval>PT3600S</interval>
+	  <keygeninterval>P3M</keygeninterval>
+	  <backupdelay>P3D</backupdelay>
 	</rollover>
 	
 	<policy name="default">

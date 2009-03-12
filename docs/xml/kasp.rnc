@@ -8,7 +8,10 @@ start = element kasp {
 	# Applies to all policies
 	element rollover {
 		# Interval between runs of the key rollover procedure
-		element interval { xsd:duration }
+		element interval { xsd:duration },
+		element keygeninterval { xsd:duration },
+		element backupdelay { xsd:duration }
+		
 	},
 
 	element policy {
