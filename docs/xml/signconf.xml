@@ -31,7 +31,7 @@
 				<algorithm>5</algorithm>
 			
 				<!-- key locator is usually matched against PKCS#11 CKA_ID -->
-				<locator>da4a25dbb8bfc18f0deea12ed9a549d9f7dba4c8</locator>
+				<locator>DFE7265B-783F-4186-8538-0AA784C2F31D</locator>
 				
 				<!-- this key should sign the DNSKEY RRset only -->
 				<sign><include>DNSKEY</include></sign>
