@@ -42,10 +42,7 @@ zone = element zone {
 			}+
 		},
 
-		element denial {
-			ttl,
-			(nsec | nsec3)
-		},
+		element denial { (nsec | nsec3)	},
 		
 		soa
 	}+
@@ -70,6 +67,7 @@ nsec = element nsec { empty }
 
 nsec3 = element nsec3 {
 		element optOut { empty }?,
+		element parameters { ttl },
 		element hash {
 			algorithm,
 			element iterations { xsd:positiveInteger },
