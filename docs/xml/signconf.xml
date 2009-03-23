@@ -9,9 +9,9 @@
 			<input type="file"/>
 			<output type="file"/>
 		</adapters>
-	
+
 		<signatures>
-			<reSign>PT2H</reSign> 
+			<reSign>PT2H</reSign>
 			<refresh>P3D</refresh>
 			<validity>
 					<default>P7D</default>
@@ -19,64 +19,64 @@
 			</validity>
 			<jitter>PT12H</jitter>
 			<clockskew>PT300S</clockskew>
-	
-			<ttl>PT3600S</ttl> 
+
+			<ttl>PT3600S</ttl>
 		</signatures>
-			
+
 		<keys>
 			<ttl>PT3600S</ttl>
-	
+
 			<key>
 				<flags>257</flags>
 				<algorithm>5</algorithm>
-			
+
 				<!-- key locator is matched against PKCS#11 CKA_ID in hex -->
 				<!-- e.g. DFE7265B-783F-4186-8538-0AA784C2F31D -->
 				<!-- is written as -->
 				<!-- DFE7265B783F418685380AA784C2F31D -->
 				<locator>DFE7265B783F418685380AA784C2F31D</locator>
-				
+
 				<!-- this key should sign the DNSKEY RRset only -->
 				<sign><include>DNSKEY</include></sign>
-				
+
 				<!-- this key should be published in the zonefile -->
 				<publish/>
-			</key>	
-	
+			</key>
+
 			<key>
 				<flags>256</flags>
 				<algorithm>5</algorithm>
-	
+
 				<!-- key locator is matched against PKCS#11 CKA_ID in hex -->
 				<locator>8D76C0C49FEB4A97B8E920C7552401CE</locator>
-	
+
 				<!-- this key should sign all non-DNSKEY RRsets -->
 				<sign><exclude>DNSKEY</exclude></sign>
-	
+
 				<!-- this key should be published in the zonefile -->
 				<publish/>
-			</key>		
+			</key>
 		</keys>
-		
+
 		<denial>
 			<nsec3>
-				<optOut/>		
+				<optOut/>
 				<parameters>
 					<ttl>PT3600S</ttl>
 				</parameters>
 				<hash>
 					<algorithm>1</algorithm>
-					<iterations>10</iterations>					
+					<iterations>10</iterations>
 					<salt>656d6d6b7469736169646f677461</salt>
 				</hash>
 			</nsec3>
 		</denial>
-		
+
 		<soa>
 			<ttl>PT3600S</ttl>
 			<min>PT3600S</min>
 			<serial>unixtime</serial>
 		</soa>
-	
+
 	</zone>
 </signconf>

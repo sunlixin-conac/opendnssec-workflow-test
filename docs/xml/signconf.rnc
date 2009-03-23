@@ -37,13 +37,13 @@ zone = element zone {
 					 element exclude { text }+ |
 					 empty)
 				},
-	
+
 				element publish { empty }?
 			}+
 		},
 
 		element denial { (nsec | nsec3)	},
-		
+
 		soa
 	}+
 

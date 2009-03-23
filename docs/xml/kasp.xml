@@ -3,16 +3,16 @@
 <!-- $Id$ -->
 
 <kasp>
-	
+
 	<rollover>
 	  <interval>PT3600S</interval>
 	  <keygeninterval>P3M</keygeninterval>
 	  <backupdelay>P3D</backupdelay>
 	</rollover>
-	
+
 	<policy name="default">
 	    <description>A default policy that will amaze you and your friends</description>
-		<signatures> 
+		<signatures>
 			<reSign>PT2H</reSign>
 			<refresh>P3D</refresh>
 			<validity>
@@ -29,21 +29,21 @@
 				<optOut/>
 				<reSalt>P100D</reSalt>
 				<parameters>
-					<ttl>PT3600S</ttl>						
+					<ttl>PT3600S</ttl>
 				</parameters>
 				<hash>
 					<algorithm>1</algorithm>
-					<iterations>10</iterations>					
+					<iterations>10</iterations>
 					<salt length="160"/>
 				</hash>
 			</nsec3>
-		</denial>		
+		</denial>
 
 		<keys>
 		  <ttl>PT3600S</ttl>
 		  <retireSafety>PT3600S</retireSafety>
 			<publishSafety>PT3600S</publishSafety>
-			
+
 			<!-- Parameters that are different for zsks and ksks -->
 			<ksk>
 				<algorithm length="2048">5</algorithm>
@@ -60,26 +60,26 @@
 				<emergency>2</emergency>
 			</zsk>
 		</keys>
-		
+
 		<zone>
-		  <propagationDelay>PT9999S</propagationDelay>			
+		  <propagationDelay>PT9999S</propagationDelay>
 		  <soa>
 		    <ttl>PT3600S</ttl>
 		    <min>PT3600S</min>
 			<serial>unixtime</serial>
 		  </soa>
 		</zone>
-		
+
 		<parent>
 		  <ttlDS>PT3600S</ttlDS>
-		  <propagationDelay>PT9999S</propagationDelay> 
+		  <propagationDelay>PT9999S</propagationDelay>
 		  <soa>
 		    <ttl>PT3600S</ttl>
 		    <min>PT3600S</min>
 		  </soa>
 		</parent>
 	</policy>
-	
+
 	<zone name="opendnssec.org" policy="default">
 		<adapters>
 			<input type="file"/>
