@@ -47,9 +47,6 @@ start = element kasp {
 		},
 
 		element denial {
-			# TTL for authenticated denial of existence?
-			ttl,
-
 			# use NSEC or NSEC3?
 			(nsec | nsec3)
 		},
@@ -127,6 +124,12 @@ nsec3 = element nsec3 {
 	# how often should we resalt?
 	# (e.g. create new NSEC3 chains)
 	element reSalt { xsd:duration },
+
+	# NSEC3 parameters
+	element parameters {
+		# NSEC3PARAMS TTL
+		ttl
+	},
 
 	# NSEC3 hash parameters
 	element hash {

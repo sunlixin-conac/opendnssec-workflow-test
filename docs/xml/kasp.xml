@@ -25,10 +25,12 @@
 		</signatures>
 
 		<denial>
-			<ttl>PT3600S</ttl>						
 			<nsec3>
 				<optOut/>
 				<reSalt>P100D</reSalt>
+				<parameters>
+					<ttl>PT3600S</ttl>						
+				</parameters>
 				<hash>
 					<algorithm>1</algorithm>
 					<iterations>10</iterations>					
