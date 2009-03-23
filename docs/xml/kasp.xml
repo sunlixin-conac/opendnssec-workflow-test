@@ -21,7 +21,6 @@
 			</validity>
 			<jitter>PT12H</jitter>
 			<clockskew>PT300S</clockskew>
-			<ttl>PT3600S</ttl>
 		</signatures>
 
 		<denial>

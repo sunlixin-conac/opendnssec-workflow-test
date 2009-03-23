@@ -39,10 +39,7 @@ start = element kasp {
 			element jitter { xsd:duration },
 
 			# how much should we predate the signature inception time?
-			element clockskew { xsd:duration },
-
-			# TTL for RRSIGs
-			ttl
+			element clockskew { xsd:duration }
 		},
 
 		element denial {
