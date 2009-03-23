@@ -5,13 +5,13 @@
 <kasp>
 
 	<rollover>
-	  <interval>PT3600S</interval>
-	  <keygeninterval>P3M</keygeninterval>
-	  <backupdelay>P3D</backupdelay>
+		<interval>PT3600S</interval>
+		<keygeninterval>P3M</keygeninterval>
+		<backupdelay>P3D</backupdelay>
 	</rollover>
 
 	<policy name="default">
-	    <description>A default policy that will amaze you and your friends</description>
+		<description>A default policy that will amaze you and your friends</description>
 		<signatures>
 			<reSign>PT2H</reSign>
 			<refresh>P3D</refresh>
@@ -40,8 +40,8 @@
 		</denial>
 
 		<keys>
-		  <ttl>PT3600S</ttl>
-		  <retireSafety>PT3600S</retireSafety>
+			<ttl>PT3600S</ttl>
+			<retireSafety>PT3600S</retireSafety>
 			<publishSafety>PT3600S</publishSafety>
 
 			<!-- Parameters that are different for zsks and ksks -->
@@ -62,21 +62,21 @@
 		</keys>
 
 		<zone>
-		  <propagationDelay>PT9999S</propagationDelay>
-		  <soa>
-		    <ttl>PT3600S</ttl>
-		    <min>PT3600S</min>
-			<serial>unixtime</serial>
-		  </soa>
+			<propagationDelay>PT9999S</propagationDelay>
+			<soa>
+				<ttl>PT3600S</ttl>
+				<min>PT3600S</min>
+				<serial>unixtime</serial>
+			</soa>
 		</zone>
 
 		<parent>
-		  <ttlDS>PT3600S</ttlDS>
-		  <propagationDelay>PT9999S</propagationDelay>
-		  <soa>
-		    <ttl>PT3600S</ttl>
-		    <min>PT3600S</min>
-		  </soa>
+			<ttlDS>PT3600S</ttlDS>
+			<propagationDelay>PT9999S</propagationDelay>
+			<soa>
+				<ttl>PT3600S</ttl>
+				<min>PT3600S</min>
+			</soa>
 		</parent>
 	</policy>
 

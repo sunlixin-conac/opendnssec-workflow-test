@@ -11,7 +11,6 @@ start = element kasp {
 		element interval { xsd:duration },
 		element keygeninterval { xsd:duration },
 		element backupdelay { xsd:duration }
-
 	},
 
 	element policy {
