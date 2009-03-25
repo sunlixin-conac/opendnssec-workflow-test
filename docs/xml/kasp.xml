@@ -4,11 +4,11 @@
 
 <kasp>
 
-	<rollover>
+	<enforcer>
 		<interval>PT3600S</interval>
-		<keygeninterval>P3M</keygeninterval>
-		<backupdelay>P3D</backupdelay>
-	</rollover>
+		<keygenInterval>P3M</keygenInterval>
+		<backupDelay>P3D</backupDelay>
+	</enforcer>
 
 	<policy name="default">
 		<description>A default policy that will amaze you and your friends</description>

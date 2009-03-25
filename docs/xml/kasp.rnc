@@ -4,13 +4,17 @@ datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
 start = element kasp {
 
-	# Parameters about the key rollover procedure itself
+	# Parameters about the KASP Enforcer itself
 	# Applies to all policies
-	element rollover {
+	element enforcer {
 		# Interval between runs of the key rollover procedure
 		element interval { xsd:duration },
-		element keygeninterval { xsd:duration },
-		element backupdelay { xsd:duration }
+
+		# Interval between runs of the key pre-generation procedure
+		element keygenInterval { xsd:duration },
+
+		# Interval between runs of the key backup procedure
+		element backupDelay { xsd:duration }
 	},
 
 	element policy {
