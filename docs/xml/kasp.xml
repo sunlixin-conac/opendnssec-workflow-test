@@ -80,19 +80,5 @@
 			</SOA>
 		</Parent>
 	</Policy>
-
-	<Zone name="opendnssec.org" policy="default">
-		<Adapters>
-			<Input type="file"/>
-			<Output type="file"/>
-		</Adapters>
-	</Zone>
-
-	<Zone name="opendnssec.se" policy="default">
-		<Adapters>
-			<Input type="file"/>
-			<Output type="file"/>
-		</Adapters>
-	</Zone>
-
+	
 </KASP>
