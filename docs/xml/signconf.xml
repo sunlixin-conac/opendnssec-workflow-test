@@ -2,79 +2,79 @@
 
 <!-- $Id$ -->
 
-<signconf>
-	<zone name="opendnssec.org">
+<SignerConfiguration>
+	<Zone name="opendnssec.org">
 
-		<adapters>
-			<input type="file"/>
-			<output type="file"/>
-		</adapters>
+		<Adapters>
+			<Input type="file"/>
+			<Output type="file"/>
+		</Adapters>
 
-		<signatures>
-			<reSign>PT2H</reSign>
-			<refresh>P3D</refresh>
-			<validity>
-					<default>P7D</default>
-					<denial>P14D</denial>
-			</validity>
-			<jitter>PT12H</jitter>
-			<clockskew>PT300S</clockskew>
-		</signatures>
+		<Signatures>
+			<Resign>PT2H</Resign>
+			<Refresh>P3D</Refresh>
+			<Validity>
+					<Default>P7D</Default>
+					<Denial>P14D</Denial>
+			</Validity>
+			<Jitter>PT12H</Jitter>
+			<Clockskew>PT300S</Clockskew>
+		</Signatures>
 
-		<keys>
-			<ttl>PT3600S</ttl>
+		<Keys>
+			<TTL>PT3600S</TTL>
 
-			<key>
-				<flags>257</flags>
-				<algorithm>5</algorithm>
+			<Key>
+				<Flags>257</Flags>
+				<Algorithm>5</Algorithm>
 
 				<!-- key locator is matched against PKCS#11 CKA_ID in hex -->
 				<!-- e.g. DFE7265B-783F-4186-8538-0AA784C2F31D -->
 				<!-- is written as -->
 				<!-- DFE7265B783F418685380AA784C2F31D -->
-				<locator>DFE7265B783F418685380AA784C2F31D</locator>
+				<Locator>DFE7265B783F418685380AA784C2F31D</Locator>
 
 				<!-- this key should sign the DNSKEY RRset only -->
-				<sign><include>DNSKEY</include></sign>
+				<Sign><Include>DNSKEY</Include></Sign>
 
 				<!-- this key should be published in the zonefile -->
-				<publish/>
-			</key>
+				<Publish/>
+			</Key>
 
-			<key>
-				<flags>256</flags>
-				<algorithm>5</algorithm>
+			<Key>
+				<Flags>256</Flags>
+				<Algorithm>5</Algorithm>
 
 				<!-- key locator is matched against PKCS#11 CKA_ID in hex -->
-				<locator>8D76C0C49FEB4A97B8E920C7552401CE</locator>
+				<Locator>8D76C0C49FEB4A97B8E920C7552401CE</Locator>
 
 				<!-- this key should sign all non-DNSKEY RRsets -->
-				<sign><exclude>DNSKEY</exclude></sign>
+				<Sign><Exclude>DNSKEY</Exclude></Sign>
 
 				<!-- this key should be published in the zonefile -->
-				<publish/>
-			</key>
-		</keys>
+				<Publish/>
+			</Key>
+		</Keys>
 
-		<denial>
-			<nsec3>
-				<optOut/>
-				<parameters>
-					<ttl>PT3600S</ttl>
-				</parameters>
-				<hash>
-					<algorithm>1</algorithm>
-					<iterations>10</iterations>
-					<salt>656d6d6b7469736169646f677461</salt>
-				</hash>
-			</nsec3>
-		</denial>
+		<Denial>
+			<NSEC3>
+				<OptOut/>
+				<Parameters>
+					<TTL>PT3600S</TTL>
+				</Parameters>
+				<Hash>
+					<Algorithm>1</Algorithm>
+					<Iterations>10</Iterations>
+					<Salt>656d6d6b7469736169646f677461</Salt>
+				</Hash>
+			</NSEC3>
+		</Denial>
 
-		<soa>
-			<ttl>PT3600S</ttl>
-			<min>PT3600S</min>
-			<serial>unixtime</serial>
-		</soa>
+		<SOA>
+			<TTL>PT3600S</TTL>
+			<Minimum>PT3600S</Minimum>
+			<Serial>unixtime</Serial>
+		</SOA>
 
-	</zone>
-</signconf>
+	</Zone>
+</SignerConfiguration>

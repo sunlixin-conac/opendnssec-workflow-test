@@ -2,45 +2,45 @@
 
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
-start = element signconf { zone }
+start = element SignerConfiguration { zone }
 
-zone = element zone {
+zone = element Zone {
 		attribute name { xsd:string },
 
-		element adapters {
-			element input { adapter },
-			element output { adapter }
+		element Adapters {
+			element Input { adapter },
+			element Output { adapter }
 		},
 
-		element signatures {
-			element reSign { xsd:duration },
-			element refresh { xsd:duration },
-			element validity {
-				element default { xsd:duration },
-				element denial { xsd:duration }
+		element Signatures {
+			element Resign { xsd:duration },
+			element Refresh { xsd:duration },
+			element Validity {
+				element Default { xsd:duration },
+				element Denial { xsd:duration }
 			},
-			element jitter { xsd:duration },
-			element clockskew { xsd:duration }
+			element Jitter { xsd:duration },
+			element Clockskew { xsd:duration }
 		},
 
-		element keys {
+		element Keys {
 			ttl,
-			element key {
-				element flags { xsd:positiveInteger },
+			element Key {
+				element Flags { xsd:positiveInteger },
 				algorithm,
-				element locator { xsd:string },
+				element Locator { xsd:string },
 
-				element sign {
-					(element include { text }+ |
-					 element exclude { text }+ |
+				element Sign {
+					(element Include { text }+ |
+					 element Exclude { text }+ |
 					 empty)
 				},
 
-				element publish { empty }?
+				element Publish { empty }?
 			}+
 		},
 
-		element denial { (nsec | nsec3)	},
+		element Denial { (nsec | nsec3)	},
 
 		soa
 	}+
@@ -51,24 +51,24 @@ adapter =
 
 keyid = attribute keyid { xsd:positiveInteger}
 
-algorithm = element algorithm { xsd:positiveInteger }
+algorithm = element Algorithm { xsd:positiveInteger }
 
-ttl = element ttl { xsd:duration }
+ttl = element TTL { xsd:duration }
 
-soa = element soa {
+soa = element SOA {
 		ttl,
-		element min { xsd:duration },
-		element serial { "counter" | "unixtime" | "datecounter" }?
+		element Minimum { xsd:duration },
+		element Serial { "counter" | "unixtime" | "datecounter" }?
 	}
 
-nsec = element nsec { empty }
+nsec = element NSEC { empty }
 
-nsec3 = element nsec3 {
-		element optOut { empty }?,
-		element parameters { ttl },
-		element hash {
+nsec3 = element NSEC3 {
+		element OptOut { empty }?,
+		element Parameters { ttl },
+		element Hash {
 			algorithm,
-			element iterations { xsd:positiveInteger },
-			element salt { xsd:string }
+			element Iterations { xsd:positiveInteger },
+			element Salt { xsd:string }
 		}
 	}

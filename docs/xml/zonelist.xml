@@ -2,22 +2,22 @@
 
 <!-- $Id$ -->
 
-<zonelist>
+<ZoneList>
 
-	<zone name="opendnssec.se">
-		<lastUpdate>2002-05-30T09:30:10Z</lastUpdate>
-	</zone>
+	<Zone name="opendnssec.se">
+		<LastUpdate>2002-05-30T09:30:10Z</LastUpdate>
+	</Zone>
 
-	<zone name="opendnssec.org">
-		<lastUpdate>2002-05-30T09:30:10Z</lastUpdate>
-	</zone>
+	<Zone name="opendnssec.org">
+		<LastUpdate>2002-05-30T09:30:10Z</LastUpdate>
+	</Zone>
 
-	<zone name="opendnssec.com">
-		<lastUpdate>2002-05-30T09:30:10Z</lastUpdate>
-	</zone>
+	<Zone name="opendnssec.com">
+		<LastUpdate>2002-05-30T09:30:10Z</LastUpdate>
+	</Zone>
 
-	<zone name="opendnssec.net">
-		<lastUpdate>2002-05-30T09:30:10Z</lastUpdate>
-	</zone>
+	<Zone name="opendnssec.net">
+		<LastUpdate>2002-05-30T09:30:10Z</LastUpdate>
+	</Zone>
 
-</zonelist>
+</ZoneList>

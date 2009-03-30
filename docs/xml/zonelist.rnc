@@ -2,9 +2,9 @@
 
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
-element zonelist {
-	element zone {
+element ZoneList {
+	element Zone {
 		attribute name { text },
-		element lastUpdate { xsd:dateTime }?
+		element LastUpdate { xsd:dateTime }?
 	}*
 }

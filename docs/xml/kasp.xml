@@ -2,94 +2,97 @@
 
 <!-- $Id$ -->
 
-<kasp>
+<KASP>
 
-	<enforcer>
-		<interval>PT3600S</interval>
-		<keygenInterval>P3M</keygenInterval>
-		<backupDelay>P3D</backupDelay>
-	</enforcer>
+	<Enforcer>
+		<Interval>PT3600S</Interval>
+		<KeygenInterval>P3M</KeygenInterval>
+		<BackupDelay>P3D</BackupDelay>
+	</Enforcer>
 
-	<policy name="default">
-		<description>A default policy that will amaze you and your friends</description>
-		<signatures>
-			<reSign>PT2H</reSign>
-			<refresh>P3D</refresh>
-			<validity>
-					<default>P7D</default>
-					<denial>P14D</denial>
-			</validity>
-			<jitter>PT12H</jitter>
-			<clockskew>PT300S</clockskew>
-		</signatures>
+	<Policy name="default">
+		<Description>A default policy that will amaze you and your friends</Description>
+		<Signatures>
+			<Resign>PT2H</Resign>
+			<Refresh>P3D</Refresh>
+			<Validity>
+					<Default>P7D</Default>
+					<Denial>P14D</Denial>
+			</Validity>
+			<Jitter>PT12H</Jitter>
+			<Clockskew>PT300S</Clockskew>
+		</Signatures>
 
-		<denial>
-			<nsec3>
-				<optOut/>
-				<reSalt>P100D</reSalt>
-				<parameters>
-					<ttl>PT3600S</ttl>
-				</parameters>
-				<hash>
-					<algorithm>1</algorithm>
-					<iterations>10</iterations>
-					<salt length="160"/>
-				</hash>
-			</nsec3>
-		</denial>
+		<Denial>
+			<NSEC3>
+				<OptOut/>
+				<Resalt>P100D</Resalt>
+				<Parameters>
+					<TTL>PT3600S</TTL>
+				</Parameters>
+				<Hash>
+					<Algorithm>1</Algorithm>
+					<Iterations>10</Iterations>
+					<Salt length="160"/>
+				</Hash>
+			</NSEC3>
+		</Denial>
 
-		<keys>
-			<ttl>PT3600S</ttl>
-			<retireSafety>PT3600S</retireSafety>
-			<publishSafety>PT3600S</publishSafety>
+		<Keys>
+			<TTL>PT3600S</TTL>
+			<RetireSafety>PT3600S</RetireSafety>
+			<PublishSafety>PT3600S</PublishSafety>
 
 			<!-- Parameters that are different for zsks and ksks -->
-			<ksk>
-				<algorithm length="2048">5</algorithm>
-				<lifetime>P1Y</lifetime>
-				<repository>sca6000-1</repository>
-				<emergency>2</emergency>
-				<rfc5011/>
-			</ksk>
+			<KSK>
+				<Algorithm length="2048">5</Algorithm>
+				<Lifetime>P1Y</Lifetime>
+				<Repository>sca6000-1</Repository>
+				<Emergency>2</Emergency>
+				<RFC5011/>
+			</KSK>
 
-			<zsk>
-				<algorithm length="1024">5</algorithm>
-				<lifetime>P14D</lifetime>
-				<repository>SoftHSM-01</repository>
-				<emergency>2</emergency>
-			</zsk>
-		</keys>
+			<ZSK>
+				<Algorithm length="1024">5</Algorithm>
+				<Lifetime>P14D</Lifetime>
+				<Repository>SoftHSM-01</Repository>
+				<Emergency>2</Emergency>
+			</ZSK>
+		</Keys>
 
-		<zone>
-			<propagationDelay>PT9999S</propagationDelay>
-			<soa>
-				<ttl>PT3600S</ttl>
-				<min>PT3600S</min>
-				<serial>unixtime</serial>
-			</soa>
-		</zone>
+		<Zone>
+			<PropagationDelay>PT9999S</PropagationDelay>
+			<SOA>
+				<TTL>PT3600S</TTL>
+				<Minimum>PT3600S</Minimum>
+				<Serial>unixtime</Serial>
+			</SOA>
+		</Zone>
 
-		<parent>
-			<ttlDS>PT3600S</ttlDS>
-			<propagationDelay>PT9999S</propagationDelay>
-			<soa>
-				<ttl>PT3600S</ttl>
-				<min>PT3600S</min>
-			</soa>
-		</parent>
-	</policy>
+		<Parent>
+			<PropagationDelay>PT9999S</PropagationDelay>
+			<DS>
+				<TTL>PT3600S</TTL>
+			</DS>
+			<SOA>
+				<TTL>PT3600S</TTL>
+				<Minimum>PT3600S</Minimum>
+			</SOA>
+		</Parent>
+	</Policy>
 
-	<zone name="opendnssec.org" policy="default">
-		<adapters>
-			<input type="file"/>
-			<output type="file"/>
-		</adapters>
-	</zone>
+	<Zone name="opendnssec.org" policy="default">
+		<Adapters>
+			<Input type="file"/>
+			<Output type="file"/>
+		</Adapters>
+	</Zone>
 
-	<zone name="opendnssec.se" policy="default">
-		<adapters>
-			<input type="file"/>
-			<output type="file"/>
-		</adapters>
-	</zone>
-</kasp>
+	<Zone name="opendnssec.se" policy="default">
+		<Adapters>
+			<Input type="file"/>
+			<Output type="file"/>
+		</Adapters>
+	</Zone>
+
+</KASP>
