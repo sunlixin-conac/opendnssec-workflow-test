@@ -20,7 +20,7 @@ zone = element Zone {
 				element Denial { xsd:duration }
 			},
 			element Jitter { xsd:duration },
-			element Clockskew { xsd:duration }
+			element InceptionOffset { xsd:duration }
 		},
 
 		element Keys {

@@ -18,7 +18,7 @@
 					<Denial>P14D</Denial>
 			</Validity>
 			<Jitter>PT12H</Jitter>
-			<Clockskew>PT300S</Clockskew>
+			<InceptionOffset>-PT300S</InceptionOffset>
 		</Signatures>
 
 		<Keys>

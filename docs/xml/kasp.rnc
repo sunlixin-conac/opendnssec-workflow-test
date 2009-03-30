@@ -43,7 +43,7 @@ start = element KASP {
 			element Jitter { xsd:duration },
 
 			# how much should we predate the signature inception time?
-			element Clockskew { xsd:duration }
+			element InceptionOffset { xsd:duration }
 		},
 
 		element Denial {
