@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<OpenDNSSEC>
+	<HSM>
+		<Repository>
+			<Name>sca6000</Name>
+			<Module>/usr/lib/libpkcs11.so</Module>
+			<PIN>test:1234</PIN>
+		</Repository>
+
+		<Repository>
+			<Name>softHSM</Name>
+			<Module>/usr/local/lib/libsofthsm.so</Module>
+			<PIN>test:5678</PIN>
+		</Repository>
+	</HSM>
+
+	<Enforcer>
+		<Interval>PT3600S</Interval>
+		<KeygenInterval>P3M</KeygenInterval>
+		<BackupDelay>P3D</BackupDelay>
+	</Enforcer>
+</OpenDNSSEC>

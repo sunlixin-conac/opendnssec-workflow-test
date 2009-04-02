@@ -1,0 +1,29 @@
+# $Id: signconf.rnc 327 2009-03-30 14:44:40Z jakob $
+
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+start = element OpenDNSSEC {
+	element HSM {
+		element Repository {
+			# Symbolic name of Respository
+			element Name { xsd:string },
+			
+			# PKCS#11 Module (aka shared library)
+			element Module { xsd:string },
+			
+			# PKCS#11 Login Credentials (asked for if not specified)
+			element PIN { xsd:string }?
+		}*
+	},
+	
+	element Enforcer {
+		# Interval between runs of the key rollover procedure
+		element Interval { xsd:duration },
+
+		# Interval between runs of the key pre-generation procedure
+		element KeygenInterval { xsd:duration },
+
+		# Interval between runs of the key backup procedure
+		element BackupDelay { xsd:duration }
+	}
+}
