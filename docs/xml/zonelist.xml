@@ -3,21 +3,16 @@
 <!-- $Id$ -->
 
 <ZoneList>
-
 	<Zone name="opendnssec.se">
-		<LastUpdate>2002-05-30T09:30:10Z</LastUpdate>
+		<Policy>default</Policy>
+		<SignerConfiguration>/var/opendnssec/config/opendnssec.se.xml</SignerConfiguration>
+		<Adapters>
+			<Input>
+				<File>/var/dnssec/unsigned/opendnssec.se</File>
+			</Input>
+			<Output>
+				<File>/var/dnssec/signed/opendnssec.se</File>
+			</Output>
+		</Adapters>
 	</Zone>
-
-	<Zone name="opendnssec.org">
-		<LastUpdate>2002-05-30T09:30:10Z</LastUpdate>
-	</Zone>
-
-	<Zone name="opendnssec.com">
-		<LastUpdate>2002-05-30T09:30:10Z</LastUpdate>
-	</Zone>
-
-	<Zone name="opendnssec.net">
-		<LastUpdate>2002-05-30T09:30:10Z</LastUpdate>
-	</Zone>
-
 </ZoneList>

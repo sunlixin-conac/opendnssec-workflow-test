@@ -2,9 +2,18 @@
 
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
-element ZoneList {
+start = element ZoneList {
 	element Zone {
-		attribute name { text },
-		element LastUpdate { xsd:dateTime }?
+		attribute name { xsd:string },
+
+		element Policy { xsd:string },
+		element SignerConfiguration { xsd:string },
+		
+		element Adapters {
+			element Input { adapter },
+			element Output { adapter }
+		}
 	}*
 }
+
+adapter = element File { xsd:string }
