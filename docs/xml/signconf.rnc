@@ -53,8 +53,6 @@ zone = element Zone {
 		soa
 	}+
 
-keyid = attribute keyid { xsd:positiveInteger}
-
 algorithm = element Algorithm { xsd:positiveInteger }
 
 ttl = element TTL { xsd:duration }
