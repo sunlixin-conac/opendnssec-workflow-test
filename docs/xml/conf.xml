@@ -2,8 +2,9 @@
 
 <!-- $Id$ -->
 
-<OpenDNSSEC>
-	<HSM>
+<Configuration>
+
+	<RepositoryList>
 		<Repository>
 			<Name>sca6000</Name>
 			<Module>/usr/lib/libpkcs11.so</Module>
@@ -15,11 +16,12 @@
 			<Module>/usr/local/lib/libsofthsm.so</Module>
 			<PIN>test:5678</PIN>
 		</Repository>
-	</HSM>
+	</RepositoryList>
 
 	<Enforcer>
 		<Interval>PT3600S</Interval>
 		<KeygenInterval>P3M</KeygenInterval>
 		<BackupDelay>P3D</BackupDelay>
 	</Enforcer>
-</OpenDNSSEC>
+
+</Configuration>

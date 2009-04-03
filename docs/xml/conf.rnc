@@ -2,8 +2,8 @@
 
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
-start = element OpenDNSSEC {
-	element HSM {
+start = element Configuration {
+	element RepositoryList {
 		element Repository {
 			# Symbolic name of Respository
 			element Name { xsd:string },
