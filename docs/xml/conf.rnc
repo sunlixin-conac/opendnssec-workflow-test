@@ -3,9 +3,11 @@
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
 start = element Configuration {
+	
+	# List of all known Key Repositories (aka HSM:s)
 	element RepositoryList {
 		element Repository {
-			# Symbolic name of Respository
+			# Symbolic name of Repository
 			element Name { xsd:string },
 			
 			# PKCS#11 Module (aka shared library)
@@ -16,6 +18,7 @@ start = element Configuration {
 		}*
 	},
 	
+	# Configuration parameters for the KASP Enforcer
 	element Enforcer {
 		# Interval between runs of the key rollover procedure
 		element Interval { xsd:duration },
@@ -27,6 +30,7 @@ start = element Configuration {
 		element BackupDelay { xsd:duration }
 	},
 	
+	# Configuration parameters for the Signer
 	element Signer {
 		empty
 	}?
