@@ -5,11 +5,6 @@
 <SignerConfiguration>
 	<Zone name="opendnssec.org">
 
-		<Adapters>
-			<Input type="file"/>
-			<Output type="file"/>
-		</Adapters>
-
 		<Signatures>
 			<Resign>PT2H</Resign>
 			<Refresh>P3D</Refresh>

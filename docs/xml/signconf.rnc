@@ -7,11 +7,6 @@ start = element SignerConfiguration { zone }
 zone = element Zone {
 		attribute name { xsd:string },
 
-		element Adapters {
-			element Input { adapter },
-			element Output { adapter }
-		},
-
 		element Signatures {
 			element Resign { xsd:duration },
 			element Refresh { xsd:duration },
@@ -44,10 +39,6 @@ zone = element Zone {
 
 		soa
 	}+
-
-adapter =
-	attribute type { xsd:string },
-	empty
 
 keyid = attribute keyid { xsd:positiveInteger}
 
