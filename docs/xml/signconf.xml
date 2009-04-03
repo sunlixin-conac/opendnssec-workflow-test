@@ -16,41 +16,6 @@
 			<InceptionOffset>-PT300S</InceptionOffset>
 		</Signatures>
 
-		<Keys>
-			<TTL>PT3600S</TTL>
-
-			<Key>
-				<Flags>257</Flags>
-				<Algorithm>5</Algorithm>
-
-				<!-- key locator is matched against PKCS#11 CKA_ID in hex -->
-				<!-- e.g. DFE7265B-783F-4186-8538-0AA784C2F31D -->
-				<!-- is written as -->
-				<!-- DFE7265B783F418685380AA784C2F31D -->
-				<Locator>DFE7265B783F418685380AA784C2F31D</Locator>
-
-				<!-- this key should sign the DNSKEY RRset only -->
-				<Sign><Include>DNSKEY</Include></Sign>
-
-				<!-- this key should be published in the zonefile -->
-				<Publish/>
-			</Key>
-
-			<Key>
-				<Flags>256</Flags>
-				<Algorithm>5</Algorithm>
-
-				<!-- key locator is matched against PKCS#11 CKA_ID in hex -->
-				<Locator>8D76C0C49FEB4A97B8E920C7552401CE</Locator>
-
-				<!-- this key should sign all non-DNSKEY RRsets -->
-				<Sign><Exclude>DNSKEY</Exclude></Sign>
-
-				<!-- this key should be published in the zonefile -->
-				<Publish/>
-			</Key>
-		</Keys>
-
 		<Denial>
 			<NSEC3>
 				<OptOut/>
@@ -64,6 +29,26 @@
 				</Hash>
 			</NSEC3>
 		</Denial>
+
+		<Keys>
+			<TTL>PT3600S</TTL>
+
+			<Key>
+				<Flags>257</Flags>
+				<Algorithm>5</Algorithm>
+				<Locator>DFE7265B783F418685380AA784C2F31D</Locator>
+				<KSK/>
+				<Publish/>
+			</Key>
+
+			<Key>
+				<Flags>256</Flags>
+				<Algorithm>5</Algorithm>
+				<Locator>8D76C0C49FEB4A97B8E920C7552401CE</Locator>
+				<ZSK/>
+				<Publish/>
+			</Key>
+		</Keys>
 
 		<SOA>
 			<TTL>PT3600S</TTL>

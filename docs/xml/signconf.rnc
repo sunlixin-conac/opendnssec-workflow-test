@@ -7,6 +7,7 @@ start = element SignerConfiguration { zone }
 zone = element Zone {
 		attribute name { xsd:string },
 
+		# This section is taken directly from the corresponding KASP policy
 		element Signatures {
 			element Resign { xsd:duration },
 			element Refresh { xsd:duration },
@@ -18,25 +19,37 @@ zone = element Zone {
 			element InceptionOffset { xsd:duration }
 		},
 
+		# use NSEC or NSEC3?
+		element Denial { (nsec | nsec3)	},
+
 		element Keys {
+			# TTL for all DNSKEYs
 			ttl,
+
 			element Key {
+				# DNSKEY flags
 				element Flags { xsd:positiveInteger },
+				
+				# DNSKEY algorithm
 				algorithm,
+				
+				# The key locator is matched against PKCS#11 CKA_ID in hex
+				# e.g. DFE7265B-783F-4186-8538-0AA784C2F31D
+				# is written as DFE7265B783F418685380AA784C2F31D
 				element Locator { xsd:string },
 
-				element Sign {
-					(element Include { text }+ |
-					 element Exclude { text }+ |
-					 empty)
-				},
-
+				# sign all the DNSKEY RRsets with this key?
+				element KSK { empty }?,
+				
+				# sign all non-DNSKEY RRsets with this key?
+				element ZSK { empty }?,
+				
+				# include this key in the zonefile?
 				element Publish { empty }?
 			}+
 		},
 
-		element Denial { (nsec | nsec3)	},
-
+		# What parameters to use for the SOA record
 		soa
 	}+
 
@@ -54,6 +67,8 @@ soa = element SOA {
 
 nsec = element NSEC { empty }
 
+# This section is taken directly from the corresponding KASP policy
+# (except that the NSEC3 Salt is not optional)
 nsec3 = element NSEC3 {
 		element OptOut { empty }?,
 		element Parameters { ttl },
