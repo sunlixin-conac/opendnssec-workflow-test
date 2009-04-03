@@ -48,16 +48,18 @@ start = element KASP {
 			# key publication safety factor
 			element PublishSafety { xsd:duration },
 
+			# Key Signing Keys
 			element KSK {
-				# generic key policy, see below
+				# generic key definition, see below
 				anykey,
 
 				# use RFC 5011 for key rollover?
 				element RFC5011 { empty }?
 			}*,
 
+			# Zone Signing Keys
 			element ZSK {
-				# generic key policy, see below
+				# generic key definition, see below
 				anykey
 			}*
 		},
@@ -96,8 +98,7 @@ nsec3 = element NSEC3 {
 	# use global NSEC3 opt-out?
 	element OptOut { empty }?,
 
-	# how often should we resalt?
-	# (e.g. create new NSEC3 chains)
+	# how often should we resalt? (e.g. create new NSEC3 chains)
 	element Resalt { xsd:duration },
 
 	# NSEC3 parameters
@@ -122,8 +123,10 @@ nsec3 = element NSEC3 {
 	}
 }
 
+# Generic SOA definition
 anysoa = ttl, element Minimum { xsd:duration }
 
+# Generic key definition
 anykey = element Algorithm {
 		attribute length { xsd:positiveInteger }?,
 		xsd:positiveInteger
