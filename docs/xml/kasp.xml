@@ -4,12 +4,6 @@
 
 <KASP>
 
-	<Enforcer>
-		<Interval>PT3600S</Interval>
-		<KeygenInterval>P3M</KeygenInterval>
-		<BackupDelay>P3D</BackupDelay>
-	</Enforcer>
-
 	<Policy name="default">
 		<Description>A default policy that will amaze you and your friends</Description>
 		<Signatures>
