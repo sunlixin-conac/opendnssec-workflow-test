@@ -25,5 +25,9 @@ start = element Configuration {
 
 		# Interval between runs of the key backup procedure
 		element BackupDelay { xsd:duration }
-	}
+	},
+	
+	element Signer {
+		empty
+	}?
 }
