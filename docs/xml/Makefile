@@ -7,8 +7,8 @@ TRANG=	 	java -jar trang.jar
 XMLLINT=	xmllint
 
 
-RNG=		kasp.rng zonelist.rng signconf.rng opendnssec.rng
-XSD=		kasp.xsd zonelist.xsd signconf.xsd opendnssec.xsd
+RNG=		kasp.rng zonelist.rng signconf.rng conf.rng
+XSD=		kasp.xsd zonelist.xsd signconf.xsd conf.xsd
 
 
 
@@ -27,7 +27,7 @@ regress: $(RNG)
 	${XMLLINT} --noout --relaxng kasp.rng kasp.xml
 	${XMLLINT} --noout --relaxng zonelist.rng zonelist.xml
 	${XMLLINT} --noout --relaxng signconf.rng signconf.xml
-	${XMLLINT} --noout --relaxng opendnssec.rng opendnssec.xml
+	${XMLLINT} --noout --relaxng conf.rng conf.xml
 
 .rnc.rng:
 	${TRANG} $< $@
