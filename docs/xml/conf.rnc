@@ -30,7 +30,7 @@ start = element Configuration {
 		element BackupDelay { xsd:duration }
 	},
 	
-	# Configuration parameters for the Signer
+	# Configuration parameters for the Signer (placeholder)
 	element Signer {
 		empty
 	}?
