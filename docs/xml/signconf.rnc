@@ -51,7 +51,7 @@ zone = element Zone {
 
 		# What parameters to use for the SOA record
 		soa
-	}+
+	}
 
 algorithm = element Algorithm { xsd:positiveInteger }
 
