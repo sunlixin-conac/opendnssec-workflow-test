@@ -30,7 +30,7 @@ start = element Configuration {
 		element BackupDelay { xsd:duration }
 	},
 	
-	# Configuration parameters for the Signer (placeholder)
+	# Configuration parameters for the Signer 
 	element Signer {
 		# Location to store intermediate zone information
 		element WorkingDirectory { xsd:string }?,
