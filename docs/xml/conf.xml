@@ -24,4 +24,11 @@
 		<BackupDelay>P3D</BackupDelay>
 	</Enforcer>
 
+	<Signer>
+		<WorkingDirectory>/var/dnssec/tmp</WorkingDirectory>
+		<ZoneListFile>/var/dnssec/zonelist.xml</ZoneListFile>
+		<!-- toolsdir will be removed, but is used for testing atm -->
+		<ToolsDirectory>/usr/local/bin</ToolsDirectory>
+	</Signer>
+
 </Configuration>

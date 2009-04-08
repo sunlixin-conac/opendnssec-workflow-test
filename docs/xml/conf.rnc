@@ -32,6 +32,14 @@ start = element Configuration {
 	
 	# Configuration parameters for the Signer (placeholder)
 	element Signer {
-		empty
+		# Location to store intermediate zone information
+		element WorkingDirectory { xsd:string }?,
+
+		# Location to store the zonelist XML file
+		element ZoneListFile {xsd:string }?,
+
+		# This can probably be removed later; location of the
+		# signer tools (used for intermediate testing)
+		element ToolsDirectory {xsd:string }?
 	}?
 }
