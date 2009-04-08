@@ -69,7 +69,6 @@ nsec = element NSEC { empty }
 # (except that the NSEC3 Salt is not optional)
 nsec3 = element NSEC3 {
 		element OptOut { empty }?,
-		element Parameters { ttl },
 		element Hash {
 			algorithm,
 			element Iterations { xsd:positiveInteger },

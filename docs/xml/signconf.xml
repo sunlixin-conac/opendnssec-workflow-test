@@ -19,9 +19,6 @@
 		<Denial>
 			<NSEC3>
 				<OptOut/>
-				<Parameters>
-					<TTL>PT3600S</TTL>
-				</Parameters>
 				<Hash>
 					<Algorithm>1</Algorithm>
 					<Iterations>10</Iterations>

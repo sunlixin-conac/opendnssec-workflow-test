@@ -99,12 +99,6 @@ nsec3 = element NSEC3 {
 	# how often should we resalt? (e.g. create new NSEC3 chains)
 	element Resalt { xsd:duration },
 
-	# NSEC3 parameters
-	element Parameters {
-		# NSEC3PARAMS TTL
-		ttl
-	},
-
 	# NSEC3 hash parameters
 	element Hash {
 		element Algorithm { xsd:positiveInteger },
