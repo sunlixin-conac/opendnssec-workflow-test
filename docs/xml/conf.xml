@@ -9,6 +9,7 @@
 			<Name>sca6000</Name>
 			<Module>/usr/lib/libpkcs11.so</Module>
 			<PIN>test:1234</PIN>
+			<Capacity>1000</Capacity>
 		</Repository>
 
 		<Repository>
