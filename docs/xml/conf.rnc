@@ -9,10 +9,10 @@ start = element Configuration {
 		element Repository {
 			# Symbolic name of Repository
 			element Name { xsd:string },
-			
+
 			# PKCS#11 Module (aka shared library)
 			element Module { xsd:string },
-			
+
 			# PKCS#11 Login Credentials (asked for if not specified)
 			element PIN { xsd:string }?,
 
@@ -20,7 +20,7 @@ start = element Configuration {
 			element Capacity { xsd:positiveInteger }?
 		}*
 	},
-	
+
 	# Configuration parameters for the KASP Enforcer
 	element Enforcer {
 		# Interval between runs of the key rollover procedure
@@ -32,17 +32,17 @@ start = element Configuration {
 		# Interval between runs of the key backup procedure
 		element BackupDelay { xsd:duration }
 	},
-	
+
 	# Configuration parameters for the Signer 
 	element Signer {
 		# Location to store intermediate zone information
 		element WorkingDirectory { xsd:string }?,
 
 		# Location to store the zonelist XML file
-		element ZoneListFile {xsd:string }?,
+		element ZoneListFile { xsd:string }?,
 
 		# This can probably be removed later; location of the
 		# signer tools (used for intermediate testing)
-		element ToolsDirectory {xsd:string }?
+		element ToolsDirectory { xsd:string }?
 	}?
 }
