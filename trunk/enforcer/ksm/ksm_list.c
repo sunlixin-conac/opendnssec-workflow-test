@@ -305,7 +305,7 @@ int KsmListRollovers(int zone_id)
     char*       temp_date = NULL;   /* place to store date returned */
 
     /* Select rows */
-    StrAppend(&sql, "select z.name, k.keytype, k.retire from zones z, KEYDATA_VIEW k where z.id = k.zone_id and active is not null ");
+    StrAppend(&sql, "select z.name, k.keytype, k.retire from zones z, KEYDATA_VIEW k where z.id = k.zone_id and k.state = 4 ");
     if (zone_id != -1) {
         StrAppend(&sql, "and zone_id = ");
         snprintf(stringval, KSM_INT_STR_SIZE, "%d", zone_id);
