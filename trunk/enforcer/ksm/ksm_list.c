@@ -66,10 +66,13 @@
 int KsmListBackups(int repo_id)
 {
     char*       sql = NULL;     /* SQL query */
+    char*       sql2 = NULL;     /* SQL query */
     int         status = 0;     /* Status return */
     char        stringval[KSM_INT_STR_SIZE];  /* For Integer to String conversion */
     DB_RESULT	result;         /* Result of the query */
     DB_ROW      row = NULL;     /* Row data */
+    DB_RESULT	result2;         /* Result of the query */
+    DB_ROW      row2 = NULL;     /* Row data */
 
     char*       temp_date = NULL; /* place to store date returned */
     char*       temp_repo = NULL; /* place to store repository returned */
@@ -96,7 +99,9 @@ int KsmListBackups(int repo_id)
             DbString(row, 0, &temp_date);
             DbString(row, 1, &temp_repo);
 
-            printf("%-24s %s\n", (temp_date == NULL) ? "(null)" : temp_date, temp_repo);
+            if (temp_date != NULL) {
+                printf("%-24s %s\n", (temp_date == NULL) ? "(null)" : temp_date, temp_repo);
+            }
             
             status = DbFetchRow(result, &row);
         }
@@ -111,6 +116,43 @@ int KsmListBackups(int repo_id)
     }
 
     DusFree(sql);
+
+    /* List repos which need a backup */
+    StrAppend(&sql2, "select s.name from keypairs k, securitymodules s ");
+    StrAppend(&sql2, "where s.id = k.securitymodule_id ");
+    if (repo_id != -1) {
+        StrAppend(&sql2, "and s.id = ");
+        snprintf(stringval, KSM_INT_STR_SIZE, "%d", repo_id);
+        StrAppend(&sql2, stringval);
+    }
+    StrAppend(&sql2, " and k.backup is null");
+    StrAppend(&sql2, " group by backup order by backup");
+
+    DusEnd(&sql2);
+
+    status = DbExecuteSql(DbHandle(), sql2, &result2);
+
+    if (status == 0) {
+        status = DbFetchRow(result2, &row2);
+        while (status == 0) {
+            /* Got a row, print it */
+            DbString(row, 0, &temp_repo);
+
+            printf("Repository %s has unbacked up keys\n", temp_repo);
+            
+            status = DbFetchRow(result2, &row2);
+        }
+
+        /* Convert EOF status to success */
+
+        if (status == -1) {
+            status = 0;
+        }
+
+        DbFreeResult(result2);
+    }
+
+    DusFree(sql2);
 
     return status;
 }
