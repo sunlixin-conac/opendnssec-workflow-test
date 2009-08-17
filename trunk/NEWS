@@ -1,7 +1,13 @@
 $Id$
 
-
 OpenDNSSEC trunk
+
+Features:
+
+Bugfixes:
+
+
+OpenDNSSEC 1.0a2 - 2009-08-14
 
 Features:
 * conf.xml format changed
