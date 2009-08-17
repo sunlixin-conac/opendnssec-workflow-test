@@ -114,7 +114,7 @@ usage_listzone ()
 usage_export ()
 {
     fprintf(stderr,
-            "usage: [-f config] %s export [policy]\n"
+            "usage: %s [-f config] export [policy]\n"
             "\texport all policies [or named policy] to xml\n",
             progname);
 }
