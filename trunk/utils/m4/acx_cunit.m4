@@ -17,7 +17,20 @@ AC_DEFUN([ACX_CUNIT],[
 	CUNIT_LIBS="-L$CUNIT_PATH/lib -lcunit"
 	AC_MSG_RESULT($CUNIT_LIBS)
 
-	AC_CHECK_LIB(cunit, CU_run_test,,[AC_MSG_NOTICE([Can't find cunit library])])
+	tmp_CPPFLAGS=$INCLUDES
+	tmp_LIBS=$LIBS
+
+	CPPFLAGS="$CPPFLAGS $CUNIT_INCLUDES"
+	LIBS="$LIBS $CUNIT_LIBS"
+
+	AC_CHECK_LIB(cunit, CU_run_test, [],[
+		AC_MSG_NOTICE([Can't find cunit library])
+		CUNIT_INCLUDES=
+		CUNIT_LIBS=
+	])
+
+	CPPFLAGS=$tmp_INCLUDES
+	LIBS=$tmp_LIBS
 
 	AC_SUBST(CUNIT_INCLUDES)
 	AC_SUBST(CUNIT_LIBS)
