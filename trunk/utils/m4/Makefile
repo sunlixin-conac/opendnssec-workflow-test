@@ -1,6 +1,14 @@
 # $Id$
 
-TARGETS = softHSM libhsm enforcer signer auditor xml hsmbully .
+TARGETS = \
+	softHSM \
+	hsmbully \
+	OpenDNSSEC \
+	OpenDNSSEC/libhsm \
+	OpenDNSSEC/enforcer \
+	OpenDNSSEC/signer \
+	OpenDNSSEC/auditor \
+	OpenDNSSEC/xml
 
 all:
 
@@ -12,10 +20,4 @@ install:
 			> $$target; \
 		echo "" >>$$target; \
 		cat *.m4 >> $$target; \
-	done
-
-sync:
-	@for dir in $(TARGETS); do \
-		target=../$$dir/acinclude.m4; \
-		echo svn commit -m sync $$target; \
 	done

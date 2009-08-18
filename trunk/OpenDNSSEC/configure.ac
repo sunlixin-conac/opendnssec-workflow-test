@@ -7,9 +7,6 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE(foreign)
 
-# softham
-ACX_BOTAN
-
 # xml
 AC_PATH_PROG(XMLLINT, xmllint)
 AC_PATH_PROG(JAVA, java)
@@ -32,7 +29,7 @@ ACX_DBPARAMS
 # auditor
 AM_PATH_RUBY([], [], [])
 
-AC_CONFIG_SUBDIRS([softHSM libhsm libksm enforcer signer auditor xml])
+AC_CONFIG_SUBDIRS([libhsm libksm enforcer signer auditor xml])
 
 AC_CONFIG_FILES([Makefile])
 
