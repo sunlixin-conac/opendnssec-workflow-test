@@ -7,6 +7,7 @@ CONFIGURE_ARGS = \
 	--sysconfdir=/etc \
 	--localstatedir=/var \
 	--with-sqlite3=/usr \
+	--with-cunit=/opt/local \
 	--with-ldns=/opt/local \
 	--with-libxml2=/usr \
 	--with-botan=/opt/local \
