@@ -9,7 +9,7 @@ CONFIGURE_ARGS = \
 	--with-sqlite3=/usr/local \
 	--with-ldns=/usr/local \
 	--with-libxml2=/usr/local \
-	--with-botan=/usr/local/botan \
+	--with-botan=/usr/local \
 	--with-pkcs11-softhsm=$(PREFIX)/lib/libsofthsm.so
 
 MAKE = make
