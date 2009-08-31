@@ -3,9 +3,6 @@
 PREFIX = /usr/local
 
 CONFIGURE_ARGS = \
-	--prefix=$(PREFIX) \
-	--sysconfdir=/etc \
-	--localstatedir=/var \
 	--with-sqlite3=/usr/local \
 	--with-cunit=/usr/local \
 	--with-ldns=/opt/ldns/nossl \
