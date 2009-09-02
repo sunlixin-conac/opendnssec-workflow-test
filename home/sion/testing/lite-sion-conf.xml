@@ -1,31 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- $Id: conf.xml 714 2009-05-11 15:51:16Z jakob $ -->
+<!-- $Id: conf.xml.in 1143 2009-06-24 12:10:40Z jakob $ -->
 
 <Configuration>
 
 	<RepositoryList>
+
 		<Repository name="softHSM">
             <Module>/home/sion/temp/opendnssec/install/lib/libsofthsm.so</Module>
 			<TokenLabel>alice</TokenLabel>
 			<PIN>5678</PIN>
+            <Capacity>1000</Capacity>
+            <RequireBackup />
 		</Repository>
+
+<!--
+		<Repository name="sca6000">
+			<Module>/usr/lib/libpkcs11.so</Module>
+			<TokenLabel>Sun Metaslot</TokenLabel>
+			<PIN>test:1234</PIN>
+			<Capacity>1000</Capacity>
+		</Repository>
+-->
+
 	</RepositoryList>
 
-	<Enforcer>
-		<Datastore>
+    <Common>
+        <Logging>
+            <Syslog><Facility>local0</Facility></Syslog>
+        </Logging>
+        <PolicyFile>/home/sion/temp/opendnssec/install/etc/opendnssec/kasp.xml</PolicyFile>
+        <ZoneListFile>/home/sion/temp/opendnssec/install/etc/opendnssec/zonelist.xml</ZoneListFile>
+    </Common>
+
+    <Enforcer>
+        <Privileges>
+            <User>sion</User>
+            <Group>sion</Group>
+        </Privileges>
+        <Datastore>
 		  <SQLite>/home/sion/temp/opendnssec/install/var/opendnssec/enforcer.db</SQLite>
-		</Datastore>
-		<Interval>PT3600S</Interval>
-		<KeygenInterval>P3M</KeygenInterval>
-		<BackupDelay>PT0S</BackupDelay>
+        </Datastore>
+		<Interval>PT360S</Interval>
+		<KeygenInterval>PT6M</KeygenInterval>
+		<BackupDelay>PT6M</BackupDelay>
+		<RolloverNotification>PT10M</RolloverNotification>
 	</Enforcer>
 
 	<Signer>
-		<WorkingDirectory>/var/dnssec/tmp</WorkingDirectory>
-		<ZoneListFile>/var/dnssec/zonelist.xml</ZoneListFile>
-		<!-- toolsdir will be removed, but is used for testing atm -->
-		<ToolsDirectory>/usr/local/bin</ToolsDirectory>
+        <WorkingDirectory>/home/sion/temp/opendnssec</WorkingDirectory>
+		<WorkerThreads>8</WorkerThreads>
+		<SignerThreads>1</SignerThreads>
 	</Signer>
 
 </Configuration>

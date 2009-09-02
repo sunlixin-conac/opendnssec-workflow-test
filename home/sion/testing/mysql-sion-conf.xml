@@ -35,7 +35,7 @@
 
 	<Signer>
 		<WorkingDirectory>/var/dnssec/tmp</WorkingDirectory>
-		<ZoneListFile>/var/dnssec/zonelist.xml</ZoneListFile>
+		<ZoneListFile>/home/sion/temp/opendnssec/install/etc/opendnssec/zonelist.xml</ZoneListFile>
 		<!-- toolsdir will be removed, but is used for testing atm -->
 		<ToolsDirectory>/usr/local/bin</ToolsDirectory>
 	</Signer>

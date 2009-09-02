@@ -15,4 +15,28 @@
 			</Output>
 		</Adapters>
 	</Zone>
+	<Zone name="opendnssec.org">
+		<Policy>default</Policy>
+		<SignerConfiguration>/home/sion/temp/opendnssec/install/var/opendnssec/config/opendnssec.org.xml</SignerConfiguration>
+		<Adapters>
+			<Input>
+				<File>/var/dnssec/unsigned/opendnssec.org</File>
+			</Input>
+			<Output>
+				<File>/var/dnssec/signed/opendnssec.org</File>
+			</Output>
+		</Adapters>
+	</Zone>
+	<Zone name="opendnssec.test">
+		<Policy>default</Policy>
+		<SignerConfiguration>/home/sion/temp/opendnssec/install/var/opendnssec/config/opendnssec.test.xml</SignerConfiguration>
+		<Adapters>
+			<Input>
+				<File>/var/dnssec/unsigned/opendnssec.test</File>
+			</Input>
+			<Output>
+				<File>/var/dnssec/signed/opendnssec.test</File>
+			</Output>
+		</Adapters>
+	</Zone>
 </ZoneList>
