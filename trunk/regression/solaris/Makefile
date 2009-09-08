@@ -7,7 +7,8 @@ CONFIGURE_ARGS = \
 	--with-cunit=/usr/local \
 	--with-ldns=/opt/ldns/nossl \
 	--with-libxml2=/usr \
-	--with-botan=/usr/local
+	--with-botan=/usr/local \
+	--enable-timeshift
 
 SUDO = sudo
 MAKE = make -j 4
