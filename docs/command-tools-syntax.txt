@@ -10,7 +10,7 @@ $Id$
 ## commands
 
 	list [repository]
-	generatae <repository> rsa <keysize>
+	generate <repository> rsa <keysize>
 	remove <id>
 	dnskey <id> <name>
 	test <repository>
@@ -48,9 +48,10 @@ $Id$
 
 	key import <CKA_ID> <HSM> <ZONE> <KEYTYPE> <SIZE> <ALGORITHM> <STATE> <TIME> [RETIRE_TIME]
 	
+	key backup done <repository>
+	key backup list <repository>
+	
 	rollover zone <zone>
 	rollover policy <policy>
 	rollover list
 
-	backup done <repository>
-	backup list <repository>
