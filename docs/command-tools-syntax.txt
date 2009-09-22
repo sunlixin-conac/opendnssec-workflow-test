@@ -1,0 +1,56 @@
+$Id$
+
+
+# hsmutil
+
+## global options
+
+	-f <config>
+
+## commands
+
+	list [repository]
+	generatae <repository> rsa <keysize>
+	remove <id>
+	dnskey <id> <name>
+	test <repository>
+
+# ksmutil
+
+## global options
+
+	-f <config>
+
+## commands
+
+	setup
+	update
+
+	zone add <zone> [policy] [signerconf.xml] [input] [output]
+	zone delete <zone>
+	zone delete -a
+	zone list
+
+	repository list
+
+	policy export <policy>
+	policy list
+
+	key list [-v] <zone> [state] [keytype]
+	key list [-v] -a [state] [keytype]	
+
+(verbose listing using -v)
+
+	key export [-d] <zone> [state] [keytype]
+	key export [-d] -a [state] [keytype]
+
+(export as DS using -d)
+
+	key import <CKA_ID> <HSM> <ZONE> <KEYTYPE> <SIZE> <ALGORITHM> <STATE> <TIME> [RETIRE_TIME]
+	
+	rollover zone <zone>
+	rollover policy <policy>
+	rollover list
+
+	backup done <repository>
+	backup list <repository>
