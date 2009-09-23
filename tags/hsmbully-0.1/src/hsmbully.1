@@ -1,0 +1,185 @@
+.TH HSMBULLY 1 "$Revision$"
+.SH NAME
+hsmbully \- Test a PKCS #11 token for OpenDNSSEC suitability
+.SH SYNOPSIS
+.B hsmbully
+[\fBoptions\fR]...
+.SH DESCRIPTION
+.PP
+The hsmbully tool is designed to verify if a token, HSM or other PKCS #11
+implementation suffices to support OpenDNSSEC.  It is intended to allow a
+test before setting up full-blown OpenDNSSEC on the token, but as a
+result of that it cannot give 100% certainty that a token will suffice.
+In most cases however, it can give ample warning if the token would give
+problems when running fullblown OpenDNSSEC.
+.PP
+There are two modes of operation for hsmbully; one is destructive, meaning
+that all the contents on the token will be wiped, and the token will be
+erased.  The other mode of operation is non-destructive; in that mode the
+space left in the token is used for testing.  It is up to the tester to
+ensure that a fair amount of space is available to increase the likelyhood
+of testing properly, which means that at least a number of keys should be
+able to co-exist in the remaining space.  The default mode of operation is
+non-destructive, but this choice of default was made for reasons of safety
+rather than to get the sharpest test results.
+.PP
+The tests run by hsmbully take hours to complete.  The results are reported
+through the CUnit framework, and dumped into an XML file.  The intermediate
+objects created on the token for tests will be removed after successful
+termination of hsmbully.
+.PP
+The tests performed by hsmbully are deterministic.  That is, a second run with
+the same parameters and on the same initial token state should run in exactly
+the same way.  This is ensured by an internal "random" number generator that
+is reset with a given seed.
+.PP
+The current version of hsmbully assumes to find only a single slot with a
+token in it.  If not, it will bail out and complain that it does not know
+what token to bully.
+.SH OPTIONS
+.PP
+Several options to hsmbully are required options.  You must always specify
+\fB\-\-pin\fR, \fB\-\-so\-pin\fR and \fB\-\-pkcs11lib\fR.  It is likely
+that you will initially want to specify \fB\-\-fast\-and\-frivolous\fR and
+\fB\-\-verbose=4\fR as well.
+.TP
+\fB\-\-help\fR
+A quick and incomplete reference to the hsmbully commandline options.
+.TP
+\fB\-\-verbose\fR, \fB\-v\fR, \fB\-\-verbose=NUM\fR
+Increase or set the verbosity level.  Default level is 1, which reports only
+major steps of the program.  Level 0 is quiet, and higher levels may yield
+more detailed output.
+.TP
+\fB\-\-destructive\fR
+destroy all contents on the token.  This means that the \fB\-\-pin\fR and
+\fB\-\-so\-pin\fR options are interpreted as values to set, rather than as
+values to use for login.  There is no single-character option alias for
+this long option.
+.TP
+\fB\-\-pin=PIN\fR, \fB\-p PIN\fR
+specifies the user PIN to be used by hsmbully.  If \fB\-\-destructive\fR
+is also specified, this PIN is set rather than just used to login.  In
+that case, the PIN will remain on the token even after all other objects
+are removed.
+.TP
+\fB\-\-so\-pin=PIN\fR, \fB\-P PIN\fR
+specifies the security officer PIN, also known as the SO-PIN, to be used
+by hsmbully.  If \fB\-\-destructive\fR is also specified, this PIN is set
+rather than just used to login.  In that case, the PIN will remain on the
+token even after all other objects are removed.
+.TP
+\fB\-\-pkcs11lib=PIN\fR, \fB\-l /path/to/lib.so\fR
+specifies the PKCS #11 library to use.  This must be a shared library that
+adheres to the PKCS #11 specifications from RSA Laboratories.  It will be
+addressed as a dynamic library.
+.TP
+\fB\-\-fast\-and\-frivolous\fR, \fB\-\-frivolous\fR, \fB\-f\fR
+The fullblown tests performed by hsmbully are quite extensive.  This may
+not be ideal during some preliminary work.  This option replaces the normal
+fullblown testing with far fewer loop-arounds.  Note that the outcome of
+hsmbully is generated faster, but it is less likely to find potential problems
+in the token under test.
+.TP
+\fB\-\-test\-initiation\fR
+Perform the Initiation Test, as described under
+.SM
+.B "TESTS PERFORMED"
+below.  This test is off by default, as it tests more than what OpenDNSSEC
+does with a token.  Be a bit careful when using this option; we have seen
+at least one widely used commercial HSM crash on it.
+.TP
+\fB\-\-skip\-fragmentation\fR
+Skip the Fragmentation Test, as described under
+.SM
+.B "TESTS PERFORMED"
+below.  This may be useful for very large tokens, or soft tokens that have
+a virtually unconstrained memory space available.  Fragmentation testing
+may take unpractically long on such tokens, and may be skipped if sufficient
+trust in non-fragmentation may be assumed.
+.TP
+\fB\-\-skip\-keysizing\fR
+Skip the Key Sizing Test, as described under
+.SM
+.B "TESTS PERFORMED"
+below.  This may help to overcome problems with tokens that lie about the
+key sizes they can handle; for example, a token that can handle keys with
+1024 or 2048 bits, but nothing in between.  Be sure to manually configure
+OpenDNSSEC to key sizes usable for this token.
+.TP
+\fB\-\-skip\-signing\fR
+Skip the Signing Test, as described under
+.SM
+.B "TESTS PERFORMED"
+below.  This is not usually a shocking test to skip, as it tests a feature
+that is so common that it usually tested thoroughly by both token manufacturer
+and their (other) customers.
+.SM
+.B "TESTS PERFORMED"
+below.  If all four tests are skipped, hsmbully will not test anything. 
+.\" TODO: --token
+.\" TODO: --interactive/CUnit
+.SH "TESTS PERFORMED"
+The following tests are performed as part of a run of hsmbully:
+.TP
+\fBInitiation test\fR
+This tests if the token properly handles all sorts of orders of opening and
+closing access to the resources on the token.  The sequences tested
+deliberately include invalid accesses, such as not logging on and seeing
+if a previous sesssion's login is reused.  If the token sustains this test,
+it appears to be a proper implementation of those aspects of PKCS #11.
+.TP
+\fBFragmentation test\fR
+This tests if memory can sustain a long list of creations and deletions of
+keys, without ending up with fragmented memory.  This test starts by filling
+up all free space in the token with keys of various sizes, and then removes
+arbitrary ones and expects to be able to recreate a new one of the same size
+immediately after that.
+.TP
+\fBKey sizing test\fR
+This tests if the key sizes supported by the token are within reasonable
+constraints, if they match the algorithms used by OpenDNSSEC and if the
+claimed key size range is covered as PKCS #11 prescribes.  The test is done
+by creating key pairs and verifying the size of the modulus of the public
+key.
+.TP
+\fBSigning test\fR
+This tests if the signatures are made properly.  Signatures are constructed
+at a variety of key sizes within the supported range.
+.SH "SEE ALSO"
+opendnssec(1)
+.SH COPYRIGHT
+Copyright (c) 2009 OpenFortress
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+.TP 3
+1. Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+.TP 3
+2. Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+.PP
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+.SH AUTHOR
+.PP
+Rick van Rein <rick@openfortress.nl>
+.PP
+See http://opendnssec.org/ for the latest version and,
+perhaps, bugs.  In general, use the version of hsmbully that comes with the
+version of OpenDNSSEC you are testing.
