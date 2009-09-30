@@ -1,59 +1,66 @@
 $Id$
 
 
-# hsmutil
+# ksmutil usage
 
 ## global options
 
-	-f <config>
-
-## commands
-
-	list [repository]
-	generate <repository> rsa <keysize>
-	remove <id>
-	dnskey <id> <name>
-	test <repository>
-
-# ksmutil
-
-## global options
-
-	-f <config>
+	--config <config>
 
 ## commands
 
 	setup
 	update
 
-	zone add <zone> [policy] [signerconf.xml] [input] [output]
-	zone delete <zone>
-	zone delete -a
+	zone add
+		--zone <zone>
+		[--policy <policy>]
+		[--signerconf <signerconf.xml>]
+		[--input <input>]
+		[--output <output>]
+	zone delete
+		--zone <zone> | --all
 	zone list
 
 	repository list
 
-	policy export <policy>
-	policy list
+	policy --export --policy <policy>
+	policy --list
 
-	key list [-v] <zone> [state] [keytype]
-	key list [-v] -a [state] [keytype]	
+	key list
+		[--verbose]
+		--zone <zone> | --all
+		[--keystate <state>]
+		[--keytype <type>]
+		[--ds]
 
-(verbose listing using -v)
+	key export
+		--zone <zone> | --all
+		[--keystate state]
+		[--keytype keytype]
+		[--ds]
 
-	key export [-d] <zone> [state] [keytype]
-	key export [-d] -a [state] [keytype]
-
-(export as DS using -d)
-
-	key import <CKA_ID> <HSM> <ZONE> <KEYTYPE> <SIZE> <ALGORITHM> <STATE> <TIME> [RETIRE_TIME]
+	key import
+		--cka_id <CKA_ID>
+		--repository <repository>
+		--zone <zone>
+		--size <size>
+		--algorithm <algorithm>
+		--keytype <type>
+		--keystate <state>
+		--time <time>
+		[--retire <retire>]
 	
-	key backup done <repository>
-	key backup list <repository>
+	key purge --zone <zone>
+	key purge --policy <policy>
 
-	key purge <policy>
+	backup done --repository <repository>
+	backup list --repository <repository>
 	
-	rollover zone <zone>
-	rollover policy <policy>
-	rollover list
+	rollover --zone <zone>
+	rollover --policy <policy>
+	rollover --list
 
+
+key states: GENERATED|PUBLISHED|READY|ACTIVE|RETIRED|REVOKED|DEAD
+key types:  KSK|ZSK
