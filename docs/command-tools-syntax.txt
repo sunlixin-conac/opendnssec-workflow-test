@@ -24,8 +24,8 @@ $Id$
 
 	repository list
 
-	policy --export --policy <policy>
-	policy --list
+	policy export --policy <policy>
+	policy list
 
 	key list
 		[--verbose]
@@ -50,6 +50,10 @@ $Id$
 		--keystate <state>
 		--time <time>
 		[--retire <retire>]
+		
+	key rollover
+		[--zone zone]
+		[--policy policy]
 	
 	key purge --zone <zone>
 	key purge --policy <policy>
@@ -57,9 +61,7 @@ $Id$
 	backup done --repository <repository>
 	backup list --repository <repository>
 	
-	rollover --zone <zone>
-	rollover --policy <policy>
-	rollover --list
+	rollover list
 
 
 key states: GENERATED|PUBLISHED|READY|ACTIVE|RETIRED|REVOKED|DEAD
