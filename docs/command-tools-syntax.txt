@@ -18,13 +18,17 @@ $Id$
 		[--signerconf <signerconf.xml>]
 		[--input <input>]
 		[--output <output>]
+
 	zone delete
 		--zone <zone> | --all
+
 	zone list
 
 	repository list
 
-	policy export --policy <policy>
+	policy export
+		--policy <policy>
+
 	policy list
 
 	key list
