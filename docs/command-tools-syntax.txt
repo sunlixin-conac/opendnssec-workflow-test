@@ -5,7 +5,7 @@ $Id$
 
 ## global options
 
-	--config <config>
+	--config <config>          aka -c
 
 ## commands
 
@@ -13,45 +13,45 @@ $Id$
 	update
 
 	zone add
-		--zone <zone>
-		[--policy <policy>]
-		[--signerconf <signerconf.xml>]
-		[--input <input>]
-		[--output <output>]
+		--zone <zone>                     aka -z
+		[--policy <policy>]               aka -p
+		[--signerconf <signerconf.xml>]   aka -s
+		[--input <input>]                 aka -i
+		[--output <output>]               aka -o
 
 	zone delete
-		--zone <zone> | --all
+		--zone <zone> | --all             aka -z / -a
 
 	zone list
 
 	repository list
 
 	policy export
-		--policy <policy>
+		--policy <policy>                 aka -p
 
 	policy list
 
 	key list
 		[--verbose]
-		--zone <zone> | --all
-		[--keystate <state>]
-		[--keytype <type>]
-		[--ds]
+		--zone <zone> | --all             aka -z / -a
+		[--keystate <state>]              aka -e
+		[--keytype <type>]                aka -t
+		[--ds]                            aka -d
 
 	key export
-		--zone <zone> | --all
-		[--keystate state]
-		[--keytype keytype]
-		[--ds]
+		--zone <zone> | --all             aka -z
+		[--keystate <state>]              aka -e
+		[--keytype <type>]                aka -t
+		[--ds]                            aka -d
 
 	key import
-		--cka_id <CKA_ID>
-		--repository <repository>
-		--zone <zone>
+		--cka_id <CKA_ID>                 aka -i
+		--repository <repository>         aka -r
+		--zone <zone>                     aka -z
 		--size <size>
 		--algorithm <algorithm>
-		--keytype <type>
-		--keystate <state>
+		--keystate <state>                aka -t
+		--keytype <type>                  aka -e
 		--time <time>
 		[--retire <retire>]
 		
@@ -59,11 +59,11 @@ $Id$
 		[--zone zone]
 		[--policy policy]
 	
-	key purge --zone <zone>
-	key purge --policy <policy>
+	key purge --zone <zone>                   aka -z
+	key purge --policy <policy>               aka -p
 
-	backup done --repository <repository>
-	backup list --repository <repository>
+	backup done --repository <repository>     aka -r
+	backup list --repository <repository>     aka -r
 	
 	rollover list
 
