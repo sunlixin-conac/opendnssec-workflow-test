@@ -45,15 +45,15 @@ $Id$
 		[--ds]                            aka -d
 
 	key import
-		--cka_id <CKA_ID>                 aka -i
+		--cka_id <CKA_ID>                 aka -k
 		--repository <repository>         aka -r
 		--zone <zone>                     aka -z
-		--size <size>
-		--algorithm <algorithm>
-		--keystate <state>                aka -t
-		--keytype <type>                  aka -e
-		--time <time>
-		[--retire <retire>]
+		--size <size>                     aka -m
+		--algorithm <algorithm>           aka -g
+		--keystate <state>                aka -e
+		--keytype <type>                  aka -t
+		--time <time>                     aka -w
+		[--retire <retire>]               aka -y
 		
 	key rollover
 		[--zone zone]
