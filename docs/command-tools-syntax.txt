@@ -27,16 +27,17 @@ $Id$
 	repository list
 
 	policy export
-		--policy <policy>                 aka -p
+		--policy <policy> | --all         aka -p / -a
 
 	policy list
 
 	key list
 		[--verbose]
 		--zone <zone> | --all             aka -z / -a
+(will appear soon:
 		[--keystate <state>]              aka -e
 		[--keytype <type>]                aka -t
-		[--ds]                            aka -d
+		[--ds]                            aka -d    )
 
 	key export
 		--zone <zone> | --all             aka -z
@@ -48,7 +49,7 @@ $Id$
 		--cka_id <CKA_ID>                 aka -k
 		--repository <repository>         aka -r
 		--zone <zone>                     aka -z
-		--size <size>                     aka -m
+		--bits <size>                     aka -b
 		--algorithm <algorithm>           aka -g
 		--keystate <state>                aka -e
 		--keytype <type>                  aka -t
@@ -56,8 +57,8 @@ $Id$
 		[--retire <retire>]               aka -y
 		
 	key rollover
-		[--zone zone]
-		[--policy policy]
+		[--zone zone] [--keytype <type>]
+		[--policy policy] [--keytype <type>]
 	
 	key purge --zone <zone>                   aka -z
 	key purge --policy <policy>               aka -p
