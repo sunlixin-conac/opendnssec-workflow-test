@@ -57,8 +57,9 @@ $Id$
 		[--retire <retire>]               aka -y
 		
 	key rollover
-		[--zone zone] [--keytype <type>]
-		[--policy policy] [--keytype <type>]
+		--zone zone [--keytype <type>]
+	key rollover
+		--policy policy [--keytype <type>]
 	
 	key purge --zone <zone>                   aka -z
 	key purge --policy <policy>               aka -p
