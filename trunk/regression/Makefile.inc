@@ -11,21 +11,26 @@ build: build-softHSM build-hsmbully build-OpenDNSSEC
 install: install-softHSM install-hsmbully install-OpenDNSSEC
 
 
-build-OpenDNSSEC:
+configure-OpenDNSSEC:
 	-mkdir -p $(BUILDDIR)/OpenDNSSEC
 	cd $(BUILDDIR)/OpenDNSSEC; $(SRCDIR)/OpenDNSSEC/configure $(CONFIGURE_ARGS)
-	cd $(BUILDDIR)/OpenDNSSEC; $(MAKE)
 
-build-softHSM:
+configure-softHSM:
 	-mkdir -p $(BUILDDIR)/softHSM
 	cd $(BUILDDIR)/softHSM; $(SRCDIR)/softHSM/configure $(CONFIGURE_ARGS)
-	cd $(BUILDDIR)/softHSM; $(MAKE)
 	
-build-hsmbully:
+configure-hsmbully:
 	-mkdir -p $(BUILDDIR)/hsmbully
 	cd $(BUILDDIR)/hsmbully; $(SRCDIR)/hsmbully/configure $(CONFIGURE_ARGS)
-	cd $(BUILDDIR)/hsmbully; $(MAKE)
 
+build-OpenDNSSEC: configure-OpenDNSSEC
+	cd $(BUILDDIR)/OpenDNSSEC; $(MAKE)
+
+build-softHSM: configure-softHSM
+	cd $(BUILDDIR)/softHSM; $(MAKE)
+	
+build-hsmbully:configure-hsmbully
+	cd $(BUILDDIR)/hsmbully; $(MAKE)
 
 install-OpenDNSSEC:
 	cd $(BUILDDIR)/OpenDNSSEC; $(SUDO) $(MAKE) install
