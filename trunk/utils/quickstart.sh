@@ -40,6 +40,6 @@ if [ -f ${KASP_DB} ]; then
 	exit 1
 else
 	echo "Setting up KASP database"
-	ksmutil setup
+	ods-ksmutil setup
 fi
 
