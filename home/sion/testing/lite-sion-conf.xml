@@ -12,7 +12,15 @@
 			<PIN>5678</PIN>
             <Capacity>1000</Capacity>
             <RequireBackup />
+        </Repository>
+
+        <Repository name="softHSM2">
+            <Module>/home/sion/temp/opendnssec/install/lib/libsofthsm.so</Module>
+			<TokenLabel>alice2</TokenLabel>
+			<PIN>5678</PIN>
+            <Capacity>1000</Capacity>
 		</Repository>
+
 
 <!--
 		<Repository name="sca6000">
@@ -43,14 +51,12 @@
         </Datastore>
 		<Interval>PT360S</Interval>
 		<KeygenInterval>PT6M</KeygenInterval>
-		<BackupDelay>PT6M</BackupDelay>
 		<RolloverNotification>PT10M</RolloverNotification>
 	</Enforcer>
 
 	<Signer>
         <WorkingDirectory>/home/sion/temp/opendnssec</WorkingDirectory>
 		<WorkerThreads>8</WorkerThreads>
-		<SignerThreads>1</SignerThreads>
 	</Signer>
 
 </Configuration>

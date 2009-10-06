@@ -28,7 +28,7 @@
 		</Adapters>
 	</Zone>
 	<Zone name="opendnssec.test">
-		<Policy>default</Policy>
+		<Policy>default2</Policy>
 		<SignerConfiguration>/home/sion/temp/opendnssec/install/var/opendnssec/config/opendnssec.test.xml</SignerConfiguration>
 		<Adapters>
 			<Input>
