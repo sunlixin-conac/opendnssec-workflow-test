@@ -10,7 +10,6 @@
             <Module>/home/sion/temp/opendnssec/install/lib/libsofthsm.so</Module>
 			<TokenLabel>alice</TokenLabel>
 			<PIN>5678</PIN>
-            <Capacity>1000</Capacity>
             <RequireBackup />
         </Repository>
 
@@ -50,7 +49,6 @@
 		  <SQLite>/home/sion/temp/opendnssec/install/var/opendnssec/enforcer.db</SQLite>
         </Datastore>
 		<Interval>PT360S</Interval>
-		<KeygenInterval>PT6M</KeygenInterval>
 		<RolloverNotification>PT10M</RolloverNotification>
 	</Enforcer>
 

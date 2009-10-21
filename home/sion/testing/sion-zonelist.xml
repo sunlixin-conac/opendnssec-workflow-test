@@ -38,5 +38,17 @@
 				<File>/var/dnssec/signed/opendnssec.test</File>
 			</Output>
 		</Adapters>
+    </Zone>
+    <Zone name="opendnssec.test2">
+		<Policy>default2</Policy>
+		<SignerConfiguration>/home/sion/temp/opendnssec/install/var/opendnssec/config/opendnssec.test2.xml</SignerConfiguration>
+		<Adapters>
+			<Input>
+				<File>/var/dnssec/unsigned/opendnssec.test2</File>
+			</Input>
+			<Output>
+				<File>/var/dnssec/signed/opendnssec.test2</File>
+			</Output>
+		</Adapters>
 	</Zone>
 </ZoneList>

@@ -103,7 +103,6 @@
 			<TTL>PT360S</TTL>
 			<RetireSafety>PT360S</RetireSafety>
 			<PublishSafety>PT360S</PublishSafety>
-            <ShareKeys />
 
 			<!-- Parameters for KSK only -->
 			<KSK>

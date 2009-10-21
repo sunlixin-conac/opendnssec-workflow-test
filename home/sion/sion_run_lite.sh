@@ -18,18 +18,18 @@ $MYDIR/install/bin/softhsm --init-token --slot 0 --label "alice"
 $MYDIR/install/bin/softhsm --init-token --slot 1 --label "alice2"
 
 #Import the xml config from $MYDIR in to the DB
-$MYDIR/install/bin/ksmutil setup
+$MYDIR/install/bin/ods-ksmutil setup
 
 #Start the enforcerd
-$MYDIR/install/sbin/enforcerd -d &
+$MYDIR/install/sbin/ods-enforcerd -d &
 
-sleep 10
+sleep 30
 
 $MYDIR/install/bin/ksmutil backup done
 
-killall -HUP enforcerd
+killall -HUP ods-enforcerd
 
 sleep 10
-killall -INT enforcerd
+killall -INT ods-enforcerd
 echo "Look in the system logs and see what happened."
 
