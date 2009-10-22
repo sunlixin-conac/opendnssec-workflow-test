@@ -5,7 +5,7 @@ PREFIX = /usr/local
 CONFIGURE_ARGS = \
 	--with-sqlite3=/usr/local \
 	--with-cunit=/usr/local \
-	--with-ldns=/opt/ldns/nossl \
+	--with-ldns=/opt/ldns \
 	--with-libxml2=/usr \
 	--with-botan=/usr/local \
 	--enable-timeshift
