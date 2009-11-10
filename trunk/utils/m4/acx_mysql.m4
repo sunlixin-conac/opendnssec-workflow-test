@@ -23,7 +23,7 @@ AC_DEFUN([ACX_MYSQL],[
 		fi
 	
 		AC_MSG_CHECKING(what are the MySQL includes)
-		MYSQL_INCLUDES="`$MYSQL_CONFIG --include` -DBIG_JOINS=1 -DUSE_MYSQL"
+		MYSQL_INCLUDES="`$MYSQL_CONFIG --include` -DBIG_JOINS=1 -DUSE_MYSQL -Wno-long-long"
 		AC_MSG_RESULT($MYSQL_INCLUDES)
 
 		AC_MSG_CHECKING(what are the MySQL libs)
@@ -34,6 +34,17 @@ AC_DEFUN([ACX_MYSQL],[
 	if ! test -x "$MYSQL"; then
 		AC_MSG_ERROR([mysql command not found])
 	fi
+
+	tmp_CPPFLAGS=$CPPFLAGS
+	tmp_LIBS=$LIBS
+
+	CPPFLAGS="$CPPFLAGS $MYSQL_INCLUDES"
+	LIBS="$LIBS $MYSQL_LIBS"
+
+	AC_CHECK_HEADERS(mysql.h,,[AC_MSG_ERROR([Can't find MySQL headers])])
+
+	CPPFLAGS=$tmp_CPPFLAGS
+	LIBS=$tmp_LIBS
 
 	AC_SUBST(MYSQL_INCLUDES)
 	AC_SUBST(MYSQL_LIBS)
