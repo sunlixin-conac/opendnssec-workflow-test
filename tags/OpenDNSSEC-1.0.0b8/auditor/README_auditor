@@ -1,0 +1,124 @@
+KASP Auditor README
+-------------------
+
+The KASP auditor is written to check the output of the signer.
+The auditor and its tools are part of the OpenDNSSEC project.
+For more information, visit http://www.opendnssec.org
+The Auditor requirements may be found at :
+http://trac.opendnssec.org/wiki/Signer/AuditorRequirements
+
+CONTENTS
+    Introduction
+    Dependencies
+    Installation
+    Testing
+    Running Manually
+
+-------------------------------------------------------------------
+Introduction
+-------------------------------------------------------------------
+
+The KASP Auditor checks the output of the signer against the
+policy used to sign the zone (obtained from the KASP). The signer
+calls the auditor once the zone(s) have been signed.
+
+The auditor runs in two stages : first, the signed and unsigned
+zones are sorted into canonical order, and then the sorted files
+are audited.
+
+Upon completion, the auditor signals any errors to the caller.
+Errors and warnings are written to the configured log facility.
+
+Checks performed include : DNSKEY, NSEC(3), RRSIG and NSEC3PARAM
+checks. More details are available on the OpenDNSSEC website :
+http://trac.opendnssec.org/wiki/Signer/AuditorRequirements
+
+-------------------------------------------------------------------
+Dependencies
+-------------------------------------------------------------------
+
+To run the auditor, it is necessary to install dnsruby. It is 
+presumed that Ruby is already installed on the target system, and 
+that the system is online. To install dnsruby, run the following
+ command : 
+
+    gem install dnsruby
+
+Ruby gems will download the dnsruby gem from rubyforge.org and 
+install it to the target system. Depending on how Ruby is 
+installed on the target system, it may be necessary to run the
+above command as root.
+
+Version 1.40 or greater of dnsruby is required.
+
+-------------------------------------------------------------------
+Installation
+-------------------------------------------------------------------
+
+From the base directory <opendnssec>/auditor :
+
+autoreconf --install
+./configure
+make
+make install
+
+--prefix=<dir>    Installation directory. All files will be installed
+                  relative to this path, and default search paths will
+                  be relative to the prefix. Defaults to /usr/local
+
+
+The auditor invocation script, will be installed in
+<prefix>/bin
+The Ruby libraries will be installed in
+<prefix>/lib/opendnssec
+
+-------------------------------------------------------------------
+Testing
+-------------------------------------------------------------------
+
+To run the auditor test files, run the command :
+
+  ruby test/auditor_test.rb
+
+If you wish to test the auditor locally before installing it, then
+run the following command from <path_to_OpenDNSSEC>/auditor :
+
+  ruby -I lib test/auditor_test.rb
+
+-------------------------------------------------------------------
+Running Manually
+-------------------------------------------------------------------
+
+Although the auditor is designed to be run by the signer, it
+can also be run manually :
+
+ods-auditor [--conf path/to/conf.xml] [--kasp path/to/kasp.xml]
+            [--zone zone_to_audit [--signed path/to/temp/signed.zone] 
+
+All zones will be audited by default. If --zone is specified, then 
+only that zone will be audited. If --signed is specified for the 
+zone, then the auditor will use that file as the signed output
+file, instead of the file specified in the zonelist.
+
+e.g. ods-auditor --conf /etc/opendnssec/conf.xml
+
+
+------------------------------------------------------------------
+Known Issues
+------------------------------------------------------------------
+
+The auditor is known to take a long time to sort through very 
+large zones. If your zone is very large, and needs to be signed
+very often, then you may need to disable the auditor (to do this,
+remove the <Audit/> tag from kasp.xml).
+
+Future versions of the auditor will have a "partial audit" option
+for use with very large zones.
+
+The signer currently starts one Ruby Virtual Machine for each zone
+which is to be audited. If you have many thousands of zones, this
+may consume excessive resource : the <Audit/> element should be
+removed if this is the case.
+
+
+Any problems, please contact alex@nominet.org.uk

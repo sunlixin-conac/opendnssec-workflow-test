@@ -1,0 +1,273 @@
+$Id$
+
+OpenDNSSEC 1.0.0b8 - 2009-11-23
+
+* ods-ksmutil: KSK rollover now holds at the point where the new key is made
+  active until the command "ds-seen" is issued.
+* ods-ksmutil: "database backup" implemented to safely make a copy of the
+  SQLite enforcer database.
+
+Bugfixes:
+* Auditor: Crashed on unknown RR class.
+* Signer Engine: NSEC3 RR included wrong information in bitmap (fixed in ldns
+  trunk).
+* Signer Engine: Force a new signed zone if input is reread. Necessary because
+  we cannot recognize if
+  glue or unsigned delegations have been added and/or removed (yet).
+* Signer Engine: Fix adding duplicate signatures in case of single key is
+  being used as both ZSK and KSK.
+* Bugreport #46: Vanishing records
+* KASP Enforcer: Could not handle zones with names longer than 30 characters.
+
+
+OpenDNSSEC 1.0.0b7 - 2009-11-16
+
+* ods-auditor: Dnsruby version 1.40 or later required.
+* ods-kaspcheck: Checks Enforcer SQLite datastore to ensure writable
+* Signer Engine: LDNS 1.6.2 is recommended (bugfixes)
+* The supported RRs are documented on the wiki
+
+Bugfixes:
+* ods-ksmutil: Segmentation fault when missing arguments to "key import"
+* KASP Enforcer: Improved support for MySQL (experimental)
+* Signer Engine: DLV is included in NSEC RR (fixed in LDNS 1.6.2)
+* Signer Engine: Better handling of removed zones
+* Signer Engine: Correct handling of zero length rdata - RFC3597 style (fixed
+  in LDNS trunk)
+* Signer Engine: Inherit class of zone to DNSSEC-related RRs
+
+
+OpenDNSSEC 1.0.0b6 - 2009-11-06
+
+* ods-hsmutil now has a command ("purge") to remove ALL keys from a given
+  repository.
+
+Bugfixes:
+* Some minor bugfixes for the auditor
+* Better detection for MySQL (now requires --enable-mysql to build)
+* Init PKCS#11 library with CKF_OS_LOCKING_OK
+* Change config file flag to hsmspeed
+
+
+OpenDNSSEC 1.0.0b5 - 2009-10-31
+
+* Reintroduce MySQL for enforcer back-end on an experimental footing
+
+Bugfixes:
+* Auditor: Fixed TXT parsing.
+* ods-ksmutil: Database could not be created for first time users.
+* ods-ksmutil: Set the correct privileges on the database.
+* Signer Engine: Tweek log levels.
+* Signer Engine: Fixed segmentation fault with WKS RR (in LDNS trunk).
+* Signer Engine: Fixed NSAP, IPSECKEY, and SIG parsing (in LDNS trunk).
+* Signer Engine: Disable multiline parsing when the line is commented out.
+* Signer Engine: The tools are not hanging any more. Better pipe handling.
+* Signer Engine: NSEC zone even if only 1 NSEC is needed.
+* Signer Engine: Don't create NSEC3 records for empty non terminals that
+  lead to glue.
+* Signer Engine: LDNS can now parse explicit TTLs that are non-numbers
+  (for example 3d2h, in LDNS trunk).
+* Bugreport #43: ods-signer: The command parser was too strict with white
+  spaces.
+
+OpenDNSSEC 1.0.0b4 - 2009-10-23
+
+* Default TTL in case of $TTL or explicit RR TTL becomes the SOA Minimum
+  value (was 3600).
+* The signer engine will check if another engine is already running before
+  starting.
+* Startup scripts for Solaris (SMF).
+* Auditor gives an error if key moves to "in use" without sufficient
+  "prepublished" time.
+
+Bugfixes:
+* Trailing spaces are not part of the domain name/ include file/ ttl in
+  directives.
+* nsec3er: Print final RRset, even if no NSEC3 was needed at that RRset.
+* Proper privileges dropping when creating the command socket
+* Signer sometimes didn't terminate if socket shutdown failed.
+
+Known issues:
+* The Signer Engine fails with broken pipes sometimes.
+
+
+OpenDNSSEC 1.0.0b3 - 2009-10-16
+
+* The auditor now tracks the SOA serial over time
+* The auditor (dnsruby) supports RSA/SHA256 and RSA/SHA512
+
+Bugfixes:
+* The LDNS bug that affected SRV records has been fixed in ldns-trunk.
+* Bugreport #41: Fix for SOA serial 'keep'.
+* Allow for SOA Serial/TTL/Minimum values of zero.
+* Correct socket binding of NotifyListen.
+* Systems with older SQLite had problem rolling keys on a policy.
+* Auditor now handles SSHFP and NAPTR records correctly
+  (but needs Dnsruby 1.39)
+* Auditor now handles TTLs in zone file with suffix s, m, h, d, and w.
+
+
+OpenDNSSEC 1.0.0b2 - 2009-10-09
+
+* Added experimental support for RSA/SHA256 and RSA/SHA512 to KASP auditor.
+  Dnsruby version 1.38 or higher required for SHA2 support.
+* Added experimental support for RSA/SHA256 and RSA/SHA512 to KASP enforcer
+  and the signer engine.
+* SignerThreads and KeygenInterval has been deprecated (actually removed
+  just before 1.0.0b1).
+* Added support for RSA/SHA256 and RSA/SHA512 to libhsm. No API changes.
+
+Bugfixes:
+* Bugreport #33 (#35): Output a signed zone if only the SOA record changed. 
+* Zone fetcher did not start correctly
+* Create the pid / socket directory if it not yet exists, with the correct
+  privileges.
+* Signer Engine now catches exception if running with incorrect permission.
+* TCP-support for LDNS on Solaris is fixed in LDNS trunk.
+
+Known issues:
+* LDNS is having problem with SRV records. The main effect is that these
+  records are given non-valid RRSIGs. This is still under investigation.
+
+
+OpenDNSSEC 1.0.0b1 - 2009-10-02
+
+* <Purge> tag added to automatically delete keys that have been dead
+  for some interval.
+* Rename all OpenDNSSEC command line tools and daemons to ods-XXX (e.g.
+  ksmutil becomes ods-ksmutil).
+* kasp_check command added to check the conf.xml and kasp.xml configuration
+  files for sanity and consistency.
+* communicated and keygend combined to form "ods-enforcerd".
+* ksmutil command line changes. Most commands have changed slightly, but
+  there are some significant changes (see
+  http://svn.opendnssec.org/docs/command-tools-syntax.txt for details.)
+* Enforcer database now has a version number. If it differs from the version
+  number in the code (specified via a #define statement), the software will
+  issue an error message and not connect to the database.
+* "ksmutil list keys" now displays the keytag if the -l flag is passed to it.
+* "Emergency Keys" renamed to "Standby Keys" as this better reflects their
+  role in OpenDNSSEC.
+* The behaviour of SOA Serial value 'counter' has changed according to
+  Ticket #31.
+* The directory "xml" and been renamed to "conf". (This is part of repository
+  clean.)
+* There are changes to the KASP DB:
+* Zone fetcher added, that will do AXFR from the master.
+
+  If want to use your old database, use the following commands to upgrade:
+
+    sqlite3 <PATH_TO_ENFORCER.DB> < enforcer/utils/migrate_090922_1.sqlite3
+    sqlite3 <PATH_TO_ENFORCER.DB> < enforcer/utils/migrate_090930_1.sqlite3
+    sqlite3 <PATH_TO_ENFORCER.DB> < enforcer/utils/migrate_091002_1.sqlite3
+
+  Or, to start a new (with loss of information), remove old keys from the HSM
+  and issue the command:
+
+    ksmutil setup
+
+Bugfixes:
+* Make sure that parenthesis in zonefiles don't concatenate rdata fields.
+
+Known issues:
+* TCP-support for LDNS on Solaris is currently broken due to an issue with
+  SO_RCVTIMEO. The result is that the zonefetcher doesn't work. No other
+  parts of OpenDNSSEC is affected by this bug.
+  There is currently no workaround.
+
+
+OpenDNSSEC 1.0a5 - 2009-09-21
+
+Features:
+* support %zonefile expansion in the signer engine NotifyCommand 
+
+Bugfixes:
+* Read <OptOut/> correctly from the kasp.xml
+* Correctly discover Empty Non-Terminals when reading input zonefile
+* Don't error on space-only lines in input zonefile
+
+
+OpenDNSSEC 1.0a4 - 2009-09-10
+
+Features:
+* warn (by sending a message to the log) about:
+    - impending key rollover
+    - Rollover occurrance
+    - when it is safe to remove a DS record
+* add export of DNSKEY and DS records to ksmutil
+* add configure option '--disable-auditor' to disable building the auditor
+* Added <ManualRollover/> tag to kasp.xml; this allows automatic rollovers
+    to be turned off in a policy for either keytype.
+* Changes to the KASP DB, please apply:
+  If want to use your old DB:
+    sqlite3 <PATH_TO_ENFORCER.DB> < enforcer/utils/migrate_090901_1.sqlite3
+  Or start fresh (with loss of information. User should remove old keys
+  from the HSM):
+    ksmutil setup
+
+Bugfixes:
+* "signer_engine_cli clear <ZONE>" dont crash on missing files anymore
+  and removes all internal files now
+* Bugreport #18, #19: Fix segfault at nseccer, nsec3er or finalizer when 
+  handling large zones.
+* Signer Engine starts correctly (problem was python 2.4, not RHEL5).
+
+
+OpenDNSSEC 1.0a3 - 2009-08-26
+
+Features:
+* ksmutil import key implemented for importing key ID of existing keys
+* "hsmspeed" will test the speed of the HSM.
+* "hsmutil test" will test the HSM against OpenDNSSEC.
+* Changes to the KASP DB, please apply:
+  If want to use your old DB:
+    sqlite3 <PATH_TO_ENFORCER.DB> < enforcer/utils/migrate_090820_1.sqlite3
+  Or start fresh (with loss of information. User should remove old keys
+  from the HSM):
+    ksmutil setup
+
+Bugfixes:
+* Better display of null backups (i.e. backup required) in ksmutil list
+* Don't show historical rollovers in ksmutil list
+* Fix key counting routines so that they all agree
+* Missing SQLite includes in the Enforcer
+
+Known bugs:
+* Signer Engine not starting correctly in RHEL5.
+  Use "signer_engine -d" for now
+* "signer_engine_cli clear <ZONE>" crashes on missing files
+
+
+OpenDNSSEC 1.0a2 - 2009-08-14
+
+Features:
+* conf.xml format changed
+* Read the default path to kasp.xml from conf.xml
+* libksm integrated into enforcer (and no longer installed)
+* Dropping privileges as specified
+* Option to specify that a key from a specific repository 
+  should not be used if it has not been backed up
+* ksmutil backup done, to signal that the keys are backed up
+* KASP Auditor should now function properly
+* A quick start script is available
+* XSLT to translate KASP into readable text (HTML)
+* Changes to the KASP DB, please apply:
+  If want to use your old DB:
+    sqlite3 <PATH_TO_ENFORCER.DB> < enforcer/utils/migrate_090812_1.sqlite3
+    sqlite3 <PATH_TO_ENFORCER.DB> < enforcer/utils/migrate_090813_1.sqlite3
+  Or start fresh (with loss of information):
+    ksmutil setup
+
+Bugfixes:
+* Signer Engine can now read standard bind format correctly
+* make install creates an incorrectly named directory
+* ksmutil addzone defaults to wrong path
+* SoftHSM links libsofthsm to build directory
+* libksm install problem when builddir == srcdir
+* Missing include of header file in SoftHSM
+* Text about a problem with Botan on some systems.
+
+
+OpenDNSSEC 1.0a1 - 2009-07-30
+
+* Initial release (aka "Technology Preview")
