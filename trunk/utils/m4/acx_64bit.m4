@@ -23,9 +23,9 @@ AC_DEFUN([ACX_64BIT],[
 	                ],[
 	                        AC_MSG_RESULT(no)
 	                        AC_MSG_ERROR([Don't know how to compile in 64-bit mode.])
+	        		CFLAGS=$tmp_CFLAGS
 	                ]
 	        )
-	        CFLAGS=$tmp_CFLAGS
 	fi
 
 ])
