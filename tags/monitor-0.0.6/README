@@ -1,0 +1,136 @@
+$Id$
+
+
+INTRODUCTION
+------------
+
+This project contains tools to monitor a DNSSEC-signed zone,
+including a NAGIOS plug-in.
+
+INSTALLATION
+------------
+
+The tools can be run from the lib folder, or the contents of 
+the lib folder can be copied to the location of your choice.
+
+It may be necessary to :
+
+  chmod +x dnssec_monitor.rb
+
+RUNNING
+-------
+
+From the directory containing the code (e.g. lib), run :
+
+  ./dnssec_monitor.rb -z <zone> [options]
+
+where zone is the zone the be monitored. Additional options may be
+viewed by running : 
+
+  ./dnssec_monitor.rb -? 
+
+(or -h, or --help)
+
+Additional options include :
+
+    -n <ns1>[,<ns2>,<ns3>,...]       Comma-separated list of nameservers
+        --nameservers                to monitor for the zone. Defaults
+                                     to the nameservers listed in the public DNS
+        --kskwarn [n]                Warn if KSK RRSIG expiry is within n days
+                                     Defaults to 14
+        --kskcritical [n]            Error if KSK RRSIG expiry is within n days
+                                     Defaults to 7
+        --zskwarn [n]                Warn if the ZSK RRSIG expiry is within n
+                                     days
+                                     Defaults to 3
+        --zskcritical [n]            Error if ZSK RRSIG expiry is within n days
+                                     Defaults to 1
+        --dwarn [n]                  Warn if RRSIG expiry is within n days
+                                     Defaults to 3
+                                     Only useful when a list of domains
+                                     to check is supplied
+        --dcritical [n]              Error if RRSIG expiry is within n days
+                                     Defaults to 1
+                                     Only useful when a list of domains to
+                                     check is supplied
+        --ods [ods_location]         Load the OpenDNSSEC configuration files
+                                     from this location and use values for
+                                     InceptionOffset and ValidityPeriod
+                                     from them. Otherwise, defaults will
+                                     be used for these (3600 for
+                                     InceptionOffset, 3600 for ValidityPeriod).
+                                     OpenDNSSEC must have been installed on this
+                                     system if this option is used
+        --[no-]wilcard               NXDomain checks will be disabled if
+                                     wildcards are enabled
+        --names name1,name2,name3... List of names to check in the zone
+                                     Note that there must be no whitespace
+                                     between the names
+        --namefile file              Name of file containing list of names (and 
+                                     optional types) to check in the zone
+        --zonefile file              Name of zone file to load list of names to 
+                                     check against zone
+        --[no-]validation            Define whether to check parent DS records
+                                     and validation from the root
+                                     Defaults to true
+        --rootkey file               Configure the key for the signed root
+                                     Defines file to load root key from
+                                     Validation from root will not be tested
+                                     if this is not configured
+        --dlv                        Configure the location of the DLV service
+                                     Defaults to dlv.isc.org.
+                                     DLV will only be used if dlvkey is set
+        --dlvkey file                Configure the DLV key
+                                     Defines file to load DLV key from
+                                     DLV won't be used if this isn't set
+        --hints hint1,hint2,hint3... Configure the root hints
+                                     Defines the servers to use as root
+                                     Note that there must be no whitespace
+                                     between the names
+    -l, --log [FACILITY]             Specify the syslog facility for results
+                                     Defaults to print to console
+
+
+NAGIOS PLUG-IN
+--------------
+
+The nagios plug-in is provided in the same lib folder. It uses the same
+options as dnssec_monitor, with an additional NAGIOS-specific option :
+
+   -v, --verbose [n]                 Set the NAGIOS verbosity to n
+
+
+FUNCTIONALITY 
+-------------
+
+Zone Apex Checks
+   The following records are checked at the zone apex : DNSKEY, SOA and NS.
+   For each of these RRSets, the RRSIGs are verified using one of the DNSKEYs at the apex.
+   For these RRSIGs, the signature expiration is checked to ensure it is a certain amount from the current time.
+   For these RRSIGs, the signature inception is checked to ensure it is a certain amount before the current time.
+   For these RRSIGs, the signature lifetime (expiration - inception) is checked for a minimum level.
+   Check that at least one DNSKEY matches DS in parent zone (or in the ISC DLV registry)
+
+The inception/expiration tolerances may be obtained from the OpenDNSSEC configuration files, if available. Otherwise, command line options or defaults are used.
+
+A list of names (or a zone file) may be specified, for which the RRSIGs should be checked as per the zone apex RRSIG checks. If found, DS records for the specified children are checked against the published children zones.
+
+It is also possible to validate the zone from the signed root or ISC DLV registry.
+
+TESTING
+-------
+
+The test code can be run from the main project folder :
+
+sudo ruby -I lib test/tc_monitor.rb
+
+Root privileges are required to start a test server on port 53.
+Additionally, a tld is checked using the ISC DLV registry. This
+can take some seconds to complete.
+
+
+AUTHOR
+------
+
+alex@nominet.org.uk
+ 
