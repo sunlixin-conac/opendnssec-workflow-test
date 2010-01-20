@@ -1,5 +1,5 @@
 /*
- * $Id:  $
+ * $Id$
  *
  * Copyright (c) 2009 .SE (The Internet Infrastructure Foundation).
  * All rights reserved.
@@ -685,6 +685,10 @@ int read_file(char* filename, char* origin, char* default_ttl,
         DEBUGF("Reallocated line list to %d lines\n", g->listsize);
     }
 
+    /* skip over any leading dots */
+    while (*origin == '.')
+        origin++;
+
     char* currname = NULL;
     char* currclass = NULL;
     char* currttl = 0;
@@ -737,6 +741,10 @@ int read_file(char* filename, char* origin, char* default_ttl,
 
                 case 'O':
                     origin = p;
+
+                    /* skip over any leading dots */
+                    while (*origin == '.')
+                        origin++;
                     break;
 
                 case 'T':
