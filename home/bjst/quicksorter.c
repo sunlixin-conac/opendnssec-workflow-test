@@ -40,6 +40,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <locale.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -51,6 +52,8 @@
 #else
 #define DEBUGF(...)
 #endif
+
+#define MIN(x,y) (x < y ? x : y)
 
 #define START_LINE_COUNT 131072 /* 2^17 */
 
@@ -531,6 +534,116 @@ int parse_rrtype(const char* s)
     return 0;
 }
 
+int unescape(char* src, int* dest)
+{
+    int len = 0;
+    while (*src && !isspace(*src)) {
+        switch (*src) {
+            case '\\':
+                if (isdigit(src[1])) {
+                    dest[len++] =
+                        (src[1] - 48) * 100 +
+                        (src[2] - 48) * 10 +
+                        (src[3] - 48);
+                    src += 3;
+                }
+                else {
+                    dest[len++] = src[1];
+                    src++;
+                }
+                break;
+
+            case '.':
+                dest[len++] = -1;
+                break;
+
+            default:
+                dest[len++] = *src;
+                break;
+        }
+        src++;
+    }
+
+    return len;
+}
+
+int compare_escaped_names(char* s1, char* s2)
+{
+    int w1[256];
+    int w2[256];
+
+    int len1 = unescape(s1, w1);
+    int len2 = unescape(s2, w2);
+    int* d1 = w1 + len1 - 1;
+    int* d2 = w2 + len2 - 1;
+
+    while (1) {
+        int* e1 = d1;
+        int* e2 = d2;
+
+        /* find start of name segment */
+        while (d1 > w1 && (d1[-1] != -1))
+            d1--;
+        while (d2 > w2 && (d2[-1] != -1))
+            d2--;
+
+        /* compare */
+        int slen1 = e1-d1;
+        int slen2 = e2-d2;
+        int i;
+        for (i=0; i<slen1 && i<slen2; i++)
+            if (d1[i] != d2[i])
+                return d1[i] - d2[i];
+        if (slen1 != slen2)
+            return slen1 - slen2;
+
+        /* equal names? */
+        if (d1 == w1 && d2 == w2)
+            return 0;
+
+        d1--;
+        d2--;
+    }    
+}
+
+int compare_names(char* s1, char* d1, char* s2, char* d2)
+{
+    while (1) {
+        char* t1 = d1;
+        char* t2 = d2;
+
+        /* find start of name segment */
+        while (d1 > s1 && ((d1[-1] != '.') || ((d1 > s1+2) && d1[-2] == '\\'))) {
+            if (d1[-1] == '\\')
+                return compare_escaped_names(s1, s2);
+            d1--;
+        }
+        while (d2 > s2 && ((d2[-1] != '.') || ((d2 > s2+2) && d2[-2] == '\\'))) {
+            if (d2[-1] == '\\')
+                return compare_escaped_names(s1, s2);
+            d2--;
+        }
+
+        int slen1 = t1-d1;
+        int slen2 = t2-d2;
+
+        int diff = strncasecmp(d1, d2, MIN(slen1, slen2));
+        if (diff)
+            return diff;
+
+        if (slen1 != slen2)
+            return slen1 - slen2;
+
+        /* equal names? */
+        if (d1 == s1 && d2 == s2)
+            return 0;
+
+        /* go to next name segment */
+        d1--;
+        d2--;
+    }
+}
+
 /* string comparison function for use by qsort() */
 int canonical_compare(const void* v1, const void* v2)
 {
@@ -538,6 +651,7 @@ int canonical_compare(const void* v1, const void* v2)
     char* s2 = *(char**)v2;
     
     /*** compare name ***/
+
     char* e1 = strpbrk(s1, " \t");
     char* e2 = strpbrk(s2, " \t");
 
@@ -550,44 +664,9 @@ int canonical_compare(const void* v1, const void* v2)
     char* d1 = e1-1;
     char* d2 = e2-1;
 
-    while (1) {
-        char* t1 = d1;
-        char* t2 = d2;
-
-        /* temporarily terminate segment */
-        *t1 = 0;
-        *t2 = 0;
-
-        /* find start of name segment */
-        while (d1 > s1 && d1[-1] != '.')
-            d1--;
-        while (d2 > s2 && d2[-1] != '.')
-            d2--;
-
-        /* compare name segment */
-        int diff = strcasecmp(d1, d2);
-
-        /* un-terminate segment */
-        *t1 = '.';
-        *t2 = '.';
-
-        if (diff)
-            return diff;
-
-        /* equal names? */
-        if (d1 == s1 && d2 == s2)
-            break;
-        
-        if (d1 == s1)
-            return -1;
-
-        if (d2 == s2)
-            return 1;
-
-        /* go to next name segment */
-        d1--;
-        d2--;
-    }
+    int diff = compare_names(s1, d1, s2, d2);
+    if (diff)
+        return diff;
 
     /*** compare type ***/
 
@@ -1072,6 +1151,9 @@ int main(int argc, char* argv[])
         perror(outfile);
         return -5;
     }
+
+    /* set locale to C, to avoid national quirks */
+    setlocale(LC_CTYPE, "C");
 
     struct global_data g;
     init_global_data(&g);
