@@ -1,21 +1,14 @@
 # $Id$
 
-AC_DEFUN([ACX_SQLITE3],[
+AC_DEFUN([ACX_LIBSQLITE3],[
 	AC_ARG_WITH(sqlite3,
         	AC_HELP_STRING([--with-sqlite3=PATH],[Specify prefix of path of SQLite3]),
 		[
 			SQLITE3_PATH="$withval"
-			AC_PATH_PROGS(SQLITE3, sqlite3, sqlite3, $withval/bin)
 			
 		],[
 			SQLITE3_PATH="/usr/local"
-			AC_PATH_PROGS(SQLITE3, sqlite3, sqlite3, $PATH)
 		])
-
-	
-	if ! test -x "$SQLITE3"; then
-		AC_MSG_ERROR([sqlite3 command not found])
-	fi
 	
 	AC_MSG_CHECKING(what are the SQLite3 includes)
 	SQLITE3_INCLUDES="-I$SQLITE3_PATH/include"
