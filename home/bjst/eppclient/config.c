@@ -30,48 +30,50 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <string.h>
-
+#include <syslog.h>
+#include <errno.h>
 #include "config.h"
 
-void send(int fd, char* string)
-{
-    write(fd, string, strlen(string));
-}
+#define CONFIG_FILE     "eppclientd.conf"
 
+struct configdata config;
 
-void push_keys(int argc, char** argv)
+void read_config(void)    
 {
-    int fd = open(config.pipe, O_RDWR);
-    if (fd < 0) {
-        perror(config.pipe);
+    memset(&config, 0, sizeof config);
+    
+    FILE* f = fopen(CONFIG_FILE, "r");
+    if (!f)
+        f = fopen("/etc/" CONFIG_FILE, "r");
+    if (!f)
+        f = fopen("/etc/opt/" CONFIG_FILE, "r");
+    if (!f)
+        f = fopen("/usr/local/etc/" CONFIG_FILE, "r");
+    if (f) {
+        char line[128];
+        while (fgets(line, sizeof line, f)) {
+            char* label = strtok(line, "\t =");
+            char* data = strtok(NULL, "\t =\n");
+            if (!strcmp(label, "database"))
+                strcpy(config.dbpath, data);
+            else if (!strcmp(label, "pipe"))
+                strcpy(config.pipe, data);
+            else if (!strcmp(label, "pidfile"))
+                strcpy(config.pidfile, data);
+            else if (!strcmp(label, "user"))
+                strcpy(config.user, data);
+            else if (!strcmp(label, "password"))
+                strcpy(config.password, data);
+            else {
+                printf("Unknown config parameter: %s\n", label);
+                exit(-1);
+            }
+        }
+    }
+    else {
+        syslog(LOG_ERR, "%s: %s", CONFIG_FILE, strerror(errno));
+        perror(CONFIG_FILE);
         exit(-1);
     }
-
-    send(fd, "NEWKEYS ");
-    send(fd, argv[1]);
-    send(fd, " ");
-
-    for (int i=2; i<argc; i++) {
-        send(fd, "\"");
-        send(fd, argv[i]);
-        send(fd, "\" ");
-    }
-    send(fd, "\n");
-    close(fd);
-}
-
-int main(int argc, char** argv)
-{
-    if (argc < 3) {
-        printf("usage: %s [zone] [keys] ...\n", argv[0]);
-        return -1;
-    }
-
-    read_config();
-    push_keys(argc, argv);
-
-    return 0;
 }

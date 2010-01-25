@@ -28,50 +28,19 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
 
-#include "config.h"
+struct configdata {
+    char dbpath[250];
+    char pipe[250];
+    char pidfile[250];
+    char user[80];
+    char password[80];
+};
 
-void send(int fd, char* string)
-{
-    write(fd, string, strlen(string));
-}
+extern struct configdata config;
 
+void read_config(void);
 
-void push_keys(int argc, char** argv)
-{
-    int fd = open(config.pipe, O_RDWR);
-    if (fd < 0) {
-        perror(config.pipe);
-        exit(-1);
-    }
-
-    send(fd, "NEWKEYS ");
-    send(fd, argv[1]);
-    send(fd, " ");
-
-    for (int i=2; i<argc; i++) {
-        send(fd, "\"");
-        send(fd, argv[i]);
-        send(fd, "\" ");
-    }
-    send(fd, "\n");
-    close(fd);
-}
-
-int main(int argc, char** argv)
-{
-    if (argc < 3) {
-        printf("usage: %s [zone] [keys] ...\n", argv[0]);
-        return -1;
-    }
-
-    read_config();
-    push_keys(argc, argv);
-
-    return 0;
-}
+#endif
