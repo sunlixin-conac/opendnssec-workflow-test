@@ -222,6 +222,9 @@ bool rr_needs_expansion(int type, char* rr)
             if (rr[-1] != '.')
                 return true;
             break;
+
+        case 48: /* DNSKEY, needs special TTL */
+            return true;
     }
 
     return false;
@@ -712,6 +715,7 @@ int canonical_compare(const void* v1, const void* v2)
 
 /* read and parse a zone file */
 int read_file(char* filename, char* origin, char* default_ttl,
+              char* dnskey_ttl,
               struct global_data* g)
 {
     int infd = open(filename, O_RDONLY);
@@ -814,7 +818,7 @@ int read_file(char* filename, char* origin, char* default_ttl,
                             p++;
                         *p = 0; /* terminate domain name */
                     }
-                    read_file(filename, domain, default_ttl, g);
+                    read_file(filename, domain, default_ttl, dnskey_ttl, g);
                     break;
                 }
 
@@ -1013,6 +1017,8 @@ int read_file(char* filename, char* origin, char* default_ttl,
                 *l++ = ' ';
 
                 /* append ttl */
+                if (rrtype == 48 && dnskey_ttl)
+                    ttl = dnskey_ttl;
                 if (!ttl) {
                     if (currttl)
                         ttl = currttl;
@@ -1112,14 +1118,16 @@ int main(int argc, char* argv[])
         "usage: quicksorter -f INFILE -w OUTFILE [OPTIONS] \n"
         "options:\n"
         "-m <min>\tSOA minimum\n"
+        "-t <ttl>\tDNSKEY TTL\n"
         "-o <origin>\tZone origin\n";
 
     char* default_ttl = NULL;
+    char* dnskey_ttl = NULL;
     char* infile = NULL;
     char* outfile = NULL;
     char* origin = NULL;
     int c;
-    while ((c = getopt(argc, argv, "f:w:m:o:")) != -1) {
+    while ((c = getopt(argc, argv, "f:w:m:o:t:")) != -1) {
         switch (c) {
             case 'f':
                 infile = optarg;
@@ -1135,6 +1143,10 @@ int main(int argc, char* argv[])
 
             case 'o':
                 origin = optarg;
+                break;
+
+            case 't':
+                dnskey_ttl = optarg;
                 break;
         }
     }
@@ -1158,7 +1170,7 @@ int main(int argc, char* argv[])
     struct global_data g;
     init_global_data(&g);
 
-    read_file(infile, origin, default_ttl, &g);
+    read_file(infile, origin, default_ttl, dnskey_ttl, &g);
     DEBUGF("Read %d lines\n", g.linecount);
 
     qsort(g.lines, g.linecount, sizeof (char*), canonical_compare);
