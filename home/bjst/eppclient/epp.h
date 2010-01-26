@@ -30,50 +30,13 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <syslog.h>
+#include <netdb.h>
 #include <errno.h>
-#include "config.h"
+#include <openssl/ssl.h>
 
-#define CONFIG_FILE     "eppclientd.conf"
+#ifndef _EPP_H_
+#define _EPP_H_
 
-struct configdata config;
+int epp_connect(SSL_CTX* sslctx);
 
-void read_config(void)    
-{
-    memset(&config, 0, sizeof config);
-    
-    FILE* f = fopen(CONFIG_FILE, "r");
-    if (!f)
-        f = fopen("/etc/" CONFIG_FILE, "r");
-    if (!f)
-        f = fopen("/etc/opt/" CONFIG_FILE, "r");
-    if (!f)
-        f = fopen("/usr/local/etc/" CONFIG_FILE, "r");
-    if (f) {
-        char line[128];
-        while (fgets(line, sizeof line, f)) {
-            char* label = strtok(line, "\t =");
-            char* data = strtok(NULL, "\t =\n");
-            if (!strcmp(label, "database"))
-                strcpy(config.dbpath, data);
-            else if (!strcmp(label, "pipe"))
-                strcpy(config.pipe, data);
-            else if (!strcmp(label, "pidfile"))
-                strcpy(config.pidfile, data);
-            else if (!strcmp(label, "user"))
-                strcpy(config.user, data);
-            else if (!strcmp(label, "password"))
-                strcpy(config.password, data);
-            else {
-                printf("Unknown config parameter: %s\n", label);
-                exit(-1);
-            }
-        }
-    }
-    else {
-        syslog(LOG_ERR, "%s: %s", CONFIG_FILE, strerror(errno));
-        perror(CONFIG_FILE);
-        exit(-1);
-    }
-}
+#endif

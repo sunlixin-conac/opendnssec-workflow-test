@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (c) 2009 .SE (The Internet Infrastructure Foundation).
+ * Copyright (c) 2010 .SE (The Internet Infrastructure Foundation).
  * All rights reserved.
  *
  * Written by Björn Stenberg <bjorn@haxx.se> for .SE
@@ -39,10 +39,13 @@
 #include <sqlite3.h>
 #include <errno.h>
 #include <ctype.h>
+#include <openssl/ssl.h>
 
 #include "config.h"
+#include "epp.h"
 
 static sqlite3* db = NULL;
+static SSL_CTX* sslctx = NULL;
 
 void signal_handler(int sig)
 {
@@ -52,7 +55,7 @@ void signal_handler(int sig)
             break;
 
 	case SIGTERM:
-            syslog(LOG_INFO, "god SIGTERM. exiting.");
+            syslog(LOG_INFO, "killed. exiting.");
             unlink(config.pipe);
             unlink(config.pidfile);
             exit(0);
@@ -63,8 +66,7 @@ void signal_handler(int sig)
 void init_sqlite(void)
 {
     /* prepare sqlite */
-    int rc = sqlite3_open_v2(config.dbpath, &db,
-                             SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+    int rc = sqlite3_open(config.dbpath, &db);
     if (rc) {
         syslog(LOG_ERR, "Can't open %s: %s",
                config.dbpath, sqlite3_errmsg(db));
@@ -140,13 +142,17 @@ int init()
     rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS keys (job NUMERIC, key TEXT);",0,0,0);
     rc = sqlite3_exec(db, "END TRANSACTION;",0,0,0);
 
+    SSL_library_init();
+    sslctx = SSL_CTX_new(SSLv23_client_method());
+    SSL_CTX_set_options(sslctx, SSL_OP_NO_SSLv2); /* disable SSLv2 */
+
     unlink(config.pipe);
     if (mkfifo(config.pipe, 0660)) {
         syslog(LOG_ERR, "%s: %s", config.pipe, strerror(errno));
         exit(1);
     }
 
-    int pipe = open(config.pipe, O_RDWR);
+    int pipe = open(config.pipe, O_RDWR | O_NDELAY);
     if (pipe < 0) {
         syslog(LOG_ERR, "%s: %s", config.pipe, strerror(errno));
         exit(1);
@@ -185,6 +191,8 @@ int count_jobs(void)
 
 void send_keys(void)
 {
+    epp_connect(sslctx);
+    
     sqlite3_stmt* sth;
 
     /* get first job */
@@ -321,7 +329,7 @@ void read_client_pipe(int pipe)
 
     /* read byte by byte to only grab the first line */
     char c;
-    while (read(pipe, &c, 1)) {
+    while (read(pipe, &c, 1) == 1) {
         if (pos > bufsize-2) {
             bufsize *= 2;
             buf = realloc(buf, bufsize);
@@ -346,13 +354,13 @@ int main()
     int pipe = init();
     
     while (1) {
+        read_client_pipe(pipe);
+
         int count = count_jobs();
         if (count) {
             syslog(LOG_DEBUG, "%d jobs in queue", count);
             send_keys();
         }
-
-        read_client_pipe(pipe);
 
         sleep(1);
     }
