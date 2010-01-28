@@ -37,6 +37,7 @@
 #ifndef _EPP_H_
 #define _EPP_H_
 
-int epp_connect(SSL_CTX* sslctx);
+int epp_login(SSL_CTX* sslctx);
+int epp_logout(void);
 
 #endif

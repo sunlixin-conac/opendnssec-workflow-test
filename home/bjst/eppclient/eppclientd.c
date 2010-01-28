@@ -80,6 +80,7 @@ int init()
     openlog("eppclientd", 0, LOG_USER);
 
     int i;
+#ifndef DEBUG
     i = fork();
     if (i<0) {
         syslog(LOG_ERR, "fork error");
@@ -87,7 +88,7 @@ int init()
     }
     if (i>0)
         exit(0); /* parent exits */
-
+#endif
     /* child (daemon) continues */
     setsid(); /* obtain a new process group */
     for (i=getdtablesize();i>=0;--i)
@@ -98,7 +99,7 @@ int init()
     dup(i); /* handle standard I/O */
 
     umask(027); /* set newly created file permissions */
-#if 0
+#ifndef DEBUG
     chdir("/"); /* change running directory */
 #endif
     read_config();
@@ -191,7 +192,9 @@ int count_jobs(void)
 
 void send_keys(void)
 {
-    epp_connect(sslctx);
+    epp_login(sslctx);
+    epp_logout();
+    exit(-1);
     
     sqlite3_stmt* sth;
 

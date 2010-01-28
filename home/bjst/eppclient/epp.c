@@ -49,27 +49,27 @@ static const char* head =
 
 static const char* foot = "</epp>\n";
 
-struct frame
-{
-    char* ptr;
-    int len;
-};
+static int sockfd = -1;
+static SSL* ssl = NULL;
 
-static struct frame* read_frame(SSL* ssl)
+static ezxml_t read_frame(void)
 {
     static char buffer[8192];
-    static struct frame frame;
 
     int rc = SSL_read(ssl, buffer, 4);
     if (rc <= 0) {
-        syslog(LOG_ERR, "SSL_read(4) returned %d",
-               SSL_get_error(ssl, rc));
+        syslog(LOG_ERR, "SSL_read(4) returned error %d (ret %d, errno %d)",
+               SSL_get_error(ssl, rc), rc, errno);
+        long err;
+        while ((err = ERR_get_error()))
+            syslog(LOG_ERR, "SSL error %ld", err);
         return NULL;
     }
     int len = (((buffer[0] & 0xff) << 24) |
                ((buffer[1] & 0xff) << 16) |
                ((buffer[2] & 0xff) << 8) |
                (buffer[3] & 0xff));
+    len -= 4;
 
     if (len > sizeof(buffer)) {
         len = sizeof(buffer);
@@ -79,25 +79,33 @@ static struct frame* read_frame(SSL* ssl)
 
     rc = SSL_read(ssl, buffer, len);
     if (rc <= 0) {
-        syslog(LOG_ERR, "SSL_read(%d) returned %d",
+        syslog(LOG_ERR, "SSL_read(%d) returned error %d",
                len, SSL_get_error(ssl, rc));
         return NULL;
     }
     buffer[sizeof(buffer)-1] = 0;
 
-    frame.ptr = buffer;
-    frame.len = len;
+#ifdef DEBUG
+    FILE* f = fopen("input.xml", "w");
+    if (f) {
+        fwrite(buffer, len, 1, f);
+        fclose(f);
+    }
+#endif
 
-    return &frame;
+    ezxml_t xml = ezxml_parse_str(buffer, len);
+
+    return xml;
 }
 
-static int send_frame(SSL* ssl, char* ptr, int len)
+static int send_frame(char* ptr, int len)
 {
     unsigned char buf[4];
-    buf[0] = (len << 24) & 0xff;
-    buf[1] = (len << 16) & 0xff;
-    buf[2] = (len << 8) & 0xff;
-    buf[3] = len & 0xff;
+    len += 4;
+    buf[0] = (len & 0xff000000) >> 24;
+    buf[1] = (len & 0x00ff0000) >> 16;
+    buf[2] = (len & 0x0000ff00) >> 8;
+    buf[3] = (len & 0x000000ff);
 
     int rc = SSL_write(ssl, buf, 4);
     if (rc <= 0) {
@@ -113,19 +121,61 @@ static int send_frame(SSL* ssl, char* ptr, int len)
         return -1;
     }
 
+#ifdef DEBUG
+    FILE* f = fopen("output.xml", "w");
+    if (f) {
+        fprintf(f, "%02x %02x %02x %02x (%d)\n",
+                buf[0], buf[1], buf[2], buf[3], len);
+        fwrite(ptr, len-4, 1, f);
+        fclose(f);
+    }
+#endif
+
     return 0;
 }
 
-static bool server_supports_dnssec(struct frame* frame)
+
+static int read_response(void)
 {
-    ezxml_t top = ezxml_parse_str(frame->ptr, frame->len);
-    if (!top) {
-        syslog(LOG_ERR, "ezxml_parse_str() failed");
-        return false;
+    ezxml_t response = read_frame();
+    ezxml_t x = ezxml_get(response,"response",0,"result",-1);
+    if (!x) {
+        syslog(LOG_ERR, "No <result> in xml");
+        return -1;
     }
 
+    const char* code = ezxml_attr(x, "code");
+    if (!x) {
+        syslog(LOG_ERR, "No code= in <result>");
+        return -1;
+    }
+
+    x = ezxml_child(x, "msg");
+    if (!x) {
+        syslog(LOG_ERR, "No <msg> in <result>");
+        return -1;
+    }
+    char* msg = x->txt;
+
+    syslog(LOG_DEBUG, "<< result %s (%s)", code, msg);
+
+    if (code[0] == 1) {
+        ezxml_free(response);
+        return 0;
+    }
+
+    x = ezxml_get(response,"response",0,"result",0,"extValue",0,"reason",-1);
+    if (x)
+        syslog(LOG_DEBUG, "Failure reson: %s", x->txt);
+
+    ezxml_free(response);
+    return -1;
+}
+
+static bool server_supports_dnssec(ezxml_t greeting)
+{
     /* verify dnssec support */
-    ezxml_t uri = ezxml_get(top,
+    ezxml_t uri = ezxml_get(greeting,
                             "greeting",0,
                             "svcMenu",0,
                             "svcExtension",0,
@@ -133,7 +183,6 @@ static bool server_supports_dnssec(struct frame* frame)
     for (; uri; uri = uri->next)
         if (!strcmp(uri->txt, "urn:ietf:params:xml:ns:secDNS-1.0"))
             break;
-    ezxml_free(top);
     
     if (uri)
         return true;
@@ -142,17 +191,17 @@ static bool server_supports_dnssec(struct frame* frame)
     return false;
 }
 
-static int login(SSL* ssl, struct frame* frame)
+static void cleanup(void)
 {
-    /* extract language and version from greeting message */
-    ezxml_t top = ezxml_parse_str(frame->ptr, frame->len);
-    if (!top) {
-        syslog(LOG_ERR, "ezxml_parse_str() failed");
-        return -1;
-    }
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
+    close(sockfd);
+}
 
+static int login(ezxml_t greeting)
+{
     char* version = NULL;
-    ezxml_t x = ezxml_get(top,"greeting",0,"svcMenu",0,"version",-1);
+    ezxml_t x = ezxml_get(greeting,"greeting",0,"svcMenu",0,"version",-1);
     if (!x) {
         syslog(LOG_ERR, "No <version> in greeting!");
         return -1;
@@ -160,12 +209,13 @@ static int login(SSL* ssl, struct frame* frame)
     version = x->txt;
 
     char* lang = NULL;
-    x = ezxml_get(top,"greeting",0,"svcMenu",0,"lang",-1);
+    x = ezxml_get(greeting,"greeting",0,"svcMenu",0,"lang",-1);
     if (!x) {
         syslog(LOG_ERR, "No <lang> in greeting!");
         return -1;
     }
     lang = x->txt;
+    ezxml_free(greeting);
     
     /* construct login xml */
     char buffer[4096];
@@ -181,9 +231,11 @@ static int login(SSL* ssl, struct frame* frame)
              "  </options>\n"
              "  <svcs>\n"
              "   <objURI>urn:ietf:params:xml:ns:domain-1.0</objURI>\n"
+             "   <objURI>urn:ietf:params:xml:ns:host-1.0</objURI>\n"
+             "   <objURI>urn:ietf:params:xml:ns:contact-1.0</objURI>\n"
              "   <svcExtension>\n"
              "    <extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI>\n"
-             "    <extURI>urn:se:iis:xml:epp:iis-1.1</extURI>\n"
+             "    <extURI>urn:se:iis:xml:epp:iis-1.1</extURI>\n" /* TODO: rm */
              "   </svcExtension>\n"
              "  </svcs>\n"
              " </login>\n"
@@ -194,12 +246,39 @@ static int login(SSL* ssl, struct frame* frame)
              version, lang,
              foot);
 
-    send_frame(ssl, buffer, strlen(buffer));
+    syslog(LOG_DEBUG,">> login");
+    send_frame(buffer, strlen(buffer));
+
+    if (read_response())
+        return -1;
 
     return 0;
 }
 
-int epp_connect(SSL_CTX* sslctx)
+int epp_logout(void)
+{
+    /* construct logout xml */
+    char buffer[4096];
+    snprintf(buffer, sizeof buffer,
+             "%s"
+             "<command>\n"
+             " <logout/>\n"
+             "</command>\n"
+             "%s",
+             head,
+             foot);
+
+    syslog(LOG_DEBUG,">> logout");
+    send_frame(buffer, strlen(buffer));
+
+    /* ignore result - server disconnects after <logout> */
+
+    cleanup();
+
+    return 0;
+}
+
+int epp_login(SSL_CTX* sslctx)
 {
     static const char* host = "epptest.iis.se";
     static const char* service = "700";
@@ -215,7 +294,6 @@ int epp_connect(SSL_CTX* sslctx)
         return -1;
     }
 
-    int sockfd = -1;
     for (struct addrinfo* a = ai; a; a = a->ai_next) {
         sockfd = socket(a->ai_family, a->ai_socktype, a->ai_protocol);
         if (sockfd < 0)
@@ -231,7 +309,7 @@ int epp_connect(SSL_CTX* sslctx)
         return -1;
     }
 
-    SSL* ssl = SSL_new(sslctx);
+    ssl = SSL_new(sslctx);
     if (!ssl) {
         syslog(LOG_ERR, "SSL_new(): %s",
                ERR_error_string(ERR_get_error(), NULL));
@@ -264,12 +342,12 @@ int epp_connect(SSL_CTX* sslctx)
             return -1;
     }
 
-    struct frame* frame = read_frame(ssl);
+    ezxml_t greeting = read_frame();
     
-    if (!server_supports_dnssec(frame))
+    if (!server_supports_dnssec(greeting))
         return -1;
 
-    if (login(ssl, frame))
+    if (login(greeting))
         return -1;
     
     return 0;

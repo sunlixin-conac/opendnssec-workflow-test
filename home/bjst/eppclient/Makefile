@@ -1,6 +1,6 @@
 # $Id$
 
-DEBUG = -g
+DEBUG = -g -DDEBUG
 #OPTIMIZE = -O2
 CFLAGS = -Wall -std=gnu99 $(DEBUG) $(OPTIMIZE)
 LDFLAGS = $(DEBUG) $(OPTIMIZE)
