@@ -1,0 +1,122 @@
+OpenDNSSEC Signer Engine v2 Design
+______________________________________________________________________
+
+
+A. Scope.
+
+This document describes the technical design of the OpenDNSSEC Signer
+Engine daemon version 2. Key issues are that DNSSEC can be performed 
+without minimal additional maintenance and that zone updates are
+served secure as fast as possible.
+
+
+B. Components.
+
+B.1. GUI
+
+To ease DNS(SEC) maintenance, a (graphical) user interface is needed.
+The (G)UI allows the operator to update DNS configuration, zone's
+security policies and maintain DNS zones (e.g., adding new zones).
+
+B.2. Inbound Adapter
+
+Inbound Adapter is needed to fetch zonefiles, XFR messages or Dynamic
+Updates. Preparation is needed before these chunks of information can
+be applied to the zone data.
+
+B.3. Outbound Adapter
+
+Outbound Adapter is needed to output signed zonefiles or signed XFR
+messages.
+
+B.4. Signer Configuration
+
+The Signer Configuration stores the translated zone's signing policy.
+
+B.5. HSM
+
+The actual key storage is within the Hardware Security Module.
+Also, the acutal signing is done here. The HSM will have a PKCS#11
+Interface.
+
+So far, we have seen several modules. These and additional modules
+are described here.
+
+B.6. Scheduler
+
+Events are stored in the Scheduler module.
+
+B.7. XFR Server
+
+Handle XFR requests.
+
+
+C. Events
+
+Events can be triggered by different inputs.
+
+* Zone updates.
+  The signer engine must be able to handle zone updates in different
+  formats. Zones are provided through the Inbound Adapter. The signer
+  engine should be able to handle zone files, AXFR, IXFR and Dynamic
+  Update.
+
+* Enforcer updates.
+  The enforcer may notify the signer engine with security updates
+  (for example: policy changes, key rollover, NSEC3 salt rollover).
+  This might lead to new events such as re-nseccing, re-signing.
+
+* Timed events.
+  There may be timed events. For example, signature expiration and zone
+  refreshing.
+
+Now, what are the possible events that the signer engine may have to do.
+
+Actions from the DNS operator:
+* Update the zone file
+
+From the Network:
+* Incoming Dynamic Update
+* Incoming NOTIFY
+* Incoming IXFR
+* Incoming AXFR
+
+From the Slaves:
+* Incoming XFR request
+
+Timed events:
+* Zone Resign
+
+From the Security Enforcer:
+* Signer Configuration change.
+
+.6. IXFR Server
+
+Handle XFR requests.
+
+D. Scheduling events.
+
+All these events can be scheduled. A zone update may be scheduled as
+a sequence of events [update, nsecify, sign].
+
+Changes from the security enforcer lead to different events.
+Zone signing parameters:
+- refresh interval              -> [schedule]
+- validity of signatures        -> [sign]
+- jitter                        -> ?
+- clockskew                     -> ?
+- ttl rrsig                     -> [sign]
+- ttl dnskey                    -> [update, sign]
+
+Denial of existence parameters:
+- TTL NSEC                      -> [update, sign]
+- NSEC type                     -> [update, nsecify, sign]
+- NSEC3PARAM                    -> [update, nsecify, sign]
+- NSEC3 optout                  -> [update, nsecify, sign]
+
+Key parameters.
+- Published keys                -> [update, sign]
+- one or more ZSK added         -> [update, sign]
+- one or more ZSK deleted       -> [update]
+- one or more KSKs added        -> [sign]
+- one or more KSKs deleted      -> [update]

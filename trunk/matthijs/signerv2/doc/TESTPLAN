@@ -1,0 +1,26 @@
+TODO: go through requirements document
+
+06-cutest:
+- Check structures, adding and removing elements
+TODO
+
+05-check-conf:
+- check several configurations. 
+TODO
+
+04-client:
+- check client server communication, handle commands start, restart, zones, 
+    queue, start (again), stop.
+TODO
+
+03-valgrind:
+- check for memory leaks.
+TODO
+
+02-binary:
+- check if we created a valid binary, run ./ods-signerd -h
+TODO
+
+01-build:
+- check if we can ./configure && make
+TODO

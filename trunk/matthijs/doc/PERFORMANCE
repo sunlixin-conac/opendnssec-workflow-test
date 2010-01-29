@@ -1,0 +1,262 @@
+Masterdont Performance Issues
+
+
+
+
+Masterdont is intended to be most efficient in time when it comes to on-line 
+signing and serving XFRs. 
+
+
+A. Serving XFRs
+
+Masterdont must be able to handle XFR requests as fast as possible. Two types of 
+requests can be made: full zone transfers (AXFR) and incremental zone transfers 
+(IXFR). 
+
+Upon request, the query should be checked on message format and access control 
+first. If both tests passed, the response can be generated. 
+
+A.1. AXFR
+
+If the secondary asked for an AXFR, the full zone can be fetched from memory 
+and served. Optimally, the zone is already wireformatted.
+
+A.2. IXFR
+
+If the secondary asked for an IXFR, some optimalizations in memory and time must 
+be made. Also, network traffic is a concern. 
+
+A.2.1. Store all IXFR responses in memory
+
+Optimally, every possible IXFR response is already in memory, wireformatted. For 
+every x in IXFR(serial=x), it leads to the lowest possible generation time. 
+
+A problem with this approach is that you have to store a lot of IXFR responses. 
+There are two optimalizations that addresses this issue: A strict purging 
+strategy and storing condensed IXFR responses. Another issue of this approach is 
+that upon zone alteration, you must adapt all previous (condensed) IXFR 
+responses in memory. This might be a costly operation.
+
+A.2.2. Keep a journal
+
+Another strategy is to store only one IXFR. It is updated every time the zone 
+has changed. A response for IXFR(serial=x) can be generated quickly, simply by 
+skipping the journal until x is found and putting all remaining entries in the 
+response. This approach is far more friendly when it comes to memory usage, but 
+at the cost of the response generation time. 
+
+This approach doesn't allow you to store condensed IXFR responses, an 
+optimalization where the first approach benefits greatly in memory. When using 
+this optimalization, the memory advantage becomes less clear. However, even if 
+the changes are fully non-orthogonal (the changes in one update reflect to the 
+same RRs in all other updates), the memory usage for storing one single, 
+normal IXFr response does not exceed the memory usage for storing all condensed 
+IXFR responses.
+
+However, you might want to generate condensed IXFR responses, to keep a low 
+network traffic rate. One could generate these upon request. Since messages can 
+be only transmitted in parts of up to 64 KB, you only need to do a 
+small part of the condensation. It is expected that this can be generated 
+reasonably fast.
+
+A.3. Optimalizations
+
+Some optimalizations can be taken to increase the performance of serving IXFRs.
+
+A.3.1. Purging strategy
+
+RFC 1995 states:
+
+  An IXFR server can not be required to hold all previous versions forever and 
+  may delete them anytime. In general, there is a trade-off between the size of 
+  storage space and the possibility of using IXFR.
+
+Two proposals exist to purge versions:
+1. If the IXFR response would be longer than the AXFR response, it would defeat 
+   the purpose of IXFR. The IXFR response may be removed. The strategy assures 
+   that the amount of storage required for one IXFR is at most the amount of 
+   storage required to store the current zone information.
+2. Information older than the SOA expire period may also be purged. It is not 
+   expected that a secondary makes a request for such a IXFR, since the zone 
+   version is expired and may not be served anymore. 
+
+To easily detect when to purge a IXFR response/entry, we can add two variables 
+that stores the size of the response/entry and the expiry time of the old SOA. 
+Then we also need the size of the full AXFR.
+
+One could keep track of the secondaries zone versions. Changes that are older 
+than lowest maintained serial can be purged. However, than you need to maintain 
+the serial in use for every zone at every secondary. 
+
+You may also keep the last x IXFR entries in memory. It is expected that 
+this covers the largest part of the IXFR requests. Older IXFR responses may 
+be retrieved from disk.
+
+A.3.2. Condensed IXFR responses
+
+When a RR is altered, it is stored in the IXFR as if the old RR was deleted and 
+a new RR is added. A RR that is altered many times, generates a lot of noise in 
+the IXFR. If you store all possible IXFRs in memory, you don't need to maintain 
+a history. In that case, you can store condensed IXFRs. 
+
+If zone changes are orthogonal, the optimalization of condensation is minimal. 
+In this case, changes do not reflect the same RR more than once. The only 
+optimalization you can perform is the removal of SOA RRs. So, in the case of x 
+zone updates, the IXFR contains y RRs, where y is:
+
+normal IXFR:	y = 2x + (a_1 + ... + a_x) + (d_1 + ... + d_x)
+condensed IXFR: y = 2 + (a_1 + ... + a_x) + (d_1 + ... + d_x)
+
+with
+a_x = the number of RRs added in update #x
+d_x = the number of RRs deleted in update #x
+
+If changes are non-orthogonal (multiple changes may reflect the same RR), 
+condensation becomes more effective. A fully non-orthogonal condensed IXFR 
+containst y RRs, where y is:
+
+condensed IXFR: y = 2 + d_1 + a_x
+
+Given that you have to store all condensed messages, your memory usage will 
+become x*(2 + d_1 + a_x) = 2x + a_1*x + d_1*x, which is no better than storing a 
+single, normal IXFR. 
+
+Furthermore, RFC 1995 states that condensation might lead to issues if two 
+different IXFR servers are used:
+
+   But, this feature may not be so useful if an IXFR client has access
+   to two IXFR servers: A and B, with inconsistent condensation results.
+   The current version of the IXFR client, received from server A, may
+   be unknown to server B. In such a case, server B can not provide
+   incremental data from the unknown version and a full zone transfer is
+   necessary.
+
+
+
+B. On-line signing.
+
+DNSSEC raises some issues on an operational level. Automating these 
+operations is something DNSSEC deployment may greatly benefit from. 
+
+We discuss two approaches. In the first approach, a plain-DNS zone is 
+maintained. In addition, a (default) security policy is added that the DNSSEC 
+black box uses to define the security operations needed. After the black box is 
+ready with signing the controlled zones, the secondaries can be notified. 
+
+An issue with this approach is Dynamic Updates. When a zone is updated 
+dynamically, the secondaries must be notified as soon as possible. This process 
+is delayed by the DNSSEC box, that needs to provide new signatures for the new 
+and altered records, and must restore the NSEC / NSEC3 linked list.
+
+The second approach is to maintain a plain-DNS zone and forward it to a hidden 
+secondary. This provides the DNSSEC in a box functionality. The issue with this 
+approach is that upon reception of a zone transfer, the secondaries must 
+update the IXFR response as fast as possible. In essence, this problem is 
+identical to the first approach. It also involves updating signatures and 
+restoring the NSEC list.
+
+B.1. Identifying changes
+
+RRs can be added, deleted or altered. Alteration is often defined as deleting 
+and adding the record with different rdata. Adding and deleting records affect 
+RRsets. 
+
+The Updater Module of the box should mark RRsets if RRs are added and/or 
+deleted. It should also track the size of the RRset, e.g. the number of RRs 
+present. This way, the affected RRsets can be identified:
+
+If the new count is 0, and #deleted > 0, the RRset was deleted. If that made the 
+node empty, mark the predecessor NSEC(3) record to be updated. Otherwise, 
+mark this NSEC(3) record to update its bitmap.
+
+If the new count is larger than 0, and it equals #added, the RRset was added. 
+Mark the RRset to be signed. If a new node was created, create an additional 
+NSEC(3) record and mark the predecessor NSEC(3) record to be updated. 
+Otherwise, just update the bitmap. 
+
+If the new count is larger than 0, and #added or #deleted is larger than 0, the 
+RRset was altered. Mark the RRset to be signed, no NSEC(3) changes are required.
+
+This process should be done for the DNSKEY RRset explicitly. After that, the 
+NSECs must be updated. For each NSEC(3) record that currently has no successor 
+(or needs to be updated), set a pointer to the next domain name in the list. 
+Update the bitmap if necessary. 
+
+When the NSECifier is done, the zone is ready to be signed. We only need to 
+create signatures for RRsets that are marked to be signed. 
+
+The zone is now ready for XFR serving.
+
+B.2. Rapid changes
+
+A very dynamic zone might suffer from the DNSSEC operations. Old data may be 
+served longer than supposed to, new data is can only be served after the 
+signatures are generated. The dynamically changing of IP addresses normally 
+occurs for end-host users only, not services. Providing a service on a machine 
+that is constantly changing addresses is considered bad practice. 
+
+B.3. Re-signing
+
+Complete signing of a zone may take a while, especially if it contains 
+millions of records. No zone intelligence can help to optimalize that. With 
+respect to zone updating it is good practice to keep changes minimal, in order 
+to keep the number of new signatures to be created as small as possible. 
+
+When you need to resign a (partial) zone, for example when signatures expire or 
+a key rollover occurs, you have no influence in keeping the update small: the 
+RRsets need to be re-signed anyway. To minimalize the switch time between old 
+and new signatures, re-signing may be scheduled in advance. 
+
+? In a different process: how to communicate
+? In the same process: how to schedule time
+
+The zone may be chopped in portions of y RRsets, where y reflects a number in 
+where the necessary signatures can be generated reasonably fast. A portion must 
+be re-signed in advance every (signature interval/ #portions). Maybe this 
+interval must be decreased to add some buffer.
+
+During this process, new updates may arrive. If the update falls in a re-signed 
+portion, two new signatures must be made: one for the current interval, one for 
+the new interval. If the update is in the 'to be re-signed' part, the default 
+behavior is sufficient.
+
+This intelligence needs to be in the 'security enforcer box'. The signer must be 
+able to ask which keys are necessary for re-signing. It is possible that these 
+keys are not added to the zone (yet).
+
+B.4. Key rollover
+
+A ZSK or KSK rollover may occur. In the first stage, this adds a new DNSKEY 
+record, that must not yet be used for signing. This can be defined as 'changing 
+the RRset', and so the appropriate actions must be made. From now on, scheduled 
+re-signing must be done with the published key, as this will become the signing 
+key soon. This implies that we must be able to identify the key order (which 
+will go away and which will become the new one).
+
+From that point, actions differ depending on the type of key rollover.
+
+B.4.1. ZSK rollover
+
+When we are rolling the ZSK, the second stage allows us to sign with the new 
+ZSK, but not the old one. This may be a problem, since new signatures need to be 
+
+
+Somewhere in the future, we are told to use two keys to sign 
+
+
+B.4. A webfarm
+
+Webfarms introdudce additional issues. First of all: Key policy. 
+
+key - zone relation:
+1   - 1
+1   - many
+many- many
+
+See e-mail
+
+
+and...
+
+Scheduling re-signing, key rollover and notifies
+

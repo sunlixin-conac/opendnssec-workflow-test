@@ -1,0 +1,139 @@
+OpenDNSSEC Signer Engine v2 Design
+----------------------------------
+
+The Signer Engine v2 will be written in C. 
+
+The signer engine will have two binaries:
+1. ods-signerd, which is the daemon taking care of continously signing 
+   DNS zones.
+2. ods-signer, which is a control program to interact with ods-signerd
+
+
+Configuration
+-------------
+
+Configuration files are in XML-format. There are four main configuration
+files for OpenDNSSEC:
+
+conf.xml
+kasp.xml
+signconf.xml
+zonelist.xml
+
+The libxml2 libraries are used to parse and read out these files.
+RNG files are used to check the files on correctness (sort like
+named-checkconf). 
+
+The signer engine does not have to deal with kasp.xml.
+
+
+User input
+----------
+The ods-signer control program allows the following commands to be sent:
+"stop"
+"start"
+"restart"
+"reload"
+"help"
+"zones"
+"sign <zone>"
+"sign --all"
+"clear <zone>"
+"queue
+"flush"
+"update [<zone>]"
+"verbosity <level>"
+
+The ods-signerd will handle these commands. When it receives a different 
+command, or something unexpected happens, it will report an error to the
+control program.
+
+
+Adapters
+--------
+The ods-signerd can be configured with different input and output 
+adapters:
+* AXFR: 			read zone from axfr, output zone with axfr
+* IXFR: 			read zone from ixfr, output zone with ixfr
+* File: 			read zone from file, output zone to file
+* DynamicUpdate:	allow for dynamic updates
+
+There are some restrictions to mixing input adapters (on a per-zone 
+basis). Some input adapters are typical for master servers, like File 
+and DynamicUpdate. For a master server, it would not make sense to 
+configure an AXFR or IXFR adapter. On the other hand, secondaries are 
+expected to configure the AXFR or IXFR adapter. For them, File and 
+DynamicUpdate are not appropriate adapters.
+
+The output adapter cannot be DynamicUpdate. You can mix and match File 
+and *XFR adapters, although they have different purposes.
+
+Input adapters have different formats. When the signer engine receives a 
+zone, it will need to convert the zone to a canonical sorted, flat zone. 
+In this case, flat means no directives and or domain substitution 
+characters. This way, future changes to a zone can be easily detected.
+
+
+Tasks
+-----
+The signer engine can have several zone tasks. The lifetime of a zone 
+within OpenDNSSEC is
+
+Task: Initial (None)
+* unsigned, unsorted, incomplete, may not be available
+Task: Read (load from disk, AXFR, IXFR, DynamicUpdate)
+* unsigned, canonical sorted, incomplete
+Task: Add keys
+* unsigned, canonical sorted, complete
+Task: Nsecify
+* unsigned, canonical sorted, nsec complete
+Task: Sign
+* signed, canonical sorted
+Task: Write
+* zone out in to the wild
+
+For the zone nlnetlabs.nl, this requires the following files on disk:
+
+nlnetlabs.nl.db         Which is the latest read zone
+nlnetlabs.nl.keys       Which are solely the DNSKEYs of the zone
+nlnetlabs.nl.nsec       Which are solely the NSEC(3)s of the zone
+nlnetlabs.nl.rrsig      Which are solely the RRSIGs of the zone
+nlnetlabs.nl.state      Which is the current state of the zone
+
+In case of a unexpected close of the daemon, these files should be 
+sufficient to recover to the latest situation.
+
+The zone state contains the following information:
+
+nlnetlabs.nl.state:
+- unsigned serial (0-4294967295)
+- signed serial (0-4294967295)
+- nsec type (NSEC or NSEC3)
+- task: (Read, AddKeys, Nsecify, Sign or Write)
+- scheduled: (0-4294967295, seconds after Epoch time)
+
+The workers will check the task queue frequently and perform a task if
+necessary. Workers are started as new threads, so they lock the task queue
+when visiting. Also, if there is a task to perform, the zone in question is
+locked. The number of workers can be configures as WorkerThreads.
+
+Moreover, if a worker is busy with the signing task, it creates even more
+threads. Every single RRset is handled by a different thread. To reach the
+maximum efficiency of the HSM, the number of SignerThreads can be configured.
+
+
+Hardware Security Module
+------------------------
+OpenDNSSEC makes use of Hardware Security Modules (HSMs) to store keys and
+sign zones. Therefore, the signer engine needs to link with libhsm.
+
+
+Dependencies
+------------
+ldns
+libhsm
+libxml2
+librt
+pthreads (later perhaps other thread libraries like solaris, windows?)
+
+

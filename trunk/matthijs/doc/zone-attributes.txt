@@ -1,0 +1,169 @@
+Zone attributes.
+
+Every zone in the DNS should be maintained by a DNS operator. A DNS operator can
+be in control of one or multiple zones. Zones represent portions of the DNS
+namespace and can be stored in many ways. This document abstracts from the type
+of storage and looks at a zone in a more general format. Given this
+abstraction, a zone contains all information about at least one domain. It may
+also contain information about multiple subordinate domains. This is stored in
+what we call a zonefile. A zonefile is composed of several RRsets. An RRset
+consists of one or more RRs with the same owner name, class and type.
+
+A zone, a portion of the global DNS namespace, has some attributes. Maintaining
+a zone may change zone attributes. The intention of this document is to create a
+complete list of zone atrributes. Later on, this list can be used to identify
+the possible actions to control zones in the DNS.
+
+1. Distribution.
+
+Zone management occurs at the server side of the DNS. The type of server 
+determines the way zones are loaded. Usually, a primary master nameserver
+(master) is presented a file on disk, while a secondary master nameserver
+(slave) loads the zone from another nameserver by zone transfer. A slave may
+also be presented files on disk, if there is a (secure) out-band way to
+communicate the zone from master to slave.
+
+Important for zone distribution is to know the origin of the data, who may 
+serve the zone and how to transfer the zone updates. 
+
+a) Am I master of slave? (type)
+b) What is the origin of the zone data? (origin)
+c) Who to notify if the zone is altered? (notify list)
+d) Who may request and receive zone transfers? (allow-xfr list)
+e) Who may notify me? (allow-notify list)
+f) Where to get zone transfers? (request-xfr list)
+g) Who may dynamically update the zone (allow-update list)
+h) What interface to use when asking for zone transfers (request-interface)
+i) What interface to use when serving zone transfers (serve-interface)
+j) Are zone transfers and requests authenticated (tsig for each element in list)
+k) Are full zone transfers allowed? (allow-axfr)
+...
+
+2. Content.
+
+A valid zone needs to start with a start of authority (SOA). A zone is ended
+when another SOA is seen, but good practice is to have only one SOA in your
+zone. A SOA identifies the name of the host the DNS data origins, a contact
+address of the responsible person, a serial to identify changes in the zone and
+some timers that steer the validity of the DNS data.
+
+A zone may contain zero or more delegation points. Delegation points
+represent nameservers at subordinate zones. Because you might not know how to
+obtain the subordinate zone data, delegation points need to be accompanied
+with glue addresses. These can be IPv4 or IPv6 addresses.
+
+You may only put data in your server that you are authoritative for, except for
+glue records.
+
+Example: A zone with the origin 'futurama.com' is known to be authoritative for
+        futurama.com, but not futurama.org, simpsons.com or .com. It is also
+        known to be authoritative for planetexpress.futurama.com, unless there
+        is a delegation for that domain.
+
+Finally a zone can contain data, like addresses, nameserver information,
+mail server information, public keys, signatures, aliases, arbitrary text
+records, and so on. 
+
+A list of possible data types is given in Appendix A.
+
+A zone may also contain signatures, that prove the authenticity of the zone 
+content. 
+
+a) The SOA record. (soa)
+b) Delegations. (delegations list)
+c) Zone data. (data list)
+d) Security records. (dnssec list)
+e) Origin to concatenate with relative domain names. (origin)
+f) Default TTL to use. (ttl)
+g) Class of the zone. (class=IN)
+...
+
+3. Journal.
+
+Journal refers to the "Changelog" of the zone. In some cases, it is better to 
+transfer an incremental zone transfer, instead of the full zone. For example, a 
+very large zone has updated only one record. In order to server IXFRs, a journal 
+must be kept. 
+
+Entries in a journal refer to updates in the zone. An update may be 'add this 
+RR' or 'delete this RR'. 
+
+a) An entry must consist of the previous serial;
+b) The deleted entries;
+c) The new serial;
+d) The added entries.
+
+Furthermore, purging attributes may be maintained. 
+e) Total size of the IXFR vs AXFR.
+f) Expire periods.
+
+4. Validity.
+
+Zones must follow some rules in order to make any sense. For example, a zone may 
+contain only one SOA record. The zone validity attributes listed below are there 
+to ensure the operator did not make any errors.
+
+A secure zone must also have correctly generated signatures, in order to be 
+validated by resolvers. 
+
+a) Is there exactly one SOA record?
+b) Is the serial value larger than the serial value of the previous zone update?
+c) Do the SOA timers make sense?
+d) Does the MNAME matches the origin given in the zone distribution attributes?
+e) RNAME ok?
+f) Is every delegation accompanied with a correct glue record?
+g) Are there no obsolete / unknown RR types in the zone?
+h) Is the zone content all authoritative (except for glue)?
+...
+y) Are all zone signatures verified?
+z) Are there no hick ups in the NSEC linked list?
+
+5. Security. 
+
+Given the possible danger of cache poisoning at the resolver, a zone may be 
+secured with DNSSEC to provide data authenticity and integrity. This introduces 
+keys and signatures to the zone contents (attribute 2.d.).
+
+See the OpenDNSSEC project for zone security attributes...
+
+6. Zone properties.
+
+It might be useful to maintain some properties of a zone. For example, given the 
+size of a zone, a different resigning policy might be used. 
+
+a) How many nodes does the zone have?
+b) How many RRsets does the zone have?
+c) How many RRs does the zone have?
+d) What is the update rate of the zone?
+...
+
+7. Global attributes.
+
+There are also some global attributes that may provide additional intelligence.
+
+a) Average zone size.
+b) Environmental network connection.
+...
+
+Distribution and Security attributes is data that zones can share. Consider a 
+SLD that serves hundreds of small zones. The hoster may choose to use the same 
+key for all of these zones and probably uses the same distribution policy for 
+each of them. It might be useful to store the distribution and security 
+attributes in shared storage.
+
+Content is unique for every zone. The SOA record enforces this property.
+
+Some other nice properties:
+next expire
+next refresh
+next sig expire
+next sig refresh
+...
+
+
+
+Appendices.
+
+A. RR types
+
+TODO

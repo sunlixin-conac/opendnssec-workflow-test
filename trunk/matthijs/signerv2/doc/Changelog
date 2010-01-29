@@ -1,0 +1,90 @@
+TODO
+- Bugreport opendnssec #4: signer does not read zones in BIND format
+- Bugreport opendnssec #11: $TTL directive patch
+- Bugreport opendnssec #12: make install creates wrong directories
+- Bugreport opendnssec #13: no new signatures, keeping old zone
+- Bugreport opendnssec #18/#19: signer fails with large zones
+- Bugreport opendnssec #20: generation statistics for nsec{3,c}er, signer
+- Bugreport opendnssec #21: Empty non-terminal at start of file
+- Bugreport opendnssec #26: Signer gets slow with many zones
+- Bugreport opendnssec #27: New placeholder for NotifyCommand
+- Bugreport opendnssec #32: Serial calculation wrapping
+- Bugreport opendnssec #33: Signer does not pick up SOA changes
+- Bugreport opendnssec #41: SOA Serial 'keep' does not work
+- Bugreport opendnssec #45: Multiple $ORIGINs confuses auditor
+- Bugreport opendnssec #46: Vanishing records
+
+25 January 2010:
+- Handle clear command
+- Merge finalizer tool
+- Start workers after reading zone list
+- File copy
+- Tag version 0.0.0
+
+19 January 2010:
+- Merge signer tool
+
+15 January 2010:
+- Merge nsec{c,3}er tool with signer v2
+
+14 January 2010:
+- Merge zone reader tool with signer v2
+
+12 January 2010:
+- Merge sorter tool with signer v2
+
+5 January 2010:
+- Syslog
+- Changed location defaults
+
+30 November 2009:
+- Thread locking bugfixes
+
+23 November 2009:
+- Refactor code
+- Restart functionality
+
+16 November 2009:
+- Block signals in non-main threads
+- Make command handler CPU friendly
+- Bugreport opendnssec #43: ods-signer parser is too strict
+
+12 November 2009:
+- Let workers sleep if no tasks are ready
+
+11 November 2009:
+- Merge zone lists
+- Handle update command
+
+10 November 2009:
+- Dirty hack to fix xml parsing bug in XPath (with respect to parsing
+  adapters)
+- Fix memory leaks with respect to threading and xml parsing
+- Would be better if task queue was also a red-black tree
+
+9 November 2009: Matthijs
+- Command handler, handle help, start, restart, stop, verbosity, zones,
+  queue, flush, sign (notimpl: clear, update)
+- Simple client tool
+- More debug levels needed (debug 2, debug 3, none)
+- Worker threads
+- Task perform (just print what to do)
+- Check correctness of configuration files with RNG
+- Signer configuration keys
+- Read zonelist, signer configurations
+- File Adapters
+
+6 November 2009: Matthijs
+- Task queue
+- Privdrop
+- Configuration check
+- Parse conf.xml
+- Engine configuration
+- Signals for shutdown, reload
+- Daemonize
+
+5 November 2009: Matthijs
+- Make DESIGN up to date
+- Initial testbed
+- Long options
+- Initial check in

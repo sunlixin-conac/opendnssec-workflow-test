@@ -1,0 +1,110 @@
+Some use cases for Masterdont 
+________________________________________________________________________________
+
+1. Incoming XFR
+
+This ascii-style UML diagram shows the communication when the master has been 
+updated. 
+
+Master     *---------------(NOTIFY)----------------------> Masterdont
+Master     <------------------(ACK)----------------------* Masterdont
+
+Master     <-----------------XFR ?-----------------------* Masterdont
+Master     *-----------------XFR !-----------------------> Masterdont
+
+[A]
+
+Masterdont *----------------NOTIFY-----------------------> Slave
+Masterdont <-------------------ACK-----------------------* Slave
+
+Masterdont <-----------------XFR ?-----------------------* Slave
+Masterdont *-----------------XFR'!-----------------------> Slave
+
+At point [A], something magical happens:). The incoming XFR must be checked on 
+consistency and control. It must be compared with the current zone, in order to 
+identify changes. If changes are identified, one can determine the changes that 
+must be made in the NSEC chain and in the signature set. These changes need to 
+be adapted in the XFR, resulting in XFR' (signed zone transfer). The result can 
+be canonicalized, the serial number can be updated (if necessary) and it can be 
+stored in the Datastore. 
+
+When Masterdont runs as Master, this scheme can almost be copied for the Dynamic 
+Update use case:
+
+DHCP       *----------------UPDATE-----------------------> Masterdont
+DHCP       <-------------------ACK-----------------------* Masterdont
+
+[A]
+
+Masterdont *----------------NOTIFY-----------------------> Slave
+Masterdont <-------------------ACK-----------------------* Slave
+
+Masterdont <-----------------XFR ?-----------------------* Slave
+Masterdont *-----------------XFR'!-----------------------> Slave
+
+As you can see, no interaction with the Security Enforcer is needed. This use 
+case assumes that keys are already present at the Signer. When changes occur at 
+security level, the Signer must first do the appropriate action in use case 2, 
+before it can continue with updates.
+
+2. Key management
+
+Key rollover intelligence must lie within KASP. In the current OpenDNSSEC 
+proposal, the Signer needs to ask KASP for the security parameters in order to 
+sign the new received zone data. 
+
+Changes in the security parameters may affect the Signer's scheduling algorithm 
+or it may lead to zone updates (or both).
+
+We tried to define the actions needed when one of the parameters have changed:
+
+Zone signing parameters.
+- refresh interval		-> update the scheduling algorithm for 
+				   resigning. 
+- validity of signatures	-> "all or nothing"
+- jitter			-> ?
+- clockskew			-> ?
+- ttl rrsig			-> "all or nothing"
+- ttl dnskey			-> update the TTL for DNSKEY RRs, replace 
+				   signature of the DNSKEY RRset.
+
+The "all or nothing" refers to the observation that the Signer has to do a lot 
+of work or hardly any work when this parameter has changed. This depends on the 
+priority of the change. We could interpret it as change the signature 
+validity period from now on, resulting in hardly any work for the Signer. In 
+this case, only some parameters in the scheduling algorithm for resigning need 
+to be updated. On the other hand, the operator might want to see the change 
+be applied directly. In that case, all the RRsets must be provided with new 
+signatures, resulting in a complete resign of the zone.
+
+This might be problematic for large zones (see Appendix B.1. in the 
+REQUIREMENTS document). 
+
+Denial of existence parameters.
+- TTL NSEC			-> Update the TTL for NSEC RRs, replace 
+				   signatures for all <owner, NSEC> in the zone.
+- NSEC type			-> delete old chain, create new chain, create 
+				   signatures for all <owner, NSEC> in the zone.
+- NSEC3PARAM			-> idem dito.
+- NSEC3 optout			-> Update the chain. In the worst case, you need 
+				   to delete the complete old chain and create a 
+				   complete new chain. Create signatures for the 
+				   new <owner, NSEC> RRsets
+
+Why would one want to change the TTL for NSECs? According to RFC 4034, the TTL 
+for NSECs SHOULD have the same TTL value as the SOA minimum TTL field.
+
+Changing the NSEC parameters will result in lots of work for the Signer 
+(actually, for the NSECifier, which is part of the Signer).
+
+Key parameters.
+- Published keys		-> The DNSKEY RRset must be updated and 
+				   resigned.
+- one or more ZSK added		-> For all RRsets, new signatures must be 
+				   created. Again: "all or nothing"
+- one or more ZSK deleted	-> For all RRsets, delete the corresponding
+				   signatures.
+- one or more KSKs added	-> The DNSKEY RRset must be provided with new 
+				   signatures.
+- one or more KSKs deleted	-> The corresponding signatures over the DNSKEY 
+				   RRset must be removed.

@@ -1,0 +1,17 @@
+Make configure.ac more strict
+Make use of Makefile.am instead of Makefile.in
+Create multiple depth directories
+Privdrop testing
+Test Engine
+ods-signer hangs if queue is too big
+replace time(null) / now with task->when
+
+Chroot
+Zone fetcher
+Zone intelligence
+Read state
+Write state
+Replace dummy tasks
+Make backups
+Read backups
+libhsm

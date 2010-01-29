@@ -1,0 +1,202 @@
+# Makefile -- Just do it.
+# Copyright (c) 2009, NLnet Labs. All rights reserved.
+# See LICENSE for the license.
+
+CONFIGS =   autom4te.cache \
+            config.h \
+            config.log \
+            configure \
+            Makefile \
+            config.h.in* \
+            config.status \
+            config.guess \
+            config.sub \
+            ltmain.sh
+
+SHELL = @SHELL@
+srcdir = @srcdir@
+prefix  = @prefix@
+exec_prefix = @exec_prefix@
+sbindir = @sbindir@
+mandir = @mandir@
+
+UTIL_OBJS       = adapter.o cmdhandler.o config.o confparser.o create_dnskey.o domain.o duration.o engine.o file.o finalizer.o locks.o log.o nsec3er.o nseccer.o privdrop.o se_key.o se_malloc.o signconf.o signconfparser.o signer.o sorter.o task.o tools.o util.o worker.o zone.o zone_reader.o zonedata.o zonelist.o zonelistparser.o
+TEST_OBJS       = test-conf.o test-signconf.o test-tasklist.o test-zonelist.o
+ADDITIONAL_OBJS = $(UTIL_OBJS)
+MAIN_OBJS       = ods-signerd.o ods-signer.o
+
+CC              = @CC@
+CFLAGS          = -Wall -Wextra -W -g -O2 -I. @CFLAGS@
+CPPFLAGS        = -I/usr/include -I/usr/local/include -I/usr/include/libxml2 -I../include @CPPFLAGS@
+LDFLAGS         = -L/usr/lib -L/usr/local/lib -L../lib @LDFLAGS@
+LIBS            = -lhsm -lldns -lxml2 -lrt
+
+INSTALL         = $(srcdir)/install-sh -c
+INSTALL_PROGRAM = $(INSTALL)
+INSTALL_DATA    = $(INSTALL) -m 644
+
+COMPILE     = $(CC) $(CPPFLAGS) $(CFLAGS)
+LINK        = $(CC) $(CFLAGS) $(LDFLAGS)
+EDIT        = sed \
+            -e 's,@prefix\@,$(prefix),g' \
+            -e 's,@exec_prefix\@,$(exec_prefix),g' \
+            -e 's,@sbindir\@,$(sbindir),g' \
+            -e 's,@shell\@,$(SHELL),g'
+
+
+
+.PHONY:				all install uninstall clean confclean realclean
+
+all:				ods-signerd ods-signer
+
+test:				test-conf test-signconf test-tasklist test-zonelist
+
+test-conf:			$(TEST_OBJS) $(ADDITIONAL_OBJS)
+					$(LINK) -o test/test-conf test-conf.o $(ADDITIONAL_OBJS) $(LIBS)
+
+test-signconf:		$(TEST_OBJS) $(ADDITIONAL_OBJS)
+					$(LINK) -o test/test-signconf test-signconf.o $(ADDITIONAL_OBJS) $(LIBS)
+
+test-tasklist:		$(TEST_OBJS) $(ADDITIONAL_OBJS)
+					$(LINK) -o test/test-tasklist test-tasklist.o $(ADDITIONAL_OBJS) $(LIBS)
+
+test-zonelist:		$(TEST_OBJS) $(ADDITIONAL_OBJS)
+					$(LINK) -o test/test-zonelist test-zonelist.o $(ADDITIONAL_OBJS) $(LIBS)
+
+ods-signerd:		$(MAIN_OBJS) $(ADDITIONAL_OBJS)
+					$(LINK) -o ods-signerd ods-signerd.o $(ADDITIONAL_OBJS) $(LIBS)
+
+ods-signer:			$(MAIN_OBJS) $(ADDITIONAL_OBJS)
+					$(LINK) -o ods-signer ods-signer.o $(ADDITIONAL_OBJS) $(LIBS)
+
+# object files
+ods-signerd.o:		${srcdir}/ods-signerd.c
+					$(COMPILE) -c ${srcdir}/ods-signerd.c
+
+ods-signer.o:		${srcdir}/ods-signerd.c
+					$(COMPILE) -c ${srcdir}/ods-signer.c
+
+# adapter object files
+adapter.o:			${srcdir}/adapter/adapter.c ${srcdir}/adapter/adapter.h
+					$(COMPILE) -c ${srcdir}/adapter/adapter.c
+
+# daemon object files
+cmdhandler.o:		${srcdir}/daemon/cmdhandler.c ${srcdir}/daemon/cmdhandler.h
+					$(COMPILE) -c ${srcdir}/daemon/cmdhandler.c
+
+config.o:			${srcdir}/daemon/config.c ${srcdir}/daemon/config.h
+					$(COMPILE) -c ${srcdir}/daemon/config.c
+
+engine.o:			${srcdir}/daemon/engine.c ${srcdir}/daemon/engine.h
+					$(COMPILE) -c ${srcdir}/daemon/engine.c
+
+worker.o:			${srcdir}/daemon/worker.c ${srcdir}/daemon/worker.h
+					$(COMPILE) -c ${srcdir}/daemon/worker.c
+
+# parser object files
+confparser.o:		${srcdir}/parser/confparser.c ${srcdir}/parser/confparser.h
+					$(COMPILE) -c ${srcdir}/parser/confparser.c
+
+signconfparser.o:	${srcdir}/parser/signconfparser.c ${srcdir}/parser/signconfparser.h
+					$(COMPILE) -c ${srcdir}/parser/signconfparser.c
+
+zonelistparser.o:	${srcdir}/parser/zonelistparser.c ${srcdir}/parser/zonelistparser.h
+					$(COMPILE) -c ${srcdir}/parser/zonelistparser.c
+
+# scheduler object files
+locks.o:			${srcdir}/scheduler/locks.c ${srcdir}/scheduler/locks.h
+					$(COMPILE) -c ${srcdir}/scheduler/locks.c
+
+task.o:				${srcdir}/scheduler/task.c ${srcdir}/scheduler/task.h
+					$(COMPILE) -c ${srcdir}/scheduler/task.c
+
+# signer object files
+domain.o:			${srcdir}/signer/domain.c ${srcdir}/signer/domain.h
+					$(COMPILE) -c ${srcdir}/signer/domain.c
+
+se_key.o:			${srcdir}/signer/se_key.c ${srcdir}/signer/se_key.h
+					$(COMPILE) -c ${srcdir}/signer/se_key.c
+
+signconf.o:			${srcdir}/signer/signconf.c ${srcdir}/signer/signconf.h
+					$(COMPILE) -c ${srcdir}/signer/signconf.c
+
+tools.o:			${srcdir}/signer/tools.c ${srcdir}/signer/tools.h
+					$(COMPILE) -c ${srcdir}/signer/tools.c
+
+zone.o:				${srcdir}/signer/zone.c ${srcdir}/signer/zone.h
+					$(COMPILE) -c ${srcdir}/signer/zone.c
+
+zonedata.o:			${srcdir}/signer/zonedata.c ${srcdir}/signer/zonedata.h
+					$(COMPILE) -c ${srcdir}/signer/zonedata.c
+
+zonelist.o:			${srcdir}/signer/zonelist.c ${srcdir}/signer/zonelist.h
+					$(COMPILE) -c ${srcdir}/signer/zonelist.c
+
+# tools object files
+create_dnskey.o:		${srcdir}/tools/create_dnskey.c ${srcdir}/tools/tools.h ${srcdir}/tools/util.h
+					$(COMPILE) -c ${srcdir}/tools/create_dnskey.c
+
+finalizer.o:			${srcdir}/tools/finalizer.c ${srcdir}/tools/tools.h ${srcdir}/tools/util.h
+					$(COMPILE) -c ${srcdir}/tools/finalizer.c
+
+nsec3er.o:			${srcdir}/tools/nsec3er.c ${srcdir}/tools/tools.h ${srcdir}/tools/util.h
+					$(COMPILE) -c ${srcdir}/tools/nsec3er.c
+
+nseccer.o:			${srcdir}/tools/nseccer.c ${srcdir}/tools/tools.h ${srcdir}/tools/util.h
+					$(COMPILE) -c ${srcdir}/tools/nseccer.c
+
+signer.o:			${srcdir}/tools/signer.c ${srcdir}/tools/tools.h ${srcdir}/tools/util.h
+					$(COMPILE) -c ${srcdir}/tools/signer.c
+
+sorter.o:			${srcdir}/tools/sorter.c ${srcdir}/tools/tools.h ${srcdir}/tools/util.h
+					$(COMPILE) -c ${srcdir}/tools/sorter.c
+
+util.o:				${srcdir}/tools/util.c ${srcdir}/tools/util.h
+					$(COMPILE) -c ${srcdir}/tools/util.c
+
+zone_reader.o:			${srcdir}/tools/zone_reader.c ${srcdir}/tools/tools.h ${srcdir}/tools/util.h
+					$(COMPILE) -c ${srcdir}/tools/zone_reader.c
+
+# util object files
+duration.o:			${srcdir}/util/duration.c ${srcdir}/util/duration.h
+					$(COMPILE) -c ${srcdir}/util/duration.c
+
+file.o:				${srcdir}/util/file.c ${srcdir}/util/file.h
+					$(COMPILE) -c ${srcdir}/util/file.c
+
+log.o:				${srcdir}/util/log.c ${srcdir}/util/log.h
+					$(COMPILE) -c ${srcdir}/util/log.c
+
+privdrop.o:			${srcdir}/util/privdrop.c ${srcdir}/util/privdrop.h
+					$(COMPILE) -c ${srcdir}/util/privdrop.c
+
+se_malloc.o:		${srcdir}/util/se_malloc.c ${srcdir}/util/se_malloc.h
+					$(COMPILE) -c ${srcdir}/util/se_malloc.c
+
+# test object files
+test-conf.o:		${srcdir}/test/test-conf.c
+					$(COMPILE) -c ${srcdir}/test/test-conf.c
+
+test-signconf.o:	${srcdir}/test/test-signconf.c
+					$(COMPILE) -c ${srcdir}/test/test-signconf.c
+
+test-tasklist.o:	${srcdir}/test/test-tasklist.c
+					$(COMPILE) -c ${srcdir}/test/test-tasklist.c
+
+test-zonelist.o:	${srcdir}/test/test-zonelist.c
+					$(COMPILE) -c ${srcdir}/test/test-zonelist.c
+
+
+# cleansing
+realclean:			confclean clean testclean
+
+testclean:			
+					rm -rf test/test-conf test/test-signconf test/test-tasklist test/test-zonelist $(TEST_OBJS)
+
+confclean:
+					rm -rf $(CONFIGS)
+
+clean:
+					rm -f ods-signerd ods-signer $(MAIN_OBJS)
+					rm -f $(ADDITIONAL_OBJS)
+

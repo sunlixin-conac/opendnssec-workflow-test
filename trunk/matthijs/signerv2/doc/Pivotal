@@ -1,0 +1,52 @@
+- Adding NSEC when not signing
+- Different signature validity for non-denial and denial
+- Make SignerThreads and WorkerThreads configurable
+- Don't add NSEC3PARAM when not adding NSEC3 records
+- Zone is updated, even if only the SOA serial changed
+- Resigning can fail on certain changes [Bug #46?]
+- Serial==keep
+- Proper handling of SIGTERM
+- Signer Auditor Communication
+- No warning if socket file creation failed
+- Usage
+- Error if sign command has no arguments
+- Changes to the zonelist will not be noted
+- Verify output of ods-signer zones
+- Missing /var/run/opendnssec/ directory after reboot
+- ods-signer --help is missing options
+- Give signer engine is not running error
+- Do an auditor check
+- Link (static) against libhsm
+- Sign the tld all.
+- Drop privileges
+- Audit the temporary file
+- clear <zone> errors on missing files
+- Signer Engine not starting properly
+- SHA-1
+- SHA-2
+- GOST
+- Handle file permission errors (unix socket)
+- No more Denial TTL
+- Create pid directory if not exists
+- Don't leave socket file under root permissions
+- Missing check for XPath in configure.ac
+- LDNS NSEC bitmap issues
+- LDNS RR Parsing issues
+- Allow for a SOA minimum and TTL of 0
+- No hardcoded TTLs please
+- Clear out whitespace after directives
+- Do not start if already running
+- Make sure to output a new zone if data has changed (not only signatures)
+- Multiline parsing issues
+- DS treated as out-of-zone data
+- Signer to use all DNSKEY algorithms to sign RRsets
+- DLV not in NSEC
+- Zone removed but still in queue
+- Signer produces empty zone
+- Unknown RRs with rdlen=0 problem
+- Signer inserts (null) into signed zone
+- RRSIG and other DNSSEC RRs does not inherit class
+- Serial number from internal data, not from signed output file
+- Threaded RRset Signer
+- Efficient handling of multiple zones
+
