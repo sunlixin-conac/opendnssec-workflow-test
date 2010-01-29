@@ -1,0 +1,118 @@
+Signer Engine v2 Code Documentation
+===================================
+
+The signer engine source directory consists of the ods-signer.c file,
+the ods-signerd.c file and a couple of directories. 
+
+ods-signerd.c is the code that sets up the signer engine daemon.
+ods-signer.c is the code that a client can use to send commands to the 
+daemon.
+
+The daemon uses code parts that are divided in directories.
+
+adapter/
+This directory holds all the code that's related to adapters.
+Currently, there's only adapter.{c,h}. This holds the adapter structures.
+
+For every new type of adapter, this directory should get new source files.
+For example, a File Adapter would introduce adfile.{c,h} files.
+
+The adapter structure has consists of a filename, type and inbound.
+
+The filename is the name of the zone file.
+The type is the the type of adapter. Currently, we only have File adapters.
+The inbound is set to 0 if this relates to an Outbound Adapter.
+Otherwise, this adapter is an Inbound Adapter.
+
+daemon/
+The daemon is the core of the signer engine. This includes setting up the
+daemon, reading the configuration, setting up workers and handling commands
+on the client socket.
+
+cmdhandler.{c,h} implements handling the commands it receives on the
+client socket. It is one thread within the signer engine process. The
+structure holds some socket specific data. The command handler structure
+also has a pointer back to the engine, in order to pass through events
+to the scheduler and handle zone updates.
+
+config.{c,h} stores the conf.xml contents. It can do some checks on them.
+Parsing of this file is done by confparser.{c,h} in the parser/ directory.
+
+engine.{c,h} handles setting up the engine. Set up the command handler, 
+start the workers, read the configuration, read the zone list, read the
+signer configurations, schedule tasks for all zones.
+The engine has pointers to its configuration data, the zonelist, the
+workers and the command handler. The engine also has a lock. In order to
+access the engine state information, the engine needs to be locked. 
+
+worker.{c,h} implements the hard workers. A worker picks up tasks from the
+task list and performs the task. If there are no tasks scheduled, it
+will go to sleep. It is woken up if the first task in the list is
+scheduled, or if the list is edited. If there are no tasks at all, the 
+time a worker sleeps grows exponential. 
+A worker is a thread within the signer engine process. The thread number
+and identifier are stored in the worker structure. Every worker has a 
+pointer to the task list. Also, it tracks some state information about
+whether the worker is sleeping and when its alarm clock is set.
+
+parser/
+All XML parsing code goes in this directory. The signer parses three
+types of XML files: The conf.xml (confparser.{c,h}), The zonelist.xml
+(zonelistparser.{c,h}) and the signconf.xml (signconf.{c,h}).
+
+scheduler/
+The scheduler directory implements the task list and tasks and locking.
+
+locks.{c,h} is a wrapper around the Pthread functions.
+
+task.{c,h} implements tasks and the task list they are ending up.
+
+A task is defined as a task structure:
+	[what, when, backoff, who, dname, zone, flush]
+what stores the task identifier. A task can be 'read zone', 'add dnskeys
+to the zone', 'nsecify the zone', 'sign the zone', 'audit zone' and
+'write signed zone'.
+when stores at what time the task is scheduled.
+backoff stores an exponential back off value when to retry a failed task.
+who is the zone name owner in strinf format
+dname is the raw data format of the zone owner name.
+zone is a pointer to the zone structure.
+flush is set if this task needs to be performed immediately. This gives
+a task a higher priority than a non-flushed task.
+
+A task list is a red-black tree of tasks. It is provided with a lock
+(for popping, pushing tasks and updating the task list). The loading
+flag is there to mark that the zonelist is being updated. This influences
+the sleeping time of a worker (A worker will sleep shorter if the zonelist
+is being updated).
+
+signer/
+
+The signer directory implements the actual signer.
+The zones are sorted in a red black tree. 
+Each zone has a signer configuration and a pointer to its zone data
+Zone data is a red black tree of domains.
+Domains have a list of RRsets, divided by category. 
+Domains have authoritative data, delegations, glue/occluded data and
+nsec records. In case of NSEC3, the domain has a pointer to a NSEC3 domain.
+NSEC3 domains are maintained in a different red black tree, ordered in
+NSEC3 space.
+
+TODO: Expand on this directory
+
+test/
+This directory holds some small automated tests.
+
+tools/
+This is a temporary directory. It maps one-to-one the signer tools from
+the signer engine proof of concept to the tool function calls.
+
+util/
+Utility code.
+
+Duration parsing
+File handling
+Logging wrapper
+Privilege dropping
+Memory allocation wrapper
+
