@@ -264,7 +264,6 @@ void copy_names(char** src, char** dest, char* origin, int max)
                     *d++ = '.';
             }
         }
-        *d++ = ' ';
         while (isspace(*s))
             s++;
     
@@ -274,6 +273,9 @@ void copy_names(char** src, char** dest, char* origin, int max)
 
         if (max && ++count >= max)
             break;
+
+        if (*s)
+            *d++ = ' ';
     }
     *d = 0;
 
@@ -984,7 +986,7 @@ int read_file(char* filename, char* origin, char* default_ttl,
 
             if (expand) {
                 /* construct a new line with inherited values */
-                char* line = malloc(MAX_LINE_LEN);
+                char line[MAX_LINE_LEN];
                 char* l = line;
 
                 /* name */
@@ -1060,10 +1062,15 @@ int read_file(char* filename, char* origin, char* default_ttl,
                         return -9;
                     }
                 }
-                g->extralines[g->extracount++] = line;
+                char* lineptr = strdup(line);
+                if (!lineptr) {
+                    printf("%s:%d:strdup() failed!\n", __FILE__, __LINE__);
+                    exit(-1);
+                }
+                g->extralines[g->extracount++] = lineptr;
 
                 /* replace original line in the to-be-sorted array */
-                g->lines[g->linecount-1] = line;
+                g->lines[g->linecount-1] = lineptr;
             }
         }
 
