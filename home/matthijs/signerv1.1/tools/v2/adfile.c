@@ -92,7 +92,7 @@ static int
 adapter_file_read_line(FILE* fd, char* line, unsigned int* l)
 {
     int i = 0, li = 0, in_string = 0, depth = 0;
-    char c, lc = 0;
+    char c = 0, lc = 0;
     int comments = 0;
 
     for (i = 0; i < MAX_LINE_LEN; i++) {
@@ -150,15 +150,15 @@ adapter_file_read_line(FILE* fd, char* line, unsigned int* l)
             }
         } else if (c == ';' && lc != '\\') {
             comments = 1;
-        } else if (c != '\n' && lc != '\\') {
-            line[li] = c;
-            li++;
-        } else {
+        } else if (c == '\n' && lc != '\\') {
             comments = 0;
             /* if no depth issue, we are done */
             if (depth == 0) {
                 break;
             }
+        } else {
+            line[li] = c;
+            li++;
         }
         /* continue with line */
         lc = c;
@@ -259,9 +259,6 @@ adfile_read_line:
                 } else {
                     fprintf(stderr, "error parsing RR at line %i (%s): %s\n", *l,
                         ldns_get_errorstr_by_id(*status), line);
-                    while (len >= 0) {
-                        len = adapter_file_read_line(fd, line, l);
-                    }
                     if (rr) {
                         ldns_rr_free(rr);
                     }
