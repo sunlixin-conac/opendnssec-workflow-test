@@ -143,13 +143,13 @@ zone_calc_outbound_serial(zone_type* zone)
         soa = zone->inbound_serial;
         if (!DNS_SERIAL_GT(soa, prev)) {
             fprintf(stderr, "can not keep SOA SERIAL from input zone '%s' "
-                " (%u): output SOA SERIAL is %u", zone->name, soa, prev);
+                " (%u): output SOA SERIAL is %u\n", zone->name, soa, prev);
             return;
         }
         prev = soa;
         update = 0;
     } else {
-        fprintf(stderr, "zone '%s' has unknown serial type '%s'",
+        fprintf(stderr, "zone '%s' has unknown serial type '%s'\n",
             zone->name, zone->signconf->soa_serial);
         return;
     }
@@ -202,7 +202,7 @@ zone_add_rr(zone_type* zone, ldns_rr* rr)
     /* in-zone? */
     if (ldns_dname_compare(zone->dname, ldns_rr_owner(rr)) != 0 &&
         !ldns_dname_is_subdomain(ldns_rr_owner(rr), zone->dname)) {
-        fprintf(stderr, "warning: zone '%s' contains out of zone data, skipping",
+        fprintf(stderr, "warning: zone '%s' contains out of zone data, skipping\n",
             zone->name);
         ldns_rr_free(rr);
         return 0; /* consider success */
@@ -231,7 +231,7 @@ zone_add_rr(zone_type* zone, ldns_rr* rr)
                 ldns_rdf_free(soa_min);
             } else {
                 fprintf(stderr, "zone '%s' failed to replace SOA MINIMUM "
-                    "rdata", zone->name);
+                    "rdata\n", zone->name);
             }
         }
     }
@@ -274,7 +274,7 @@ zone_publish_dnskeys(zone_type* zone)
 
     ctx = hsm_create_context();
     if (ctx == NULL) {
-        fprintf(stderr, "error creating libhsm context");
+        fprintf(stderr, "error creating libhsm context\n");
         return 2;
     }
 
@@ -289,7 +289,7 @@ zone_publish_dnskeys(zone_type* zone)
             if (!key->dnskey) {
                 key->dnskey = hsm_get_key(ctx, zone->dname, key);
                 if (!key->dnskey) {
-                    fprintf(stderr, "error creating DNSKEYs for zone '%s'",
+                    fprintf(stderr, "error creating DNSKEYs for zone '%s'\n",
                         zone->name);
                     error = 1;
                     break;
@@ -301,7 +301,7 @@ zone_publish_dnskeys(zone_type* zone)
             dnskey = ldns_rr_clone(key->dnskey);
             error = zone_add_rr(zone, dnskey);
             if (error) {
-                fprintf(stderr, "error adding DNSKEYs for zone '%s'",
+                fprintf(stderr, "error adding DNSKEYs for zone '%s'\n",
                     zone->name);
                 break;
             }
@@ -371,7 +371,7 @@ zone_nsecify(zone_type* zone)
                 zone->signconf->nsec3_salt);
             if (!zone->nsec3params) {
                 fprintf(stderr, "error creating NSEC3 parameters for zone "
-                    " '%s'", zone->name);
+                    " '%s'\n", zone->name);
                 return 1;
             }
 
@@ -391,13 +391,13 @@ zone_nsecify(zone_type* zone)
 
             result = zonedata_add_rr(zone->zonedata, nsec3params_rr, 1);
             if (result != 0) {
-                fprintf(stderr, "error adding NSEC3PARAMS record to zone '%s'",
+                fprintf(stderr, "error adding NSEC3PARAMS record to zone '%s'\n",
                     zone->name);
             }
         }
         result = zone_nsecify_nsec3(zone);
     } else {
-        fprintf(stderr, "unknown RR type for denial of existence, %i",
+        fprintf(stderr, "unknown RR type for denial of existence, %i\n",
             zone->signconf->nsec_type);
         result = 1;
     }

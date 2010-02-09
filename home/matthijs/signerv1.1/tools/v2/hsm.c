@@ -56,7 +56,7 @@ hsm_get_key(hsm_ctx_t* ctx, ldns_rdf* dname, key_type* key_id)
         rrkey = hsm_get_dnskey(ctx, hsmkey, params);
     } else {
         /* could not find key */
-        fprintf(stderr, "could not find key %s", key_id->locator);
+        fprintf(stderr, "could not find key %s\n", key_id->locator);
         error = 1;
     }
     hsm_sign_params_free(params);
@@ -104,7 +104,7 @@ hsm_sign_rrset_with_key(hsm_ctx_t* ctx, ldns_rdf* dname, key_type* key_id,
         hsm_sign_params_free(params);
     } else {
         /* could not find key */
-        fprintf(stderr, "could not find key %s", key_id->locator);
+        fprintf(stderr, "could not find key %s\n", key_id->locator);
         error = 1;
     }
 

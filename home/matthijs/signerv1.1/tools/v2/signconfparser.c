@@ -68,14 +68,14 @@ parse_sc_keys(const char* cfgfile)
     /* Load XML document */
     doc = xmlParseFile(cfgfile);
     if (doc == NULL) {
-        fprintf(stderr, "could not parse <Keys>, xmlParseFile failed");
+        fprintf(stderr, "could not parse <Keys>, xmlParseFile failed\n");
         return kl;
     }
     /* Create xpath evaluation context */
     xpathCtx = xmlXPathNewContext(doc);
     if(xpathCtx == NULL) {
         xmlFreeDoc(doc);
-        fprintf(stderr, "could not parse <Keys>, xmlXPathNewContext failed");
+        fprintf(stderr, "could not parse <Keys>, xmlXPathNewContext failed\n");
         return kl;
     }
     /* Evaluate xpath expression */
@@ -84,7 +84,7 @@ parse_sc_keys(const char* cfgfile)
     if(xpathObj == NULL) {
         xmlXPathFreeContext(xpathCtx);
         xmlFreeDoc(doc);
-        fprintf(stderr, "could not parse <Keys>, xmlXPathEvalExpression failed");
+        fprintf(stderr, "could not parse <Keys>, xmlXPathEvalExpression failed\n");
         return kl;
     }
 
@@ -117,10 +117,10 @@ parse_sc_keys(const char* cfgfile)
                 new_key = key_create(locator, (uint32_t) atoi(algorithm),
                     (uint32_t) atoi(flags), publish, ksk, zsk);
                 if (keylist_add(kl, new_key) != 0) {
-                    fprintf(stderr, "failed to add key %s to key list", locator);
+                    fprintf(stderr, "failed to add key %s to key list\n", locator);
                 }
             } else {
-                fprintf(stderr, "Key missing required elements");
+                fprintf(stderr, "Key missing required elements\n");
             }
             if (locator) se_free((void*)locator);
             if (algorithm) se_free((void*)algorithm);

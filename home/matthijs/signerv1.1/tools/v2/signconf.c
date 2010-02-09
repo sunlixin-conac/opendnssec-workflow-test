@@ -114,7 +114,7 @@ signconf_read(const char* filename, time_t last_modified)
         return signconf;
     }
 
-    fprintf(stderr, "unable to read signconf file '%s'", filename);
+    fprintf(stderr, "unable to read signconf file '%s'\n", filename);
     return NULL;
 }
 
@@ -153,59 +153,60 @@ signconf_check(signconf_type* sc)
     int ret = 0;
 
     if (!sc->sig_resign_interval) {
-        fprintf(stderr, "signconf-check: no signature resign interval found");
+        fprintf(stderr, "signconf-check: no signature resign interval found\n");
         ret = 1;
     }
     if (!sc->sig_refresh_interval) {
-        fprintf(stderr, "signconf-check: no signature resign interval found");
+        fprintf(stderr, "signconf-check: no signature resign interval found\n");
         ret = 1;
     }
     if (!sc->sig_validity_default) {
-        fprintf(stderr, "signconf-check: no signature default validity found");
+        fprintf(stderr, "signconf-check: no signature default validity found\n");
         ret = 1;
     }
     if (!sc->sig_validity_denial) {
-        fprintf(stderr, "signconf-check: no signature denial validity found");
+        fprintf(stderr, "signconf-check: no signature denial validity found\n");
         ret = 1;
     }
     if (!sc->sig_jitter) {
-        fprintf(stderr, "signconf-check: no signature jitter found");
+        fprintf(stderr, "signconf-check: no signature jitter found\n");
         ret = 1;
     }
     if (!sc->sig_inception_offset) {
-        fprintf(stderr, "signconf-check: no signature inception offset found");
+        fprintf(stderr, "signconf-check: no signature inception offset found\n");
         ret = 1;
     }
     if (sc->nsec_type == LDNS_RR_TYPE_NSEC3) {
         if (sc->nsec3_algo == 0) {
-            fprintf(stderr, "signconf-check: no nsec3 algorithm found");
+            fprintf(stderr, "signconf-check: no nsec3 algorithm found\n");
             ret = 1;
         }
         /* iterations */
         /* salt */
         /* optout */
     } else if (sc->nsec_type != LDNS_RR_TYPE_NSEC) {
-        fprintf(stderr, "signconf-check: wrong nsec type %i", sc->nsec_type);
+        fprintf(stderr, "signconf-check: wrong nsec type %i\n", sc->nsec_type);
         ret = 1;
     }
     if (!sc->keys || sc->keys->count == 0) {
-        fprintf(stderr, "signconf-check: no keys found");
+        fprintf(stderr, "signconf-check: no keys found\n");
         ret = 1;
     }
     if (!sc->dnskey_ttl) {
-        fprintf(stderr, "signconf-check: no dnskey ttl found");
+        fprintf(stderr, "signconf-check: no dnskey ttl found\n");
         ret = 1;
     }
     if (!sc->soa_ttl) {
-        fprintf(stderr, "signconf-check: no soa ttl found");
+        fprintf(stderr, "signconf-check: no soa ttl found\n
+");
         ret = 1;
     }
     if (!sc->soa_min) {
-        fprintf(stderr, "signconf-check: no soa minimum found");
+        fprintf(stderr, "signconf-check: no soa minimum found\n");
         ret = 1;
     }
     if (signconf_soa_serial_check(sc->soa_serial) != 0) {
-        fprintf(stderr, "signconf-check: wrong soa serial type '%s'",
+        fprintf(stderr, "signconf-check: wrong soa serial type '%s'\n",
             sc->soa_serial);
         ret = 1;
     }

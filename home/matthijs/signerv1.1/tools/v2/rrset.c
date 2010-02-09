@@ -147,7 +147,7 @@ rrset_add_rr(rrset_type* rrset, ldns_rr* rr)
             walk_rrset->next = rrset_create(rr);
             return 0;
         } else {
-            fprintf(stderr, "cannot add RRSIG rr if the corresponding RRset (%i) is missing", type);
+            fprintf(stderr, "cannot add RRSIG rr if the corresponding RRset (%i) is missing\n", type);
             ldns_rr_free(rr);
             return 1;
         }
@@ -173,7 +173,7 @@ rrset_add_rr(rrset_type* rrset, ldns_rr* rr)
                 } else {
                     status = ldns_dnssec_rrs_add_rr(walk_rrset->rrsigs, rr);
                     if (status != LDNS_STATUS_OK) {
-                        fprintf(stderr, "error adding RR to RRset (%i): %s", type,
+                        fprintf(stderr, "error adding RR to RRset (%i): %s\n", type,
                              ldns_get_errorstr_by_id(status));
                         return 1;
                     }
@@ -205,7 +205,7 @@ rrset_add_rr(rrset_type* rrset, ldns_rr* rr)
                 }
                 status = ldns_dnssec_rrs_add_rr(walk_rrset->rrs, rr);
                 if (status != LDNS_STATUS_OK) {
-                    fprintf(stderr, "error adding RR to RRset (%i): %s", type,
+                    fprintf(stderr, "error adding RR to RRset (%i): %s\n", type,
                         ldns_get_errorstr_by_id(status));
                     return 1;
                 }
@@ -217,7 +217,7 @@ rrset_add_rr(rrset_type* rrset, ldns_rr* rr)
     /* no such RRset, create new */
     if (type < walk_rrset->rr_type) {
         if (is_rrsig) {
-            fprintf(stderr, "cannot add RRSIG rr if the corresponding RRset (%i) is missing", type);
+            fprintf(stderr, "cannot add RRSIG rr if the corresponding RRset (%i) is missing\n", type);
             ldns_rr_free(rr);
             return 1;
         }

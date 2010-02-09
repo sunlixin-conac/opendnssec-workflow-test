@@ -93,7 +93,7 @@ zonedata_add_domain(zonedata_type* zd, domain_type* domain, int at_apex)
     new_node = domain2node(domain);
     if (ldns_rbtree_insert(zd->domains, new_node) == NULL) {
         str = ldns_rdf2str(domain->name);
-        fprintf(stderr, "unable to add domain '%s'", str);
+        fprintf(stderr, "unable to add domain '%s'\n", str);
         se_free((void*)str);
         se_free((void*) new_node);
         return NULL;
@@ -139,7 +139,7 @@ zonedata_add_nsec3domain(zonedata_type* zd, domain_type* domain, nsec3params_typ
         new_node = domain2node(dname);
         if (!ldns_rbtree_insert(zd->nsec3_domains, new_node)) {
             str = ldns_rdf2str(dname->name);
-            fprintf(stderr, "unable to add NSEC3 domain '%s'", str);
+            fprintf(stderr, "unable to add NSEC3 domain '%s'\n", str);
             se_free((void*)str);
             se_free((void*)new_node);
             domain_cleanup(dname);
@@ -150,7 +150,7 @@ zonedata_add_nsec3domain(zonedata_type* zd, domain_type* domain, nsec3params_typ
     } else {
         str = ldns_rdf2str(hashed_ownername);
         ldns_rdf_deep_free(hashed_ownername);
-        fprintf(stderr, "unable to add NSEC3 domain '%s' (has collision?) ", str);
+        fprintf(stderr, "unable to add NSEC3 domain '%s' (has collision?)\n", str);
         se_free((void*)str);
     }
 
@@ -243,7 +243,7 @@ zonedata_domain_entize(zonedata_type* zd, domain_type* domain, ldns_rdf* apex)
         **/
         parent_rdf = ldns_dname_left_chop(domain->name);
         if (!parent_rdf) {
-            fprintf(stderr, "unable to create parent domain name (rdf)");
+            fprintf(stderr, "unable to create parent domain name (rdf)\n");
             return 1;
         }
 
@@ -252,7 +252,7 @@ zonedata_domain_entize(zonedata_type* zd, domain_type* domain, ldns_rdf* apex)
             parent_domain = domain_create(parent_rdf);
             parent_domain = zonedata_add_domain(zd, parent_domain, 0);
             if (!parent_domain) {
-                fprintf(stderr, "unable to add parent domain");
+                fprintf(stderr, "unable to add parent domain\n");
                 return 1;
             }
 
@@ -345,7 +345,7 @@ zonedata_entize(zonedata_type* zd, ldns_rdf* apex)
         domain = (domain_type*) node->data;
 
         if (zonedata_domain_entize(zd, domain, apex) != 0) {
-            fprintf(stderr, "zonedata_domain_entize() failed");
+            fprintf(stderr, "zonedata_domain_entize() failed\n");
             return 1;
         }
 
@@ -406,7 +406,7 @@ zonedata_nsecify_nsec(zonedata_type* zd, uint32_t ttl,
         }
 
         if (domain_nsecify_nsec(domain, to, ttl, klass) != 0) {
-            fprintf(stderr, "adding NSECs to domain failed");
+            fprintf(stderr, "adding NSECs to domain failed\n");
             return 1;
         }
     }
@@ -472,7 +472,7 @@ zonedata_nsecify_nsec3(zonedata_type* zd, uint32_t ttl,
        domain->nsec3 = zonedata_add_nsec3domain(zd, domain, nsec3params, apex->name);
        if (domain->nsec3 == NULL) {
            str = ldns_rdf2str(domain->name);
-           fprintf(stderr, "failed to create NSEC3 domain '%s'", str);
+           fprintf(stderr, "failed to create NSEC3 domain '%s'\n", str);
            se_free((void*) str);
        }
        domain->nsec3->nsec3 = domain;
@@ -524,7 +524,7 @@ zonedata_nsecify_nsec3(zonedata_type* zd, uint32_t ttl,
 
         to = (domain_type*) nsec3_node->data;
         if (domain_nsecify_nsec3(domain, to, ttl, klass, nsec3params) != 0) {
-            fprintf(stderr, "adding NSECs to domain failed");
+            fprintf(stderr, "adding NSECs to domain failed\n");
             return 1;
         }
 

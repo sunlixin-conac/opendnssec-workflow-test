@@ -44,7 +44,7 @@ static void*
 se_assert_data(void* data)
 {
     if (!data) {
-        fprintf(stderr, "memory allocation failed (se): out of memory");
+        fprintf(stderr, "memory allocation failed (se): out of memory\n");
         exit(1);
     }
     return data;
@@ -117,7 +117,7 @@ se_strdup(const char *s)
 {
     char* dup = strdup(s);
     if (!dup) {
-        fprintf(stderr, "memory allocation failed (strdup): out of memory");
+        fprintf(stderr, "memory allocation failed (strdup): out of memory\n");
         exit(1);
     }
     return dup;

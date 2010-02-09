@@ -251,7 +251,7 @@ domain_nsecify_nsec3(domain_type* domain, domain_type* to,
     se_free((void*)next_owner_string);
     ldns_rdf_deep_free(next_owner_label);
     if (status != LDNS_STATUS_OK) {
-        fprintf(stderr, "failed to create NSEC3 next owner name: %s",
+        fprintf(stderr, "failed to create NSEC3 next owner name: %s\n",
             ldns_get_errorstr_by_id(status));
         ldns_rr_free(nsec_rr);
         return 1;

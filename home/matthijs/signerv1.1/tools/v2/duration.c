@@ -75,7 +75,7 @@ duration_create_from_string(const char* str)
 
     P = strchr(str, 'P');
     if (!P) {
-        fprintf(stderr, "unable to create duration from string '%s'", str);
+        fprintf(stderr, "unable to create duration from string '%s'\n", str);
         duration_cleanup(duration);
         return NULL;
     }
@@ -125,7 +125,7 @@ duration_create_from_string(const char* str)
     W = strchr(str, 'W');
     if (W) {
         if (not_weeks) {
-            fprintf(stderr, "unable to create duration from string '%s'", P);
+            fprintf(stderr, "unable to create duration from string '%s'\n", P);
             duration_cleanup(duration);
             return NULL;
         } else {
@@ -282,7 +282,7 @@ duration2time(duration_type* duration)
 
         if (duration->months || duration->years) {
             /* [TODO] calculate correct number of days in this month/year */
-            fprintf(stderr, "warning: converting duration to approximate value");
+            fprintf(stderr, "warning: converting duration to approximate value\n");
         }
     }
     return period;
@@ -328,12 +328,12 @@ time_datestamp(time_t tt, const char* format, char** str)
 
     tmp = localtime(&t);
     if (tmp == NULL) {
-        fprintf(stderr, "time_datestamp: localtime() failed");
+        fprintf(stderr, "time_datestamp: localtime() failed\n");
         return 0;
     }
 
     if (strftime(outstr, sizeof(outstr), format, tmp) == 0) {
-        fprintf(stderr, "time_datestamp: strftime() failed");
+        fprintf(stderr, "time_datestamp: strftime() failed\n");
         return 0;
     }
 
