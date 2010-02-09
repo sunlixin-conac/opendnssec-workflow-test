@@ -884,7 +884,7 @@ static void encode_cert16(unsigned char** _src, unsigned char** _dest)
         while (!cert) {
             switch (toupper(*src++)) {
                 case 'P':
-                    switch (*src++) {
+                    switch (toupper(*src++)) {
                         case 'K': cert = 1; break; /* PKIX */
                         case 'G': cert = 3; break; /* PGP */
                         default:
