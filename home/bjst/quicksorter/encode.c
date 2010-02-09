@@ -44,9 +44,8 @@
    cmplen   - (int) length of data to compare (starting at 'owner')
    rdlen    - (int) rdata length
    owner    - owner name, stored backwards (i.e. 'com.example.www').
-              each character is stored in a (short), with these specials:
-               -2 = name segment delimiter ('.')
-               -1 = end of name
+              each character is stored in a (short), with specials values
+              for end-of-segment and end-of-string
    type     - (unsigned short) RR type
    class    - (unsigned short) RR class
    rdata    - binary RDATA in wire format
@@ -93,6 +92,7 @@ enum {
     RD_GWTYPE,  /* for IPSECKEY */
     RD_GATEWAY, /* for IPSECKEY */
     RD_APL,
+    RD_CERT16,  /* for CERT */
 };
 
 static const char format_list[NUM_TYPES][8] = {
@@ -135,7 +135,7 @@ static const char format_list[NUM_TYPES][8] = {
     /* 35: NAPTR */ { 6, RD_INT16, RD_INT16,
                       RD_STRING, RD_STRING, RD_STRING, RD_NAME },
     /* 36: KX */    { 2, RD_INT16, RD_NAME },
-    /* 37: CERT */  { 4, RD_INT16, RD_INT16, RD_INT8, RD_BASE64 },
+    /* 37: CERT */  { 4, RD_CERT16, RD_INT16, RD_INT8, RD_BASE64 },
     /* 38: A6 */    { 0 }, /* not supported by OpenDNSSEC */
     /* 39: DNAME */ { 1, RD_NAME },
     /* 40: SINK */  { 0 }, /* not supported by OpenDNSSEC */
@@ -871,6 +871,49 @@ static void encode_int(unsigned char** src, unsigned char** dest, int type)
         (*src)++;
 }
 
+static void encode_cert16(unsigned char** _src, unsigned char** _dest)
+{
+    unsigned char* src = *_src;
+    unsigned char* dest = *_dest;
+
+    int cert = 0;
+
+    if (isdigit(*src))
+        cert = atoi((char*)src);
+    else {
+        while (!cert) {
+            switch (toupper(*src++)) {
+                case 'P':
+                    switch (*src++) {
+                        case 'K': cert = 1; break; /* PKIX */
+                        case 'G': cert = 3; break; /* PGP */
+                        default:
+                            printf("Unknown certificate type: %s\n", *_src);
+                            exit(-1);
+                    }
+                    break;
+
+                case 'S': cert = 2; break; /* SPKI */
+                case 'U': cert = 253; break; /* URI */
+                case 'O': cert = 254; break; /* OID */
+                default:
+                    printf("Unknown certificate type: %s\n", *_src);
+                    exit(-1);
+            }
+        }
+    }
+
+    encode_int16(cert, dest);
+    dest += 2;
+
+    while (*src && !isspace(*src))
+        src++;
+
+    *_src = src;
+    *_dest = dest;
+    
+}
+
 static void* encode_rdata(int type,
                           unsigned char* rdata,
                           unsigned char* dest,
@@ -947,6 +990,10 @@ static void* encode_rdata(int type,
                 encode_apl(&rdata, &dest);
                 break;
 
+            case RD_CERT16:
+                encode_cert16(&rdata, &dest);
+                break;
+
             default:
                 printf("Error! Unsupported type %d.\n", format[i]);
                 exit(-1);
@@ -994,6 +1041,7 @@ static int decode_rdata(int type,
                 break;
 
             case RD_INT16:
+            case RD_CERT16:
                 dest += sprintf((char*)dest, "%d", decode_int16(rdata));
                 rdata += 2;
                 break;
