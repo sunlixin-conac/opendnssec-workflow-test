@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (c) 2009 .SE (The Internet Infrastructure Foundation).
+ * Copyright (c) 2010 .SE (The Internet Infrastructure Foundation).
  * All rights reserved.
  *
  * Written by Björn Stenberg <bjorn@haxx.se> for .SE
