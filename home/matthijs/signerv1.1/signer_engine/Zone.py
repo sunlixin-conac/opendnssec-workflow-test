@@ -815,6 +815,7 @@ class Zone:
         rr_count = 0
         cmd = [self.get_tool_filename("finalizer"),
                "-f", self.get_zone_tmp_filename(".signed")
+               "-x", self.get_zone_tmp_filename(".optout")
               ]
         finalize_p = Util.run_tool(cmd)
         if not finalize_p:
