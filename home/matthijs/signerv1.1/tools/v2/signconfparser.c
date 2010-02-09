@@ -32,6 +32,7 @@
  */
 
 #include "v2/signconfparser.h"
+#include "v2/confparser.h"
 #include "v2/duration.h"
 #include "v2/se_malloc.h"
 

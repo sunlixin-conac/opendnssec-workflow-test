@@ -36,6 +36,7 @@
 
 #include "v2/se_key.h"
 #include "v2/duration.h"
+#include "v2/confparser.h"
 #include "config.h"
 
 #include <ldns/ldns.h>

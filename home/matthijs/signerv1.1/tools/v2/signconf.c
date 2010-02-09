@@ -83,7 +83,6 @@ signconf_read(const char* filename, time_t last_modified)
 {
     signconf_type* signconf;
     FILE* scfd = NULL;
-    time_t st_mtime;
 
     scfd = fopen(filename, "r");
     if (scfd) {
@@ -108,7 +107,7 @@ signconf_read(const char* filename, time_t last_modified)
         signconf->soa_min = parse_sc_soa_min(filename);
         signconf->soa_serial = parse_sc_soa_serial(filename);
         signconf->audit = parse_sc_audit(filename);
-        signconf->last_modified = st_mtime;
+        signconf->last_modified = 0;
 
         fclose(scfd);
         return signconf;
@@ -197,8 +196,7 @@ signconf_check(signconf_type* sc)
         ret = 1;
     }
     if (!sc->soa_ttl) {
-        fprintf(stderr, "signconf-check: no soa ttl found\n
-");
+        fprintf(stderr, "signconf-check: no soa ttl found\n");
         ret = 1;
     }
     if (!sc->soa_min) {
