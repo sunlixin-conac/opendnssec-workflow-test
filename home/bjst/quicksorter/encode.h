@@ -34,16 +34,14 @@
 #define MAX_NAME_LEN 255
 
 
-int encode_rr(unsigned char* name,
+int encode_rr(char* name,
               int type,
               int class,
-              unsigned char* ttl,
-              unsigned char* rdata,
-              unsigned char* dest,
-              unsigned char* origin);
+              char* ttl,
+              char* rdata,
+              char* dest,
+              char* origin);
 
-int decode_rr(unsigned char* src, unsigned char* dest);
-
-
+int decode_rr(char* src, char* dest);
 
 #endif

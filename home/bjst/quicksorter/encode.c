@@ -186,7 +186,7 @@ static inline uint16_t decode_int16(void* src)
     return ntohs(*((uint16_t*)src));
 }
 
-static int parse_ttl(unsigned char* ttl)
+static int parse_ttl(char* ttl)
 {
     int seconds = 0;
 
@@ -194,7 +194,7 @@ static int parse_ttl(unsigned char* ttl)
         ttl++;
 
     while (*ttl && !isspace(*ttl)) {
-        int val = atoi((char*)ttl);
+        int val = atoi(ttl);
         while (isdigit(*ttl))
             ttl++;
         switch (tolower(*ttl)) {
@@ -211,10 +211,10 @@ static int parse_ttl(unsigned char* ttl)
     return seconds;
 }
 
-static void encode_base16(unsigned char** _src, unsigned char** _dest)
+static void encode_base16(char** _src, char** _dest)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
 
     while (*src && *src != '\n') {
         while (*src && isspace(*src))
@@ -227,11 +227,11 @@ static void encode_base16(unsigned char** _src, unsigned char** _dest)
     *_dest = dest;
 }
 
-static void decode_base16(unsigned char** _src, unsigned char** _dest,
+static void decode_base16(char** _src, char** _dest,
                           int bytes)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
 
     while (bytes--) {
         dest[0] = ((*src & 0xf0) >> 8) + '0';
@@ -244,10 +244,10 @@ static void decode_base16(unsigned char** _src, unsigned char** _dest,
     *_dest = dest;
 }
 
-static const unsigned char alphabet[64] =
+static const char alphabet[64] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-static const unsigned char inalphabet[256] = {
+static const char inalphabet[256] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -256,7 +256,7 @@ static const unsigned char inalphabet[256] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
-static const unsigned char decoder[256] = {
+static const char decoder[256] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,62,0,0,0,63,52,53,54,55,56,57,58,59,60,61,0,0,0,0,0,0,0,0,1,2,
     3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,0,0,0,0,0,0,
@@ -267,10 +267,10 @@ static const unsigned char decoder[256] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 /* Note: "encode" in this context means transform from ascii to binary */
-static int encode_base64(unsigned char** _src, unsigned char** _dest)
+static int encode_base64(char** _src, char** _dest)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
 
     int bits, char_count, errors = 0;
 
@@ -318,10 +318,10 @@ static int encode_base64(unsigned char** _src, unsigned char** _dest)
 }
 
 /* Note: "decode" in this context means transform from binary to ascii */
-static int decode_base64(unsigned char** _src, unsigned char** _dest, int bytes)
+static int decode_base64(char** _src, char** _dest, int bytes)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
     int bits = 0;
     int char_count = 0;
 
@@ -361,18 +361,23 @@ static int decode_base64(unsigned char** _src, unsigned char** _dest, int bytes)
     return len;
 }
 
-static void encode_string(unsigned char** _src,
-                          unsigned char** _dest,
+static void encode_string(char** _src,
+                          char** _dest,
                           bool domain_name,
-                          unsigned char* origin)
+                          char* origin)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
     int len = 1; /* first byte is length */
     bool quoted = false;
     bool copyorigin = false;
-    if (domain_name && *src == '@')
+    if (domain_name && *src == '@') {
+        if (!origin) {
+            printf("Error: No origin!\n");
+            exit(-1);
+        }
         src = origin;
+    }
     while (1) {
         while (*src && (quoted || !isspace(*src))) {
             switch (*src) {
@@ -417,6 +422,10 @@ static void encode_string(unsigned char** _src,
             *_src = src;
         
         if (domain_name && src[-1] != '.' && !copyorigin) {
+            if (!origin) {
+                printf("Error: No origin!\n");
+                exit(-1);
+            }
             dest[0] = len - 1;
             dest += len;
             len = 1;
@@ -438,10 +447,10 @@ static void encode_string(unsigned char** _src,
     *_dest = dest;
 }
 
-static void decode_string(unsigned char** _src, unsigned char** _dest, bool domain_name)
+static void decode_string(char** _src, char** _dest, bool domain_name)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
     
     do {
         int len = *src++;
@@ -450,7 +459,7 @@ static void decode_string(unsigned char** _src, unsigned char** _dest, bool doma
             if (isprint(*src))
                 *dest++ = *src;
             else
-                dest += sprintf((char*)dest, "\\%03d", *src);
+                dest += sprintf(dest, "\\%03d", *src);
             src++;
         }
         if (domain_name)
@@ -464,13 +473,13 @@ static void decode_string(unsigned char** _src, unsigned char** _dest, bool doma
     *_dest = dest;
 }
 
-static void* encode_owner(unsigned char* name,
+static void* encode_owner(char* name,
                           void* dest,
-                          unsigned char* origin)
+                          char* origin)
 {
-    unsigned char tmpname[MAX_NAME_LEN];
-    unsigned char labelpos[MAX_NAME_LEN];
-    unsigned char* tmpptr = tmpname;
+    char tmpname[MAX_NAME_LEN];
+    char labelpos[MAX_NAME_LEN];
+    char* tmpptr = tmpname;
     encode_string(&name, &tmpptr, true, origin);
 
     /* iterate through string and store the position of each label */
@@ -484,7 +493,7 @@ static void* encode_owner(unsigned char* name,
     /* now store the name backwards */
     uint16_t* dptr = dest;
     for (int i=count-1; i >= 0; i--) {
-        unsigned char* sptr = tmpname + labelpos[i];
+        char* sptr = tmpname + labelpos[i];
         int len = *sptr++;
         while (len--) {
             *dptr++ = htons(*sptr | 0x100);
@@ -497,10 +506,10 @@ static void* encode_owner(unsigned char* name,
     return dptr;
 }
 
-static void decode_owner(unsigned char** _rr, unsigned char** _dest)
+static void decode_owner(char** _rr, char** _dest)
 {
     uint16_t* rr = (uint16_t*)*_rr;
-    unsigned char* dest = *_dest;
+    char* dest = *_dest;
 
     int len = 0;
     while (rr[len] != END_OF_NAME)
@@ -534,17 +543,17 @@ static void decode_owner(unsigned char** _rr, unsigned char** _dest)
     *_dest = dest;
 }
 
-static void encode_ipv4(unsigned char** src, unsigned char** dest)
+static void encode_ipv4(char** src, char** dest)
 {
     /* inet_pton() requires a null terminated string */
-    unsigned char* end = *src;
-    unsigned char oldend;
+    char* end = *src;
+    char oldend;
     while (isgraph(*end))
         end++;
     oldend = *end;
     *end = 0;
 
-    if (!inet_pton(AF_INET, (char*)*src, *dest)) {
+    if (!inet_pton(AF_INET, *src, *dest)) {
         printf("Failed encoding ipv4 address: %s!\n", *src);
         exit(-1);
     }
@@ -556,9 +565,9 @@ static void encode_ipv4(unsigned char** src, unsigned char** dest)
     *end = oldend;
 }
 
-static void decode_ipv4(unsigned char** src, unsigned char** dest)
+static void decode_ipv4(char** src, char** dest)
 {
-    if (!inet_ntop(AF_INET, (char*)*src, (char*)*dest, INET_ADDRSTRLEN)) {
+    if (!inet_ntop(AF_INET, *src, *dest, INET_ADDRSTRLEN)) {
         printf("Failed encoding ipv4 address: %s!\n", *src);
         exit(-1);
     }
@@ -567,17 +576,17 @@ static void decode_ipv4(unsigned char** src, unsigned char** dest)
     *src += 4;
 }
 
-static void encode_ipv6(unsigned char** src, unsigned char** dest)
+static void encode_ipv6(char** src, char** dest)
 {
     /* inet_pton() requires a null terminated string */
-    unsigned char* end = *src;
-    unsigned char oldend;
+    char* end = *src;
+    char oldend;
     while (isgraph(*end))
         end++;
     oldend = *end;
     *end = 0;
 
-    inet_pton(AF_INET6, (char*)*src, *dest);
+    inet_pton(AF_INET6, *src, *dest);
     while (**src && !isspace(**src))
         (*src)++;
     *dest += 16;
@@ -585,9 +594,9 @@ static void encode_ipv6(unsigned char** src, unsigned char** dest)
     *end = oldend;
 }
 
-static void decode_ipv6(unsigned char** src, unsigned char** dest)
+static void decode_ipv6(char** src, char** dest)
 {
-    inet_ntop(AF_INET6, (char*)*src, (char*)*dest, INET6_ADDRSTRLEN);
+    inet_ntop(AF_INET6, *src, *dest, INET6_ADDRSTRLEN);
     while (**dest)
         (*dest)++;
     *src += 16;
@@ -615,28 +624,28 @@ static int pow2int(int value)
 
 #define GLOBE_MEDIAN 2147483648U
 
-static void encode_loc(unsigned char** _src, unsigned char** _dest)
+static void encode_loc(char** _src, char** _dest)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
 
     unsigned int lat, lon;
     unsigned int val = 0;
     for (int i=0; i<2; i++) {
         /* degrees */
-        val = atoi((char*)src) * 3600000;
+        val = atoi(src) * 3600000;
         while (!isspace(*src)) src++;
         while (isspace(*src)) src++;
 
         if (isdigit(*src)) {
             /* minutes */
-            val += atoi((char*)src) * 60000;
+            val += atoi(src) * 60000;
             while (!isspace(*src)) src++;
             while (isspace(*src)) src++;
 
             if (isdigit(*src)) {
                 /* seconds */
-                val += atof((char*)src) * 1000;
+                val += atof(src) * 1000;
                 while (!isspace(*src)) src++;
                 while (isspace(*src)) src++;
             }
@@ -662,7 +671,7 @@ static void encode_loc(unsigned char** _src, unsigned char** _dest)
             lon = val;
     };
 
-    int alt = atof((char*)src) * 100;
+    int alt = atof(src) * 100;
     while (*src && !isspace(*src)) src++;
     while (*src && isspace(*src)) src++;
 
@@ -671,17 +680,17 @@ static void encode_loc(unsigned char** _src, unsigned char** _dest)
     int vp = int2pow(10);
 
     if (*src) {
-        size = int2pow(atof((char*)src) * 100);
+        size = int2pow(atof(src) * 100);
         while (*src && !isspace(*src)) src++;
         while (*src && isspace(*src)) src++;
 
         if (*src) {
-            hp = int2pow(atof((char*)src) * 100);
+            hp = int2pow(atof(src) * 100);
             while (*src && !isspace(*src)) src++;
             while (*src && isspace(*src)) src++;
 
             if (*src) {
-                vp = int2pow(atof((char*)src) * 100);
+                vp = int2pow(atof(src) * 100);
                 while (*src && !isspace(*src)) src++;
             }
         }
@@ -702,10 +711,10 @@ static void encode_loc(unsigned char** _src, unsigned char** _dest)
     *_dest = dest;
 }
 
-static void decode_loc(unsigned char** _src, unsigned char** _dest)
+static void decode_loc(char** _src, char** _dest)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
 
     src++; /* version */
     int size = pow2int(*src++);
@@ -730,29 +739,29 @@ static void decode_loc(unsigned char** _src, unsigned char** _dest)
             val = abs(lon - GLOBE_MEDIAN);
         }
 
-        dest += sprintf((char*)dest, "%d", val / 3600000);
+        dest += sprintf(dest, "%d", val / 3600000);
         val %= 3600000;
         if (val) {
-            dest += sprintf((char*)dest, " %d", val / 60000);
+            dest += sprintf(dest, " %d", val / 60000);
             val %= 60000;
             if (val)
-                dest += sprintf((char*)dest, " %.3f", val / 1000.0);
+                dest += sprintf(dest, " %.3f", val / 1000.0);
         }
 
         *dest++ = ' ';
         *dest++ = dir;
         *dest++ = ' ';
     }
-    dest += sprintf((char*)dest, "%.2f", alt / 100.0);
+    dest += sprintf(dest, "%.2f", alt / 100.0);
 
     if (size != 100) {
-        dest += sprintf((char*)dest, " %.2f", size / 100.0);
+        dest += sprintf(dest, " %.2f", size / 100.0);
         
         if (hp != 10000) {
-            dest += sprintf((char*)dest, " %.2f", hp / 100.0);
+            dest += sprintf(dest, " %.2f", hp / 100.0);
     
             if (vp != 10)
-                dest += sprintf((char*)dest, " %.2f", vp / 100.0);
+                dest += sprintf(dest, " %.2f", vp / 100.0);
         }
     }
 
@@ -761,10 +770,10 @@ static void decode_loc(unsigned char** _src, unsigned char** _dest)
 }
 
 
-static void encode_apl(unsigned char** _src, unsigned char** _dest)
+static void encode_apl(char** _src, char** _dest)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
 
     while (*src) {
         int negation = 0;
@@ -775,13 +784,13 @@ static void encode_apl(unsigned char** _src, unsigned char** _dest)
         }
 
         char* slash;
-        int afi = atoi((char*)src);
+        int afi = atoi(src);
         int prefix;
         while (isdigit(*src))
             src++;
         src++;
 
-        slash = strchr((char*)src, '/');
+        slash = strchr(src, '/');
         *slash = 0;
         prefix = atoi(slash + 1);
 
@@ -805,7 +814,7 @@ static void encode_apl(unsigned char** _src, unsigned char** _dest)
                 exit(-1);
         }
         *slash = '/';
-        src = (unsigned char*)slash + 2;
+        src = slash + 2;
         while (*src && !isspace(*src))
             src++;
         while (*src && isspace(*src))
@@ -816,12 +825,12 @@ static void encode_apl(unsigned char** _src, unsigned char** _dest)
     *_dest = dest;
 }
 
-static void decode_apl(unsigned char** _src, unsigned char** _dest, int bytes)
+static void decode_apl(char** _src, char** _dest, int bytes)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
 
-    unsigned char* end = src + bytes;
+    char* end = src + bytes;
 
     while (src < end) {
         int afi = decode_int16(src);
@@ -841,15 +850,15 @@ static void decode_apl(unsigned char** _src, unsigned char** _dest, int bytes)
                 printf("Unsupported APL address family %d\n", afi);
                 exit(-1);
         }
-        dest += sprintf((char*)dest, "/%d ", prefix);
+        dest += sprintf(dest, "/%d ", prefix);
     }
     *_src = src;
     *_dest = dest;
 }
 
-static void encode_int(unsigned char** src, unsigned char** dest, int type)
+static void encode_int(char** src, char** dest, int type)
 {
-    int val = atoi((char*)*src);
+    int val = atoi(*src);
     switch (type) {
         case RD_INT8:
             **dest = val;
@@ -871,15 +880,15 @@ static void encode_int(unsigned char** src, unsigned char** dest, int type)
         (*src)++;
 }
 
-static void encode_cert16(unsigned char** _src, unsigned char** _dest)
+static void encode_cert16(char** _src, char** _dest)
 {
-    unsigned char* src = *_src;
-    unsigned char* dest = *_dest;
+    char* src = *_src;
+    char* dest = *_dest;
 
     int cert = 0;
 
     if (isdigit(*src))
-        cert = atoi((char*)src);
+        cert = atoi(src);
     else {
         while (!cert) {
             switch (toupper(*src++)) {
@@ -915,9 +924,9 @@ static void encode_cert16(unsigned char** _src, unsigned char** _dest)
 }
 
 static void* encode_rdata(int type,
-                          unsigned char* rdata,
-                          unsigned char* dest,
-                          unsigned char* origin)
+                          char* rdata,
+                          char* dest,
+                          char* origin)
 {
     static int tempvar = -1;
     const char* format = format_list[type];
@@ -959,7 +968,7 @@ static void* encode_rdata(int type,
                 break;
 
             case RD_GWTYPE:
-                tempvar = atoi((char*)rdata);
+                tempvar = atoi(rdata);
                 *dest++ = tempvar;
                 while (!isspace(*rdata))
                     rdata++;
@@ -995,7 +1004,7 @@ static void* encode_rdata(int type,
                 break;
 
             default:
-                printf("Error! Unsupported type %d.\n", format[i]);
+                printf("Error! Unsupported rdata parameter type %d.\n", format[i]);
                 exit(-1);
                 break;
         }
@@ -1007,15 +1016,15 @@ static void* encode_rdata(int type,
 }
 
 static int decode_rdata(int type,
-                        unsigned char* rdata,
-                        unsigned char* dest,
+                        char* rdata,
+                        char* dest,
                         int rdlen)
 {
     static int tempvar = -1;
     const char* format = format_list[type];
     int pcount = format[0];
-    unsigned char* rstart = rdata;
-    unsigned char* dstart = dest;
+    char* rstart = rdata;
+    char* dstart = dest;
 
     for (int i=1; i <= pcount; i++) {
         switch (format[i]) {
@@ -1036,18 +1045,18 @@ static int decode_rdata(int type,
                 break;
                 
             case RD_INT8:
-                dest += sprintf((char*)dest, "%d", *rdata);
+                dest += sprintf(dest, "%d", *rdata);
                 rdata++;
                 break;
 
             case RD_INT16:
             case RD_CERT16:
-                dest += sprintf((char*)dest, "%d", decode_int16(rdata));
+                dest += sprintf(dest, "%d", decode_int16(rdata));
                 rdata += 2;
                 break;
 
             case RD_INT32:
-                dest += sprintf((char*)dest, "%d", decode_int32(rdata));
+                dest += sprintf(dest, "%d", decode_int32(rdata));
                 rdata += 4;
                 break;
 
@@ -1061,7 +1070,7 @@ static int decode_rdata(int type,
 
             case RD_GWTYPE:
                 tempvar = *rdata;
-                dest += sprintf((char*)dest, "%d", tempvar);
+                dest += sprintf(dest, "%d", tempvar);
                 rdata++;
                 break;
 
@@ -1099,22 +1108,22 @@ static int decode_rdata(int type,
     return dest - dstart;
 }
 
-int encode_rr(unsigned char* name,
+int encode_rr(char* name,
               int type,
               int class,
-              unsigned char* ttl,
-              unsigned char* rdata,
-              unsigned char* dest,
-              unsigned char* origin)
+              char* ttl,
+              char* rdata,
+              char* dest,
+              char* origin)
 {
     int seconds = parse_ttl(ttl);
     encode_int32(seconds, dest);
 
-    unsigned char* ptr = encode_owner(name, (short*)(dest+12), origin);
+    char* ptr = encode_owner(name, dest+12, origin);
 
     if (type == 32769) /* special case for DLV */
         type = 100;
-    if (type < 1 && type >= NUM_TYPES) {
+    if (type < 1 || type >= NUM_TYPES) {
         printf("Unsupported RR type %d\n", type);
         exit(-1);
     }
@@ -1124,7 +1133,7 @@ int encode_rr(unsigned char* name,
     encode_int16(class, ptr);
     ptr += 2;
 
-    unsigned char* tmp = ptr;
+    char* tmp = ptr;
     ptr = encode_rdata(type, rdata, ptr, origin);
 
     encode_int32(ptr - dest - 12, dest+4); /* cmplen */
@@ -1133,9 +1142,9 @@ int encode_rr(unsigned char* name,
     return ptr - dest;
 }
 
-int decode_rr(unsigned char* src, unsigned char* dest)
+int decode_rr(char* src, char* dest)
 {
-    unsigned char* start = dest;
+    char* start = dest;
     int ttl = decode_int32(src);
     src += 8;
 
@@ -1145,7 +1154,7 @@ int decode_rr(unsigned char* src, unsigned char* dest)
     decode_owner(&src, &dest);
     *dest++ = ' ';
 
-    dest += sprintf((char*)dest, "%d ", ttl);
+    dest += sprintf(dest, "%d ", ttl);
 
     int type = decode_int16(src);
     src += 2;
@@ -1153,14 +1162,14 @@ int decode_rr(unsigned char* src, unsigned char* dest)
     src += 2;
 
     if (class > 0 && class < NUM_CLASSES)
-        dest += sprintf((char*)dest, "%s ", classname[class]);
+        dest += sprintf(dest, "%s ", classname[class]);
     else
-        dest += sprintf((char*)dest, "CLASS%d ", type);
+        dest += sprintf(dest, "CLASS%d ", type);
 
     if (type > 0 && type < NUM_TYPES)
-        dest += sprintf((char*)dest, "%s ", typename[type]);
+        dest += sprintf(dest, "%s ", typename[type]);
     else
-        dest += sprintf((char*)dest, "TYPE%d ", type);
+        dest += sprintf(dest, "TYPE%d ", type);
         
     dest += decode_rdata(type, src, dest, rdlen);
 
@@ -1171,7 +1180,7 @@ int decode_rr(unsigned char* src, unsigned char* dest)
 static void hexdump(void* ptr, int count)
 {
     const int DUMP_LINE_LEN = 16;
-    unsigned char* buffer = ptr;
+    char* buffer = ptr;
 
     int l;
     for (l=0; l<=count/DUMP_LINE_LEN; l++) {
@@ -1208,12 +1217,12 @@ static void hexdump(void* ptr, int count)
 #ifdef STANDALONE
 int main(void)
 {
-    unsigned char buf1[MAX_LINE_LEN];
-    unsigned char buf2[MAX_LINE_LEN];
+    char buf1[MAX_LINE_LEN];
+    char buf2[MAX_LINE_LEN];
 
 #if 1
-    unsigned char* p1 = buf1;
-    unsigned char* p2 = buf2;
+    char* p1 = buf1;
+    char* p2 = buf2;
     strcpy(buf1, "ns1 postmaster.all.rr.org.");
 //    encode_string(&p1, &p2, true, "origin.se.");
     printf("p2: %p\n", p2);
@@ -1224,17 +1233,17 @@ int main(void)
 #else
 
     memset(buf1, 0x55, sizeof(buf1));
-    unsigned char arg1[MAX_LINE_LEN] = "1:192.168.42.0/26 1:192.168.42.64/26 1:192.168.42.128/25 1:224.0.0.0/4 2:ff00:0000:0000:0000:0000:0000:0000:0000/8";
-    int len = encode_rr((unsigned char*)"opendnssec.se.", 42, 1,
-                        (unsigned char*)"2h", arg1, buf1,
-                        (unsigned char*)"origin.");
+    char arg1[MAX_LINE_LEN] = "1:192.168.42.0/26 1:192.168.42.64/26 1:192.168.42.128/25 1:224.0.0.0/4 2:ff00:0000:0000:0000:0000:0000:0000:0000/8";
+    int len = encode_rr("opendnssec.se.", 42, 1,
+                        "2h", arg1, buf1,
+                        "origin.");
     hexdump(buf1, len);
 
     memset(buf2, 0xaa, sizeof(buf2));
     decode_rr(buf1, buf2);
     printf("%s\n", arg1);
     printf("%s\n", buf2);
-    hexdump(buf2, strlen((char*)buf2)+5);
+    hexdump(buf2, strlen(buf2)+5);
 
 #endif
 

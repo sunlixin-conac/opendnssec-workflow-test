@@ -103,9 +103,9 @@ int parse_rrclass(const char* s)
       to a type name. Recognized class names: IN, CH, CS, HS, CLASSxx
     */
 
-    switch (s[0]) {
+    switch (toupper(s[0])) {
         case 'C':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'H': return 3;
                 case 'L': return atoi(s+5);
             }
@@ -113,12 +113,12 @@ int parse_rrclass(const char* s)
 
         case 'H':
             /* ensure it is not type HINFO */
-            if (s[1] == 'S')
+            if (toupper(s[1]) == 'S')
                 return 4;
             break;
 
         case 'I':
-            if (s[1] == 'N')
+            if (toupper(s[1]) == 'N')
                 return 1;
             break;
     }
@@ -134,9 +134,9 @@ int parse_rrtype(const char* s)
        NULL, OPT, TKEY, TSIG, IXFR, AXFR, MAILB, MAILA, *
     */
 
-    switch (s[0]) {
+    switch (toupper(s[0])) {
         case 'A':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case '6': return 38;  /* A6 */
                 case 'A': return 28;  /* AAAA */
                 case 'F': return 18;  /* AFSDB */
@@ -147,17 +147,17 @@ int parse_rrtype(const char* s)
             break;
             
         case 'C':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'E': return 37; /* CERT*/
                 case 'N': return 5;  /* CNAME */
             }
             break;
 
         case 'D':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'L': return 32769; /* DLV */
                 case 'N':
-                    switch (s[2]) {
+                    switch (toupper(s[2])) {
                         case 'A': return 39; /* DNAME */
                         case 'S': return 48; /* DNSKEY */
                     }
@@ -170,7 +170,7 @@ int parse_rrtype(const char* s)
         case 'E': return 31; /* EID */
 
         case 'G':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'I': return 102; /* GID */
                 case 'P': return 27; /* GPOS */
             }
@@ -180,14 +180,14 @@ int parse_rrtype(const char* s)
             return 13; /* HINFO */
 
         case 'I':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'P': return 45;  /* IPSECKEY */
                 case 'S': return 20;  /* ISDN */
             }
             break;
 
         case 'K':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'E': return 25; /* KEY */;
                 case 'X': return 36; /* KX */
             }
@@ -196,7 +196,7 @@ int parse_rrtype(const char* s)
         case 'L': return 29; /* LOC */
 
         case 'M':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'B': return 7;  /* MB */
                 case 'D': return 3;  /* MD */
                 case 'F': return 4;  /* MF */
@@ -208,18 +208,18 @@ int parse_rrtype(const char* s)
             break;
 
         case 'N':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'A': return 35; /* NAPTR */
 
                 case 'I':
-                    switch (s[2]) {
+                    switch (toupper(s[2])) {
                         case 'M': return 32; /* NIMLOC */
                         case 'N': return 56; /* NINFO */
                     }
                     break;
                     
                 case 'S':
-                    switch (s[2]) {
+                    switch (toupper(s[2])) {
                         case 'A': /* NSAP* */
                             switch (s[4] == '_') {
                                 case '_': return 23; /* NSAP_PTR */
@@ -230,7 +230,7 @@ int parse_rrtype(const char* s)
                         case 'E':
                             switch (s[4]) {
                                 case '3':
-                                    switch (s[5]) {
+                                    switch (toupper(s[5])) {
                                         case 'P': return 51; /* NSEC3PARAM */
                                         default: return 50;  /* NSEC3 */
                                     }
@@ -250,14 +250,14 @@ int parse_rrtype(const char* s)
             break;
 
         case 'P':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'T': return 12; /* PTR */
                 case 'X': return 26; /* PX */
             }
             break;
 
         case 'R':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'K': return 57; /* RKEY */
                 case 'P': return 17; /* RP */
                 case 'R': return 46; /* RRSIG */
@@ -266,9 +266,9 @@ int parse_rrtype(const char* s)
             break;
 
         case 'S':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'I':
-                    switch (s[2]) {
+                    switch (toupper(s[2])) {
                         case 'G': return 24; /* SIG */
                         case 'N': return 40; /* SINK */
                     }
@@ -281,7 +281,7 @@ int parse_rrtype(const char* s)
             break;
 
         case 'T':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'A': return 32768; /* TA */;
                 case 'X': return 16;  /* TXT */
                 case 'Y': return atoi(s+4); /* TYPExx */
@@ -289,9 +289,9 @@ int parse_rrtype(const char* s)
             break;
 
         case 'U':
-            switch (s[1]) {
+            switch (toupper(s[1])) {
                 case 'I': 
-                    switch (s[2]) {
+                    switch (toupper(s[2])) {
                         case 'D': return 101; /* UID */
                         case 'N': return 100; /* UINFO */
                     }
@@ -381,7 +381,7 @@ int read_file(char* filename,
     }
 
     /* skip over any leading dots */
-    while (*origin == '.')
+    while (origin && *origin == '.')
         origin++;
 
     int currclass = 0;
@@ -598,7 +598,7 @@ int read_file(char* filename,
             exit(-1);
         }
 
-        unsigned char buf[MAX_LINE_LEN];
+        char buf[MAX_LINE_LEN];
         if (!rrtype) {
             printf("No RR type!\n");
             exit(-1);
@@ -607,10 +607,7 @@ int read_file(char* filename,
         printf("Line %d: typ %d, class %d, ttl %s, rdata: %s\n",
                linenumber, rrtype, class, ttl, p);
 #endif
-        int len = encode_rr((unsigned char*)name, rrtype, class,
-                            (unsigned char*)ttl,
-                            (unsigned char*)p, buf,
-                            (unsigned char*)origin);
+        int len = encode_rr(name, rrtype, class, ttl, p, buf, origin);
         char* rr = malloc(len);
         memcpy(rr, buf, len);
 
@@ -718,9 +715,9 @@ int main(int argc, char* argv[])
 
     DEBUGF("Writing...\n");
     int i;
-    unsigned char buf[MAX_LINE_LEN];
+    char buf[MAX_LINE_LEN];
     for (i=0; i<g.linecount; i++) {
-        int len = decode_rr((unsigned char*)g.lines[i], buf);
+        int len = decode_rr(g.lines[i], buf);
         fwrite(buf, 1, len, outf);
     }
     fclose(outf);
