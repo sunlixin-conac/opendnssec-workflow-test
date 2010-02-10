@@ -890,26 +890,23 @@ static void encode_cert16(char** _src, char** _dest)
     if (isdigit(*src))
         cert = atoi(src);
     else {
-        while (!cert) {
-            switch (toupper(*src++)) {
-                case 'P':
-                    switch (toupper(*src++)) {
-                        case 'K': cert = 1; break; /* PKIX */
-                        case 'G': cert = 3; break; /* PGP */
-                        default:
-                            printf("Unknown certificate type: %s\n", *_src);
-                            exit(-1);
-                    }
-                    break;
+        switch (toupper(*src++)) {
+            case 'P':
+                switch (toupper(*src++)) {
+                    case 'K': cert = 1; break; /* PKIX */
+                    case 'G': cert = 3; break; /* PGP */
+                }
+                break;
 
-                case 'S': cert = 2; break; /* SPKI */
-                case 'U': cert = 253; break; /* URI */
-                case 'O': cert = 254; break; /* OID */
-                default:
-                    printf("Unknown certificate type: %s\n", *_src);
-                    exit(-1);
-            }
+            case 'S': cert = 2; break; /* SPKI */
+            case 'U': cert = 253; break; /* URI */
+            case 'O': cert = 254; break; /* OID */
         }
+    }
+
+    if (!cert) {
+        printf("Unknown certificate type: %s\n", *_src);
+        exit(-1);
     }
 
     encode_int16(cert, dest);
@@ -920,7 +917,6 @@ static void encode_cert16(char** _src, char** _dest)
 
     *_src = src;
     *_dest = dest;
-    
 }
 
 static void* encode_rdata(int type,
