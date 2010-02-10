@@ -87,12 +87,12 @@ enum {
     RD_A,
     RD_AAAA,
     RD_LOC,    /* TODO: RFC 1876 */
-    RD_BASE16,
     RD_BASE64,
     RD_GWTYPE,  /* for IPSECKEY */
     RD_GATEWAY, /* for IPSECKEY */
     RD_APL,
     RD_CERT16,  /* for CERT */
+    RD_HIP,
 };
 
 static const char format_list[NUM_TYPES][8] = {
@@ -153,7 +153,7 @@ static const char format_list[NUM_TYPES][8] = {
     /* 52: Unassigned */ { 0 },
     /* 53: Unassigned */ { 0 },
     /* 54: Unassigned */ { 0 },
-    /* 55: HIP */   { 0 }, /* not supported by OpenDNSSEC */
+    /* 55: HIP */   { 1, RD_HIP },
     /* 56: NINFO */ { 0 }, /* not supported by OpenDNSSEC */
     /* 57: RKEY */  { 0 }, /* not supported by OpenDNSSEC */
     /* 58: Unassigned */ { 0 },
@@ -211,15 +211,30 @@ static int parse_ttl(char* ttl)
     return seconds;
 }
 
-static void encode_base16(char** _src, char** _dest)
+static const char int2hex[16] = "0123456789ABCDEF";
+static const char hex2int[128] = {
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,1,2,3,4,5,6,7,8,9,0,0,0,0,0,0,
+    0,10,11,12,13,14,15,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,10,11,12,13,14,15,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+};
+
+static void encode_base16(char** _src, char** _dest, bool stop_at_space)
 {
     char* src = *_src;
     char* dest = *_dest;
 
     while (*src && *src != '\n') {
+        if (stop_at_space && isspace(*src))
+            break;
         while (*src && isspace(*src))
             src++;
-        *dest++ = (src[0]<<8) | src[1];
+        
+        *dest++ = (hex2int[src[0] & 127] << 4) | hex2int[src[1] & 127];
         src += 2;
     }
 
@@ -227,16 +242,14 @@ static void encode_base16(char** _src, char** _dest)
     *_dest = dest;
 }
 
-static void decode_base16(char** _src, char** _dest,
-                          int bytes)
+static void decode_base16(char** _src, char** _dest, int bytes)
 {
     char* src = *_src;
     char* dest = *_dest;
 
     while (bytes--) {
-        dest[0] = ((*src & 0xf0) >> 8) + '0';
-        dest[1] = (*src & 0x0f) + '0';
-        dest += 2;
+        *dest++ = int2hex[*src >> 4];
+        *dest++ = int2hex[*src & 15];
         src++;
     }
 
@@ -267,7 +280,7 @@ static const char decoder[256] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 /* Note: "encode" in this context means transform from ascii to binary */
-static int encode_base64(char** _src, char** _dest)
+static int encode_base64(char** _src, char** _dest, bool stop_at_space)
 {
     char* src = *_src;
     char* dest = *_dest;
@@ -277,6 +290,8 @@ static int encode_base64(char** _src, char** _dest)
     char_count = 0;
     bits = 0;
     while (*src && *src != '\n') {
+        if (stop_at_space && isspace(*src))
+            break;
         int c = *src++;
 	if (c == '=')
             break;
@@ -293,7 +308,7 @@ static int encode_base64(char** _src, char** _dest)
 	} else
 	    bits <<= 6;
     }
-    if (*src && *src != '\n') {
+    if (*src && *src != '\n' && !(stop_at_space && isspace(*src))) {
 	switch (char_count) {
             case 1:
                 fprintf(stderr, "base64 encoding incomplete: at least 2 bits missing");
@@ -919,10 +934,76 @@ static void encode_cert16(char** _src, char** _dest)
     *_dest = dest;
 }
 
-static void* encode_rdata(int type,
-                          char* rdata,
-                          char* dest,
-                          char* origin)
+static void encode_hip(char** _src, char** _dest, char* origin)
+{
+    char* src = *_src;
+    char* dest = *_dest;
+
+    dest++; /* skip HIT length */
+
+    *dest++ = atoi(src); /* PK algorithm */
+
+    while (isdigit(*src))
+        src++;
+    while (isspace(*src))
+        src++;
+
+    dest += 2; /* skip PK length */
+
+    /* encode HIT */
+    char* tmp = dest;
+    encode_base16(&src, &dest, true);
+    while (isspace(*src))
+        src++;
+    **_dest = dest - tmp; /* HIT length */
+
+    /* encode PK */
+    tmp = dest;
+    encode_base64(&src, &dest, true);
+    while (*src && isspace(*src))
+        src++;
+    encode_int16(dest - tmp, *_dest + 2); /* PK length */
+
+    /* encode all Rendezvous Servers */
+    while (*src) {
+        encode_string(&src, &dest, true, origin);
+        while (*src && isspace(*src))
+            src++;
+    }
+    
+    *_src = src;
+    *_dest = dest;
+}
+
+static void decode_hip(char** _src, char** _dest, int length)
+{
+    char* src = *_src;
+    char* dest = *_dest;
+
+    int hitlen = *src++;
+    int pkalgo = *src++;
+    dest += sprintf(dest, "%d ", pkalgo);
+
+    int pklen = decode_int16(src);
+    src += 2;
+
+    decode_base16(&src, &dest, hitlen); /* HIT */
+
+    *dest++ = ' ';
+    
+    decode_base64(&src, &dest, pklen); /* PK */
+
+    while (src - *_src < length) { /* RVSs */
+        *dest++ = ' ';
+        decode_string(&src, &dest, true);
+    }
+    
+    *_src = src;
+    *_dest = dest;
+}
+
+
+static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
 {
     static int tempvar = -1;
     const char* format = format_list[type];
@@ -955,12 +1036,8 @@ static void* encode_rdata(int type,
                 encode_int(&rdata, &dest, format[i]);
                 break;
 
-            case RD_BASE16:
-                encode_base16(&rdata, &dest);
-                break;
-
             case RD_BASE64:
-                encode_base64(&rdata, &dest);
+                encode_base64(&rdata, &dest, false);
                 break;
 
             case RD_GWTYPE:
@@ -999,6 +1076,10 @@ static void* encode_rdata(int type,
                 encode_cert16(&rdata, &dest);
                 break;
 
+            case RD_HIP:
+                encode_hip(&rdata, &dest, origin);
+                break;
+                
             default:
                 printf("Error! Unsupported rdata parameter type %d.\n", format[i]);
                 exit(-1);
@@ -1056,10 +1137,6 @@ static int decode_rdata(int type,
                 rdata += 4;
                 break;
 
-            case RD_BASE16:
-                decode_base16(&rdata, &dest, rdlen - (rdata - rstart));
-                break;
-
             case RD_BASE64:
                 decode_base64(&rdata, &dest, rdlen - (rdata - rstart));
                 break;
@@ -1090,8 +1167,13 @@ static int decode_rdata(int type,
                 decode_apl(&rdata, &dest, rdlen - (rdata - rstart));
                 break;
 
+            case RD_HIP:
+                decode_hip(&rdata, &dest, rdlen);
+                break;
+                
             default:
-                printf("Error! Unsupported type %d.\n", format[i]);
+                printf("Error! Unsupported rdata type %d for RR %d.\n",
+                       format[i], type);
                 exit(-1);
                 break;
         }
@@ -1171,78 +1253,3 @@ int decode_rr(char* src, char* dest)
 
     return dest - start;
 }
-
-#ifdef STANDALONE
-static void hexdump(void* ptr, int count)
-{
-    const int DUMP_LINE_LEN = 16;
-    char* buffer = ptr;
-
-    int l;
-    for (l=0; l<=count/DUMP_LINE_LEN; l++) {
-        int start = l*DUMP_LINE_LEN;
-        int end = start + DUMP_LINE_LEN;
-        if ( end > count )
-            end = count;
-
-        if ( start == end )
-            break;
-
-        printf("%08x: ", (unsigned int)(ptr + l*DUMP_LINE_LEN));
-
-        /* print hex code */
-        for (int i=start; i<start+DUMP_LINE_LEN; i++ ) {
-            if ( i < end )
-                printf("%02x ", buffer[i] );
-            else
-                printf("   ");
-        }
-
-        /* print characters */
-        for (int i=start; i<end; i++ ) {
-            if ( isprint( buffer[i] ) )
-                printf("%c", buffer[i] );
-            else
-                printf(".");
-        }
-        printf("\n");
-    }
-}
-#endif
-
-#ifdef STANDALONE
-int main(void)
-{
-    char buf1[MAX_LINE_LEN];
-    char buf2[MAX_LINE_LEN];
-
-#if 1
-    char* p1 = buf1;
-    char* p2 = buf2;
-    strcpy(buf1, "ns1 postmaster.all.rr.org.");
-//    encode_string(&p1, &p2, true, "origin.se.");
-    printf("p2: %p\n", p2);
-    encode_string(&p1, &p2, true, "origin.");
-    hexdump(buf2, 64);
-    printf("p2: %p\n", p2);
-
-#else
-
-    memset(buf1, 0x55, sizeof(buf1));
-    char arg1[MAX_LINE_LEN] = "1:192.168.42.0/26 1:192.168.42.64/26 1:192.168.42.128/25 1:224.0.0.0/4 2:ff00:0000:0000:0000:0000:0000:0000:0000/8";
-    int len = encode_rr("opendnssec.se.", 42, 1,
-                        "2h", arg1, buf1,
-                        "origin.");
-    hexdump(buf1, len);
-
-    memset(buf2, 0xaa, sizeof(buf2));
-    decode_rr(buf1, buf2);
-    printf("%s\n", arg1);
-    printf("%s\n", buf2);
-    hexdump(buf2, strlen(buf2)+5);
-
-#endif
-
-    return 0;
-}
-#endif
