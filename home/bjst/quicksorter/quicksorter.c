@@ -60,19 +60,10 @@
 
 #define START_LINE_COUNT 131072 /* 2^17 */
 
-struct mmap {
-    void* ptr;
-    int size;
-};
-
 struct global_data {
     int linecount;
     int listsize;
     char** lines;
-
-    int bufcount;
-    int arraysize;
-    struct mmap* buffers;
 };
 
 bool inside_string(char* start, char* pos)
@@ -351,21 +342,6 @@ int read_file(char* filename,
         return -4;
     }        
 
-    /* store the mmap buffer pointer in a global array */
-    struct mmap* mbuf;
-    if (g->bufcount >= g->arraysize) {
-        /* we need to realloc the mmap array */
-        g->arraysize *= 2;
-        g->buffers = realloc(g->buffers, g->arraysize * sizeof(struct mmap));
-        if (!g->buffers) {
-            perror("buffers realloc");
-            exit(-1);
-        }
-    }
-    mbuf = &(g->buffers[g->bufcount++]);
-    mbuf->ptr = buffer;
-    mbuf->size = statbuf.st_size;
-    
     int listlen = statbuf.st_size / 40; /* guesstimate line count */
     if (g->linecount + listlen > g->listsize) {
         /* we need to realloc the line array */
@@ -628,6 +604,8 @@ int read_file(char* filename,
         linenumber++;
     }
 
+    munmap(buffer, statbuf.st_size);
+    
     return 0;
 }
 
@@ -638,14 +616,6 @@ void init_global_data(struct global_data* g)
     g->lines = malloc(g->listsize * sizeof(char*));
     if (!g->lines) {
         perror("lines malloc");
-        exit(-1);
-    }
-
-    g->bufcount = 0;
-    g->arraysize = 1; /* low start value to force realloc testing */
-    g->buffers = malloc(g->arraysize * sizeof(struct mmap));
-    if (!g->buffers) {
-        perror("buffers malloc");
         exit(-1);
     }
 }
@@ -726,9 +696,6 @@ int main(int argc, char* argv[])
     for (i=0; i<g.linecount; i++)
         free(g.lines[i]);
     free(g.lines);
-    for (i=0; i<g.bufcount; i++)
-        munmap(g.buffers[i].ptr, g.buffers[i].size);
-    free(g.buffers);
     
     return 0;
 }
