@@ -51,7 +51,7 @@
 #define MAX_LINE_LEN 65535
 
 #ifdef DEBUG
-#define DEBUGF(...) fprintf(stderr__, VA_ARGS__)
+#define DEBUGF(...) fprintf(stderr, __VA_ARGS__)
 #else
 #define DEBUGF(...)
 #endif
@@ -444,19 +444,11 @@ int read_file(char* filename,
             paren++;
         }
         if (paren) {
-            /* multi-line started.
-               connect this line with next (fill to eol with space) */
-            memset(paren, ' ', end - paren + 1);
+            *paren = ' ';
+            p = paren;
 
             /* join lines until ')' */
             while (1) {
-                end = strchr(p, '\n');
-                if (!end) {
-                    fprintf(stderr,"%s:%d: Unclosed parenthesis\n", filename, linenumber);
-                    exit(-1);
-                }
-                *end = 0;
-
                 /* find and remove comment */
                 char* comment = strchr(p, ';');
                 if (comment)
@@ -478,6 +470,14 @@ int read_file(char* filename,
 
                 p = end + 1; /* go to next line */
                 linenumber++;
+
+                /* find end of line */
+                end = strchr(p, '\n');
+                if (!end) {
+                    fprintf(stderr,"%s:%d: Unclosed parenthesis\n", filename, linenumber);
+                    exit(-1);
+                }
+                *end = 0;
             }
         }
 
@@ -661,14 +661,6 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    /* open outfile before reading and sorting,
-       to make sure we can create it */
-    FILE* outf = fopen(outfile, "w");
-    if (!outf) {
-        perror(outfile);
-        return -5;
-    }
-
     /* set locale to C, to avoid national quirks */
     setlocale(LC_CTYPE, "C");
 
@@ -683,6 +675,13 @@ int main(int argc, char* argv[])
     DEBUGF("Writing...\n");
     int i;
     char buf[MAX_LINE_LEN];
+
+    FILE* outf = fopen(outfile, "w");
+    if (!outf) {
+        perror(outfile);
+        return -5;
+    }
+
     for (i=0; i<g.linecount; i++) {
         int len = decode_rr(g.lines[i], buf);
         fwrite(buf, 1, len, outf);
