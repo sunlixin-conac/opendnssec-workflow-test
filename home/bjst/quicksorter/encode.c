@@ -94,6 +94,7 @@ enum {
     RD_APL,
     RD_CERT16,  /* for CERT */
     RD_HIP,
+    RD_NSAP
 };
 
 static const char format_list[NUM_TYPES][8] = {
@@ -120,7 +121,7 @@ static const char format_list[NUM_TYPES][8] = {
     /* 19: X25 */   { 1, RD_STRING },
     /* 20: ISDN */  { 2, RD_STRING, RD_STRING },
     /* 21: RT */    { 2, RD_INT16, RD_STRING },
-    /* 22: NSAP */  { 1, RD_STRING },
+    /* 22: NSAP */  { 1, RD_NSAP },
     /* 23: NSAP-PTR */ {0}, /* obsoleted */
     /* 24: SIG */   { 0 }, /* not supported by OpenDNSSEC */
     /* 25: KEY */   { 0 }, /* not supported by OpenDNSSEC */
@@ -213,7 +214,7 @@ static int parse_ttl(char* ttl)
     return seconds;
 }
 
-static void encode_base16(char** _src, char** _dest, bool stop_at_space)
+static void encode_base16(char** _src, char** _dest, bool stop_on_noise)
 {
     static const char hex2int[128] = {
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -225,9 +226,9 @@ static void encode_base16(char** _src, char** _dest, bool stop_at_space)
     char* dest = *_dest;
 
     while (*src && *src != '\n') {
-        if (stop_at_space && isspace(*src))
+        if (stop_on_noise && !isalnum(*src))
             break;
-        while (*src && isspace(*src))
+        while (*src && !isalnum(*src))
             src++;
         if (!*src)
             break;
@@ -1071,6 +1072,19 @@ static void decode_generic(char** _src, char** _dest, int bytes)
     decode_base16(_src, _dest, bytes);
 }
 
+/* NSAP: RFC 1637 */
+static void encode_nsap(char** _src, char** _dest)
+{
+    (*_src) += 2; /* step over "0x" */
+    encode_base16(_src, _dest, false);
+}
+
+static void decode_nsap(char** _src, char** _dest, int bytes)
+{
+    *_dest += sprintf(*_dest, "0x");
+    decode_base16(_src, _dest, bytes);
+}
+
 static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
 {
     static int tempvar = -1;
@@ -1159,6 +1173,10 @@ static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
 
             case RD_HIP:
                 encode_hip(&rdata, &dest, origin);
+                break;
+                
+            case RD_NSAP:
+                encode_nsap(&rdata, &dest);
                 break;
                 
             default:
@@ -1263,6 +1281,10 @@ static int decode_rdata(int type,
                 decode_hip(&rdata, &dest, rdlen);
                 break;
                 
+            case RD_NSAP:
+                decode_nsap(&rdata, &dest, rdlen);
+                break;
+
             default:
                 fprintf(stderr,"Error! Unsupported rdata type %d for RR %d.\n",
                        format[i], type);
