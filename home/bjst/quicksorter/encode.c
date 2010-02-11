@@ -153,7 +153,7 @@ static const char format_list[NUM_TYPES][8] = {
     /* 52: Unassigned */ { 0 },
     /* 53: Unassigned */ { 0 },
     /* 54: Unassigned */ { 0 },
-    /* 55: HIP */   { 1, RD_HIP },
+    /* 55: HIP */   { 0 },
     /* 56: NINFO */ { 0 }, /* not supported by OpenDNSSEC */
     /* 57: RKEY */  { 0 }, /* not supported by OpenDNSSEC */
     /* 58: Unassigned */ { 0 },
