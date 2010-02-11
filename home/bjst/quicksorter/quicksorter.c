@@ -51,7 +51,7 @@
 #define MAX_LINE_LEN 65535
 
 #ifdef DEBUG
-#define DEBUGF(...) printf(__VA_ARGS__)
+#define DEBUGF(...) fprintf(stderr__, VA_ARGS__)
 #else
 #define DEBUGF(...)
 #endif
@@ -77,7 +77,7 @@ bool inside_string(char* start, char* pos)
                     inside = !inside;
             }
             else {
-                printf("String starter (\") found at column 1!\n");
+                fprintf(stderr,"String starter (\") found at column 1!\n");
                 exit(-1);
             }
         }
@@ -452,7 +452,7 @@ int read_file(char* filename,
             while (1) {
                 end = strchr(p, '\n');
                 if (!end) {
-                    printf("%s:%d: Unclosed parenthesis\n", filename, linenumber);
+                    fprintf(stderr,"%s:%d: Unclosed parenthesis\n", filename, linenumber);
                     exit(-1);
                 }
                 *end = 0;
@@ -522,7 +522,7 @@ int read_file(char* filename,
                             goto next_line;
 
                         case 0:
-                            printf("%s:%d: Unknown RR: %s\n", filename, linenumber, p);
+                            fprintf(stderr,"%s:%d: Unknown RR: %s\n", filename, linenumber, p);
                             exit(-1);
                             break;
                     }
@@ -562,7 +562,7 @@ int read_file(char* filename,
             ttl = dnskey_ttl;
 
         if (!ttl) {
-            printf("%s:%d: No TTL\n", filename, linenumber);
+            fprintf(stderr,"%s:%d: No TTL\n", filename, linenumber);
             exit(-1);
         }
 
@@ -570,19 +570,16 @@ int read_file(char* filename,
         if (!class)
             class = currclass;
         if (!class) {
-            printf("%s:%d: No class\n", filename, linenumber);
+            fprintf(stderr,"%s:%d: No class\n", filename, linenumber);
             exit(-1);
         }
 
         char buf[MAX_LINE_LEN];
         if (!rrtype) {
-            printf("No RR type!\n");
+            fprintf(stderr,"No RR type!\n");
             exit(-1);
         }
-#if 0
-        printf("Line %d: typ %d, class %d, ttl %s, rdata: %s\n",
-               linenumber, rrtype, class, ttl, p);
-#endif
+
         int len = encode_rr(name, rrtype, class, ttl, p, buf, origin);
         char* rr = malloc(len);
         memcpy(rr, buf, len);
@@ -660,7 +657,7 @@ int main(int argc, char* argv[])
     }
 
     if (!infile || !outfile) {
-        printf("%s\n", help);
+        fprintf(stderr, "%s\n", help);
         return -1;
     }
 

@@ -390,7 +390,7 @@ static void encode_string(char** _src,
     bool copyorigin = false;
     if (domain_name && *src == '@') {
         if (!origin) {
-            printf("Error: No origin!\n");
+            fprintf(stderr,"Error: No origin!\n");
             exit(-1);
         }
         src = origin;
@@ -440,7 +440,7 @@ static void encode_string(char** _src,
         
         if (domain_name && src[-1] != '.' && !copyorigin) {
             if (!origin) {
-                printf("Error: No origin!\n");
+                fprintf(stderr,"Error: No origin!\n");
                 exit(-1);
             }
             dest[0] = len - 1;
@@ -457,7 +457,7 @@ static void encode_string(char** _src,
     dest += len;
 
     if (len > 255) {
-        printf("String '%s' is too long! (%d bytes)\n", src, len);
+        fprintf(stderr,"String '%s' is too long! (%d bytes)\n", src, len);
         exit(-1);
     }
 
@@ -571,7 +571,7 @@ static void encode_ipv4(char** src, char** dest)
     *end = 0;
 
     if (!inet_pton(AF_INET, *src, *dest)) {
-        printf("Failed encoding ipv4 address: %s!\n", *src);
+        fprintf(stderr,"Failed encoding ipv4 address: %s!\n", *src);
         exit(-1);
     }
                
@@ -585,7 +585,7 @@ static void encode_ipv4(char** src, char** dest)
 static void decode_ipv4(char** src, char** dest)
 {
     if (!inet_ntop(AF_INET, *src, *dest, INET_ADDRSTRLEN)) {
-        printf("Failed encoding ipv4 address: %s!\n", *src);
+        fprintf(stderr,"Failed encoding ipv4 address: %s!\n", *src);
         exit(-1);
     }
     while (**dest)
@@ -827,7 +827,7 @@ static void encode_apl(char** _src, char** _dest)
                 break;
 
             default:
-                printf("Unsupported APL address family %d\n", afi);
+                fprintf(stderr,"Unsupported APL address family %d\n", afi);
                 exit(-1);
         }
         *slash = '/';
@@ -864,7 +864,7 @@ static void decode_apl(char** _src, char** _dest, int bytes)
             case 1: decode_ipv4(&src, &dest); break;
             case 2: decode_ipv6(&src, &dest); break;
             default:
-                printf("Unsupported APL address family %d\n", afi);
+                fprintf(stderr,"Unsupported APL address family %d\n", afi);
                 exit(-1);
         }
         dest += sprintf(dest, "/%d ", prefix);
@@ -922,7 +922,7 @@ static void encode_cert16(char** _src, char** _dest)
     }
 
     if (!cert) {
-        printf("Unknown certificate type: %s\n", *_src);
+        fprintf(stderr,"Unknown certificate type: %s\n", *_src);
         exit(-1);
     }
 
@@ -1043,7 +1043,7 @@ static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
     }
     else {
         if (format && !pcount) {
-            printf("Unsupported RR type %s\n", typename[type]);
+            fprintf(stderr,"Unsupported RR type '%s'\n", typename[type]);
             exit(-1);
         }
     }
@@ -1090,7 +1090,7 @@ static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
                     case 2: encode_ipv6(&rdata, &dest); break;
                     case 3: encode_string(&rdata, &dest, true, origin); break;
                     default:
-                        printf("Error! Unsupported gwtype %d.\n", tempvar);
+                        fprintf(stderr,"Error! Unsupported gwtype %d.\n", tempvar);
                         exit(-1);
                 }
 
@@ -1117,7 +1117,7 @@ static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
                 break;
                 
             default:
-                printf("Error! Unsupported rdata parameter type %d.\n", format[i]);
+                fprintf(stderr,"Error! Unsupported rdata parameter type %d.\n", format[i]);
                 exit(-1);
                 break;
         }
@@ -1219,7 +1219,7 @@ static int decode_rdata(int type,
                 break;
                 
             default:
-                printf("Error! Unsupported rdata type %d for RR %d.\n",
+                fprintf(stderr,"Error! Unsupported rdata type %d for RR %d.\n",
                        format[i], type);
                 exit(-1);
                 break;
