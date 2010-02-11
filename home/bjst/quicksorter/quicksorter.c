@@ -658,6 +658,13 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    /* check that origin ends with a dot */
+    if (origin && origin[strlen(origin) - 1] != '.') {
+        fprintf(stderr, "Error: The supplied origin must be an absolute name (end with a .)\n");
+        exit(-1);
+    }
+
+
     /* set locale to C, to avoid national quirks */
     setlocale(LC_CTYPE, "C");
 
