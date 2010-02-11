@@ -1,7 +1,7 @@
 # $Id$
 
-DEBUG = -g -DDEBUG
-#OPTIMIZE = -O3
+# DEBUG = -g -DDEBUG
+OPTIMIZE = -O3
 CFLAGS = -Wall -funsigned-char -std=gnu99 $(DEBUG) $(OPTIMIZE)
 LDFLAGS = $(DEBUG) $(OPTIMIZE)
 
