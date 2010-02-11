@@ -475,10 +475,16 @@ static void decode_string(char** _src, char** _dest, bool domain_name)
         int len = *src++;
         
         for (int i=0; i<len; i++) {
-            if (isprint(*src))
+            if (domain_name && (*src == '.' || *src == '\\')) {
+                *dest++ = '\\';
                 *dest++ = *src;
-            else
-                dest += sprintf(dest, "\\%03d", *src);
+            }
+            else {
+                if (isgraph(*src))
+                    *dest++ = *src;
+                else
+                    dest += sprintf(dest, "\\%03d", *src);
+            }
             src++;
         }
         if (domain_name)
@@ -550,7 +556,25 @@ static void decode_owner(char** _rr, char** _dest)
         
         /* copy segment */
         while (p < end) {
-            *dest++ = ntohs(*p) & 0xff;
+            int c = ntohs(*p) & 0xff;
+            switch (c) {
+                case '.':
+                    *dest++ = '\\';
+                    *dest++ = '.';
+                    break;
+
+                case '\\':
+                    *dest++ = '\\';
+                    *dest++ = '\\';
+                    break;
+
+                default:
+                    if (isgraph(c))
+                        *dest++ = c;
+                    else
+                        dest += sprintf(dest, "\\%03d", c);
+                    break;
+            }
             p++;
         }
         *dest++ = '.';
