@@ -1041,7 +1041,13 @@ static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
         encode_generic(&rdata, &dest);
         pcount = 0;
     }
-
+    else {
+        if (format && !pcount) {
+            printf("Unsupported RR type %s\n", typename[type]);
+            exit(-1);
+        }
+    }
+    
     for (int i=1; i <= pcount; i++) {
         switch (format[i]) {
             case RD_NAME:
