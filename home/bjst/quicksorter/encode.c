@@ -40,26 +40,26 @@
 
 /* Internal binary RR format:
 
-   ttl      - (int) ttl value.
-   cmplen   - (int) length of data to compare (starting at 'owner')
-   rdlen    - (int) rdata length
-   owner    - owner name, stored backwards (i.e. 'com.example.www').
-              each character is stored in a (short), with specials values
+   ttl      - (32-bit word) TTL value.
+   cmplen   - (32-bit word) Length of data to compare (starting at 'owner')
+   rdlen    - (32-bit word) RDATA length
+   owner    - Owner name, stored backwards (i.e. 'com.example.www').
+              Each character is stored in a 16-bit word, with special values
               for end-of-segment and end-of-string
-   type     - (unsigned short) RR type
-   class    - (unsigned short) RR class
-   rdata    - binary RDATA in wire format
+   type     - (16-bit word) RR type
+   class    - (16-bit word) RR class
+   rdata    - Binary RDATA in wire format
 
    The purpose of using this custom format instead of the exact wire format is
    to enable fast comparison. This way, RR records can be compared using a
    single memcmp() starting at the owner field.
 */
 
-#define NUM_TYPES 101
-#define NUM_CLASSES 5
-
 #define END_OF_SEGMENT htons(1)
 #define END_OF_NAME 0
+
+#define NUM_TYPES 101
+#define NUM_CLASSES 5
 
 static const char* typename[NUM_TYPES] = {
     NULL, "A", "NS", "MD", "MF", "CNAME", "SOA", "MB", "MG", "MR",
@@ -78,6 +78,7 @@ static const char* classname[NUM_CLASSES] = {
     NULL, "IN", NULL, "CH", "HS"
 };
 
+/* rdata data types, used in format_list below */
 enum {
     RD_INT8,
     RD_INT16,
@@ -86,7 +87,7 @@ enum {
     RD_STRING, /* wire format */
     RD_A,
     RD_AAAA,
-    RD_LOC,    /* TODO: RFC 1876 */
+    RD_LOC,
     RD_BASE64,
     RD_GWTYPE,  /* for IPSECKEY */
     RD_GATEWAY, /* for IPSECKEY */
@@ -186,6 +187,7 @@ static inline uint16_t decode_int16(void* src)
     return ntohs(*((uint16_t*)src));
 }
 
+/* convert TTL text string to seconds */
 static int parse_ttl(char* ttl)
 {
     int seconds = 0;
@@ -210,7 +212,6 @@ static int parse_ttl(char* ttl)
     }
     return seconds;
 }
-
 
 static void encode_base16(char** _src, char** _dest, bool stop_at_space)
 {
@@ -281,10 +282,9 @@ static int encode_base64(char** _src, char** _dest, bool stop_at_space)
     char* src = *_src;
     char* dest = *_dest;
 
-    int bits, char_count, errors = 0;
+    int bits = 0;
+    int char_count = 0;
 
-    char_count = 0;
-    bits = 0;
     while (*src && *src != '\n') {
         if (stop_at_space && isspace(*src))
             break;
@@ -301,15 +301,15 @@ static int encode_base64(char** _src, char** _dest, bool stop_at_space)
 	    *dest++ = bits & 0xff;
 	    bits = 0;
 	    char_count = 0;
-	} else
+	}
+        else
 	    bits <<= 6;
     }
     if (*src && *src != '\n' && !(stop_at_space && isspace(*src))) {
 	switch (char_count) {
             case 1:
                 fprintf(stderr, "base64 encoding incomplete: at least 2 bits missing");
-                errors++;
-                break;
+                exit(-1);
 
             case 2:
                 *dest++ = bits >> 10;
@@ -382,9 +382,10 @@ static void encode_string(char** _src,
 {
     char* src = *_src;
     char* dest = *_dest;
-    int len = 1; /* first byte is length */
+    int len = 1; /* start at byte 1. byte 0 stores string length */
     bool quoted = false;
     bool copyorigin = false;
+
     if (domain_name && *src == '@') {
         if (!origin) {
             fprintf(stderr,"Error: No origin!\n");
@@ -392,10 +393,12 @@ static void encode_string(char** _src,
         }
         src = origin;
     }
+
     while (1) {
         while (*src && (quoted || !isspace(*src))) {
             switch (*src) {
                 case '\\':
+                    /* parse \123 */
                     if (isdigit(src[1])) {
                         dest[len++] =
                             (src[1] - 48) * 100 +
@@ -411,6 +414,7 @@ static void encode_string(char** _src,
 
                 case '.':
                     if (domain_name) {
+                        /* start a new string segment */
                         dest[0] = len - 1;
                         dest += len;
                         len = 1;
@@ -435,6 +439,7 @@ static void encode_string(char** _src,
         if (!copyorigin)
             *_src = src;
         
+        /* do we need to append origin? */
         if (domain_name && src[-1] != '.' && !copyorigin) {
             if (!origin) {
                 fprintf(stderr,"Error: No origin!\n");
@@ -450,7 +455,7 @@ static void encode_string(char** _src,
             break;
     }
 
-    dest[0] = len - 1;
+    dest[0] = len - 1; /* store length */
     dest += len;
 
     if (len > 255) {
@@ -487,6 +492,7 @@ static void decode_string(char** _src, char** _dest, bool domain_name)
     *_dest = dest;
 }
 
+/* encodes the special 16-bit "backwards" format used for RR owner only */
 static void* encode_owner(char* name,
                           void* dest,
                           char* origin)
@@ -520,6 +526,7 @@ static void* encode_owner(char* name,
     return dptr;
 }
 
+/* decodes the special 16-bit "backwards" format used for RR owner only */
 static void decode_owner(char** _rr, char** _dest)
 {
     uint16_t* rr = (uint16_t*)*_rr;
@@ -616,6 +623,7 @@ static void decode_ipv6(char** src, char** dest)
     *src += 16;
 }
 
+/* convert integer to power-of-ten format as used in LOC */
 static int int2pow(int value)
 {
     int power = 0;
@@ -626,6 +634,7 @@ static int int2pow(int value)
     return value << 4 | power;
 }
 
+/* convert power-of-ten format as used in LOC to integer */
 static int pow2int(int value)
 {
     int power = value & 0xf;
@@ -636,16 +645,20 @@ static int pow2int(int value)
     return value;
 }
 
-#define GLOBE_MEDIAN 2147483648U
-
+/* LOC: RFC 1876 */
+static const int globe_median = 2147483648U;
 static void encode_loc(char** _src, char** _dest)
 {
+
     char* src = *_src;
     char* dest = *_dest;
 
-    unsigned int lat, lon;
-    unsigned int val = 0;
+    unsigned int lat = 0;
+    unsigned int lon = 0;
+
     for (int i=0; i<2; i++) {
+        unsigned int val = 0;
+
         /* degrees */
         val = atoi(src) * 3600000;
         while (!isspace(*src)) src++;
@@ -668,14 +681,13 @@ static void encode_loc(char** _src, char** _dest)
         switch (*src) {
             case 'N':
             case 'E':
-                val = GLOBE_MEDIAN + val;
+                val = globe_median + val;
                 break;
 
-            default:
-                val = GLOBE_MEDIAN - val;
+            default: /* S or W */
+                val = globe_median - val;
                 break;
         }
-
         while (!isspace(*src)) src++;
         while (isspace(*src)) src++;
 
@@ -693,24 +705,28 @@ static void encode_loc(char** _src, char** _dest)
     int hp = int2pow(10000);
     int vp = int2pow(10);
 
+    /* optional parameters: */
     if (*src) {
+        /* size */
         size = int2pow(atof(src) * 100);
         while (*src && !isspace(*src)) src++;
         while (*src && isspace(*src)) src++;
 
         if (*src) {
+            /* horizontal precision */
             hp = int2pow(atof(src) * 100);
             while (*src && !isspace(*src)) src++;
             while (*src && isspace(*src)) src++;
 
             if (*src) {
+                /* vertical precision */
                 vp = int2pow(atof(src) * 100);
                 while (*src && !isspace(*src)) src++;
             }
         }
     }
         
-    *dest++ = 0; /* version */
+    *dest++ = 0; /* version, must be 0 */
     *dest++ = size;
     *dest++ = hp;
     *dest++ = vp;
@@ -718,7 +734,7 @@ static void encode_loc(char** _src, char** _dest)
     dest += 4;
     encode_int32(lon, dest);
     dest += 4;
-    encode_int32(10000000+alt, dest);
+    encode_int32(10000000 + alt, dest);
     dest += 4;
 
     *_src = src;
@@ -745,20 +761,23 @@ static void decode_loc(char** _src, char** _dest)
         int val;
         char dir;
         if (i==0) {
-            dir = (lat >= GLOBE_MEDIAN) ? 'N' : 'S';
-            val = abs(lat - GLOBE_MEDIAN);
+            dir = (lat >= globe_median) ? 'N' : 'S';
+            val = abs(lat - globe_median);
         }
         else {
-            dir = (lon >= GLOBE_MEDIAN) ? 'E' : 'W';
-            val = abs(lon - GLOBE_MEDIAN);
+            dir = (lon >= globe_median) ? 'E' : 'W';
+            val = abs(lon - globe_median);
         }
 
+        /* degrees */
         dest += sprintf(dest, "%d", val / 3600000);
         val %= 3600000;
         if (val) {
+            /* minutes */
             dest += sprintf(dest, " %d", val / 60000);
             val %= 60000;
             if (val)
+                /* seconds */
                 dest += sprintf(dest, " %.3f", val / 1000.0);
         }
 
@@ -784,6 +803,7 @@ static void decode_loc(char** _src, char** _dest)
 }
 
 
+/* APL: RFC 3123 */
 static void encode_apl(char** _src, char** _dest)
 {
     char* src = *_src;
@@ -894,6 +914,7 @@ static void encode_int(char** src, char** dest, int type)
         (*src)++;
 }
 
+/* CERT: RFC 2538 */
 static void encode_cert16(char** _src, char** _dest)
 {
     char* src = *_src;
@@ -904,6 +925,7 @@ static void encode_cert16(char** _src, char** _dest)
     if (isdigit(*src))
         cert = atoi(src);
     else {
+        /* parse mnemonic */
         switch (toupper(*src++)) {
             case 'P':
                 switch (toupper(*src++)) {
@@ -933,6 +955,7 @@ static void encode_cert16(char** _src, char** _dest)
     *_dest = dest;
 }
 
+/* HIP: RFC 5205 */
 static void encode_hip(char** _src, char** _dest, char* origin)
 {
     char* src = *_src;
@@ -1001,6 +1024,7 @@ static void decode_hip(char** _src, char** _dest, int length)
     *_dest = dest;
 }
 
+/* Generic encoding: RFC 3597 */
 static void encode_generic(char** _src, char** _dest)
 {
     /* skip over \# token */
@@ -1027,7 +1051,7 @@ static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
 {
     static int tempvar = -1;
     const char* format = NULL;
-    int pcount;
+    int pcount = 0;
 
     if (type > 0 && type < NUM_TYPES) {
         format = format_list[type];
@@ -1132,7 +1156,7 @@ static int decode_rdata(int type,
 {
     static int tempvar = -1;
     const char* format = NULL;
-    int pcount;
+    int pcount = 0;
 
     char* rstart = rdata;
     char* dstart = dest;

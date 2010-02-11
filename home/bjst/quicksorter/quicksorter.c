@@ -48,8 +48,6 @@
 
 #include "encode.h"
 
-#define MAX_LINE_LEN 65535
-
 #ifdef DEBUG
 #define DEBUGF(...) fprintf(stderr, __VA_ARGS__)
 #else
@@ -57,8 +55,6 @@
 #endif
 
 #define MIN(x,y) (x < y ? x : y)
-
-#define START_LINE_COUNT 131072 /* 2^17 */
 
 struct global_data {
     int linecount;
@@ -90,8 +86,8 @@ bool inside_string(char* start, char* pos)
 int parse_rrclass(const char* s)
 {
     /*
-      This function is used to check if the string is a class name, as opposed
-      to a type name. Recognized class names: IN, CH, CS, HS, CLASSxx
+      This function is used to check which class name 's' is.
+      Recognized class names: IN, CH, CS, HS, CLASSxx
     */
 
     switch (toupper(s[0])) {
@@ -99,6 +95,7 @@ int parse_rrclass(const char* s)
             switch (toupper(s[1])) {
                 case 'H': return 3;
                 case 'L': return atoi(s+5);
+                case 'S': return 2;
             }
             break;
 
@@ -299,7 +296,7 @@ int parse_rrtype(const char* s)
     return 0;
 }
 
-/* string comparison function for use by qsort() */
+/* comparison function for use by qsort() */
 int canonical_compare(const void* v1, const void* v2)
 {
     char* s1 = *(char**)v1;
@@ -609,7 +606,7 @@ int read_file(char* filename,
 void init_global_data(struct global_data* g)
 {
     g->linecount = 0;
-    g->listsize = START_LINE_COUNT;
+    g->listsize = 1; /* will be realloc:ed by read_file() */
     g->lines = malloc(g->listsize * sizeof(char*));
     if (!g->lines) {
         perror("lines malloc");

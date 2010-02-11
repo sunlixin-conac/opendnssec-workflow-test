@@ -30,9 +30,10 @@
  */
 #ifndef _RR_H_
 #define _RR_H_
+
+/* constants used for memory buffer sizing */
 #define MAX_LINE_LEN 65535
 #define MAX_NAME_LEN 255
-
 
 int encode_rr(char* name,
               int type,
