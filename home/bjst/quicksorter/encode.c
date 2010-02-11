@@ -233,6 +233,8 @@ static void encode_base16(char** _src, char** _dest, bool stop_at_space)
             break;
         while (*src && isspace(*src))
             src++;
+        if (!*src)
+            break;
         
         *dest++ = (hex2int[src[0] & 127] << 4) | hex2int[src[1] & 127];
         src += 2;
@@ -1002,16 +1004,44 @@ static void decode_hip(char** _src, char** _dest, int length)
     *_dest = dest;
 }
 
+static void encode_generic(char** _src, char** _dest)
+{
+    /* skip over \# token */
+    *_src += 2;
+    while (**_src && isspace(**_src))
+        (*_src)++;
+
+    /* skip over length */
+    while (**_src && isdigit(**_src))
+        (*_src)++;
+    while (**_src && isspace(**_src))
+        (*_src)++;
+
+    encode_base16(_src, _dest, false);
+}
+
+static void decode_generic(char** _src, char** _dest, int bytes)
+{
+    *_dest += sprintf(*_dest, "\\# %d ", bytes);
+    decode_base16(_src, _dest, bytes);
+}
 
 static void* encode_rdata(int type, char* rdata, char* dest, char* origin)
 {
     static int tempvar = -1;
-    const char* format = format_list[type];
-    int pcount = format[0];
-    if (pcount==0) {
-        printf("Unsupported rr type %d (%s)\n", type, typename[type]);
-        exit(-1);
+    const char* format = NULL;
+    int pcount;
+
+    if (type > 0 && type < NUM_TYPES) {
+        format = format_list[type];
+        pcount = format[0];
     }
+
+    if (rdata[0] == '\\' && rdata[1] == '#') {
+        encode_generic(&rdata, &dest);
+        pcount = 0;
+    }
+
     for (int i=1; i <= pcount; i++) {
         switch (format[i]) {
             case RD_NAME:
@@ -1098,10 +1128,21 @@ static int decode_rdata(int type,
                         int rdlen)
 {
     static int tempvar = -1;
-    const char* format = format_list[type];
-    int pcount = format[0];
+    const char* format = NULL;
+    int pcount;
+
     char* rstart = rdata;
     char* dstart = dest;
+
+    if (type > 0 && type < NUM_TYPES) {
+        format = format_list[type];
+        pcount = format[0];
+    }
+
+    if (!format) {
+        decode_generic(&rdata, &dest, rdlen);
+        pcount = 0;
+    }
 
     for (int i=1; i <= pcount; i++) {
         switch (format[i]) {
@@ -1201,10 +1242,7 @@ int encode_rr(char* name,
 
     if (type == 32769) /* special case for DLV */
         type = 100;
-    if (type < 1 || type >= NUM_TYPES) {
-        printf("Unsupported RR type %d\n", type);
-        exit(-1);
-    }
+
     encode_int16(type, ptr);
     ptr += 2;
 
