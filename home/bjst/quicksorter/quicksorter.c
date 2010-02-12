@@ -45,6 +45,9 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <arpa/inet.h>
+#ifdef DEBUG
+#include <sys/times.h>
+#endif
 
 #include "encode.h"
 
@@ -302,9 +305,9 @@ int canonical_compare(const void* v1, const void* v2)
     char* s1 = *(char**)v1;
     char* s2 = *(char**)v2;
 
-    int len1 = ntohl(*((unsigned int*)(s1+4)));
-    int len2 = ntohl(*((unsigned int*)(s2+4)));
-    
+    int len1 = *(unsigned int*)s1;
+    int len2 = *(unsigned int*)s2;
+
     int diff = memcmp(s1+12, s2+12, MIN(len1, len2));
     if (diff)
         return diff;
@@ -571,13 +574,13 @@ int read_file(char* filename,
             exit(-1);
         }
 
-        char buf[MAX_LINE_LEN];
+        unsigned int buf[MAX_LINE_LEN/sizeof(int)]; /* encourage int align */
         if (!rrtype) {
             fprintf(stderr,"No RR type!\n");
             exit(-1);
         }
 
-        int len = encode_rr(name, rrtype, class, ttl, p, buf, origin);
+        int len = encode_rr(name, rrtype, class, ttl, p, (char*)buf, origin);
         char* rr = malloc(len);
         memcpy(rr, buf, len);
 
@@ -672,11 +675,20 @@ int main(int argc, char* argv[])
     init_global_data(&g);
 
     read_file(infile, origin, default_ttl, dnskey_ttl, &g);
-    DEBUGF("Sorting %d lines\n", g.linecount);
+#ifdef DEBUG
+    int start = times(NULL);
+    printf("Read took %d ticks\n", times(NULL) - start);
+    start = times(NULL);
+#endif
 
     qsort(g.lines, g.linecount, sizeof (char*), canonical_compare);
 
-    DEBUGF("Writing...\n");
+#ifdef DEBUG
+    int ticks = times(NULL) - start;
+    printf("Sort took %d ticks\n", ticks);
+    start = times(NULL);
+#endif
+
     int i;
     char buf[MAX_LINE_LEN];
 
@@ -691,6 +703,10 @@ int main(int argc, char* argv[])
         fwrite(buf, 1, len, outf);
     }
     fclose(outf);
+
+#ifdef DEBUG
+    printf("Write took %d ticks\n", times(NULL) - start);
+#endif
 
     /* free all data */
     for (i=0; i<g.linecount; i++)

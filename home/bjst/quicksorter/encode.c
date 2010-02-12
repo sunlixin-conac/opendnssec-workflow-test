@@ -40,8 +40,8 @@
 
 /* Internal binary RR format:
 
-   ttl      - (32-bit word) TTL value.
    cmplen   - (32-bit word) Length of data to compare (starting at 'owner')
+   ttl      - (32-bit word) TTL value.
    rdlen    - (32-bit word) RDATA length
    owner    - Owner name, stored backwards (i.e. 'com.example.www').
               Each character is stored in a 16-bit word, with special values
@@ -1308,9 +1308,6 @@ int encode_rr(char* name,
               char* dest,
               char* origin)
 {
-    int seconds = parse_ttl(ttl);
-    encode_int32(seconds, dest);
-
     char* ptr = encode_owner(name, dest+12, origin);
 
     if (type == 32769) /* special case for DLV */
@@ -1325,8 +1322,10 @@ int encode_rr(char* name,
     char* tmp = ptr;
     ptr = encode_rdata(type, rdata, ptr, origin);
 
-    encode_int32(ptr - dest - 12, dest+4); /* cmplen */
-    encode_int32(ptr - tmp, dest+8); /* rdlen */
+    *(unsigned int*)dest = (ptr - dest - 12); /* cmplen */
+    int seconds = parse_ttl(ttl);
+    *(unsigned int*)(dest+4) = seconds;
+    *(unsigned int*)(dest+8) = ptr - tmp; /* rdlen */
 
     return ptr - dest;
 }
@@ -1334,10 +1333,12 @@ int encode_rr(char* name,
 int decode_rr(char* src, char* dest)
 {
     char* start = dest;
-    int ttl = decode_int32(src);
-    src += 8;
+    src += 4; /* skip over cmplen */
 
-    int rdlen = decode_int32(src);
+    int ttl = *(unsigned int*)src;
+    src += 4;
+
+    int rdlen = *(unsigned int*)src;
     src += 4;
     
     decode_owner(&src, &dest);
