@@ -49,6 +49,8 @@ static const char* head =
 
 static const char* foot = "</epp>\n";
 
+static const char* contactid = "eppcli0210-00001";
+
 static int sockfd = -1;
 static SSL* ssl = NULL;
 
@@ -65,10 +67,7 @@ static ezxml_t read_frame(void)
             syslog(LOG_ERR, "SSL error %ld", err);
         return NULL;
     }
-    int len = (((buffer[0] & 0xff) << 24) |
-               ((buffer[1] & 0xff) << 16) |
-               ((buffer[2] & 0xff) << 8) |
-               (buffer[3] & 0xff));
+    int len = ntohl(*((uint32_t*)buffer));
     len -= 4;
 
     if (len > sizeof(buffer)) {
@@ -101,11 +100,8 @@ static ezxml_t read_frame(void)
 static int send_frame(char* ptr, int len)
 {
     unsigned char buf[4];
-    len += 4;
-    buf[0] = (len & 0xff000000) >> 24;
-    buf[1] = (len & 0x00ff0000) >> 16;
-    buf[2] = (len & 0x0000ff00) >> 8;
-    buf[3] = (len & 0x000000ff);
+
+    *((uint32_t*)buf) = htonl(len+4);
 
     int rc = SSL_write(ssl, buf, 4);
     if (rc <= 0) {
@@ -126,7 +122,7 @@ static int send_frame(char* ptr, int len)
     if (f) {
         fprintf(f, "%02x %02x %02x %02x (%d)\n",
                 buf[0], buf[1], buf[2], buf[3], len);
-        fwrite(ptr, len-4, 1, f);
+        fwrite(ptr, len, 1, f);
         fclose(f);
     }
 #endif
@@ -135,41 +131,62 @@ static int send_frame(char* ptr, int len)
 }
 
 
-static int read_response(void)
+static int read_response(ezxml_t* return_xml)
 {
+    int rc = -1;
     ezxml_t response = read_frame();
     ezxml_t x = ezxml_get(response,"response",0,"result",-1);
-    if (!x) {
+    if (x) {
+        const char* code = ezxml_attr(x, "code");
+        if (x) {
+            x = ezxml_child(x, "msg");
+            if (x) {
+                char* msg = x->txt;
+                
+                syslog(LOG_DEBUG, "<< result %s (%s)", code, msg);
+                
+                if (code[0] == '1')
+                    rc = 0;
+            }
+            else
+                syslog(LOG_ERR, "No <msg> in <result>");
+        }
+        else
+            syslog(LOG_ERR, "No code= in <result>");
+    }
+    else
         syslog(LOG_ERR, "No <result> in xml");
-        return -1;
+    
+    if (rc) {
+        x = ezxml_get(response,"response",0,"result",0,"extValue",0,"reason",-1);
+        if (x)
+            syslog(LOG_DEBUG, "Failure reson: %s", x->txt);
+        else
+            syslog(LOG_DEBUG, "No failure reson in response");
     }
 
-    const char* code = ezxml_attr(x, "code");
-    if (!x) {
-        syslog(LOG_ERR, "No code= in <result>");
-        return -1;
-    }
-
-    x = ezxml_child(x, "msg");
-    if (!x) {
-        syslog(LOG_ERR, "No <msg> in <result>");
-        return -1;
-    }
-    char* msg = x->txt;
-
-    syslog(LOG_DEBUG, "<< result %s (%s)", code, msg);
-
-    if (code[0] == 1) {
+    if (return_xml)
+        *return_xml = response;
+    else
         ezxml_free(response);
-        return 0;
-    }
 
-    x = ezxml_get(response,"response",0,"result",0,"extValue",0,"reason",-1);
-    if (x)
-        syslog(LOG_DEBUG, "Failure reson: %s", x->txt);
+    return rc;
+}
+
+static int read_greeting(void)
+{
+    ezxml_t response = read_frame();
+    ezxml_t x = ezxml_get(response,"greeting",0,"svcMenu",0,"version",-1);
+    if (!x) {
+        syslog(LOG_ERR, "No <version> in xml");
+        return -1;
+    }
+    char* version = x->txt;
+
+    syslog(LOG_DEBUG, "<< greeting %s", version);
 
     ezxml_free(response);
-    return -1;
+    return 0;
 }
 
 static bool server_supports_dnssec(ezxml_t greeting)
@@ -182,10 +199,7 @@ static bool server_supports_dnssec(ezxml_t greeting)
                             "extURI",-1);
     for (; uri; uri = uri->next)
         if (!strcmp(uri->txt, "urn:ietf:params:xml:ns:secDNS-1.0"))
-            break;
-    
-    if (uri)
-        return true;
+            return true;
 
     syslog(LOG_NOTICE, "Server doesn't support DNSSEC extension");
     return false;
@@ -249,7 +263,7 @@ static int login(ezxml_t greeting)
     syslog(LOG_DEBUG,">> login");
     send_frame(buffer, strlen(buffer));
 
-    if (read_response())
+    if (read_response(NULL))
         return -1;
 
     return 0;
@@ -350,5 +364,297 @@ int epp_login(SSL_CTX* sslctx)
     if (login(greeting))
         return -1;
     
+    return 0;
+}
+
+int epp_check_contact(void)
+{
+    /* construct xml */
+    char buffer[4096];
+    snprintf(buffer, sizeof buffer,
+             "%s"
+             "<command>\n"
+             " <check>\n"
+             "  <contact:check\n"
+             "   xmlns:contact=\"urn:ietf:params:xml:ns:contact-1.0\"\n"
+             "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd\">\n"
+             "    <contact:id>%s</contact:id>\n"
+             "  </contact:check>\n"
+             " </check>\n"
+             "</command>\n"
+             "%s",
+             head,
+             contactid,
+             foot);
+
+    syslog(LOG_DEBUG,">> check contact");
+    send_frame(buffer, strlen(buffer));
+
+    ezxml_t response;
+    if (read_response(&response)) {
+        ezxml_free(response);
+        return -1;
+    }
+
+    /* TODO: add namespace support */
+    ezxml_t x = ezxml_get(response,"response",0,"resData",0,"con:chkData",0,"con:cd",0,"con:id",-1);
+    if (!x) {
+        syslog(LOG_ERR, "No <con:id> in xml");
+        return -1;
+    }
+    const int avail = atoi(ezxml_attr(x, "avail"));
+    syslog(LOG_DEBUG, "Contact %s %s", x->txt, avail ? "does not exist" : "exists");
+
+    ezxml_free(response);
+
+    if (avail)
+        return -1;
+    return 0;
+}
+
+
+int epp_create_contact(void)
+{
+    /* construct xml */
+    char buffer[4096];
+    snprintf(buffer, sizeof buffer,
+             "%s"
+             "<command>\n"
+             " <create>\n"
+             "  <contact:create\n"
+             "   xmlns:contact=\"urn:ietf:params:xml:ns:contact-1.0\"\n"
+             "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd\">\n"
+             "    <contact:id>%s</contact:id>\n"
+             "    <contact:postalInfo type=\"loc\">\n"
+             "      <contact:name>Erik Svensson</contact:name>\n"
+             "      <contact:org>Example AB</contact:org>\n"
+             "      <contact:addr>\n"
+             "         <contact:street>c/o Anka</contact:street>\n"
+             "         <contact:street>Gotgatan 100</contact:street>\n"
+             "         <contact:city>Stockholm</contact:city>\n"
+             "         <contact:pc>11346</contact:pc>\n"
+             "         <contact:cc>SE</contact:cc>\n"
+             "      </contact:addr>\n"
+             "    </contact:postalInfo>\n"
+             "    <contact:voice x=\"\">+46.835555555</contact:voice>\n"
+             "    <contact:fax x=\"\">+46.835555556</contact:fax>\n"
+             "    <contact:email>er.sv@nic.se</contact:email>\n"
+             "    <contact:disclose flag=\"0\">\n"
+             "      <contact:voice/>\n"
+             "      <contact:email/>\n"
+             "    </contact:disclose>\n"
+             "  </contact:create>\n"
+             " </create>\n"
+             " <extension>\n"
+             "  <iis:create xmlns:iis=\"urn:se:iis:xml:epp:iis-1.1\"\n"
+             "   xsi:schemaLocation=\"urn:se:iis:xml:epp:iis-1.1 iis-1.1.xsd\">\n"
+             "    <iis:orgno>[SE]802405-0190</iis:orgno>\n"
+             "  </iis:create>\n"
+             " </extension>\n"
+             "</command>\n"
+             "%s",
+             head,
+             contactid,
+             foot);
+
+    syslog(LOG_DEBUG,">> create contact");
+    send_frame(buffer, strlen(buffer));
+
+    if (read_response(NULL))
+        return -1;
+
+    return 0;
+}
+
+int epp_check_host(char* host)
+{
+    /* construct xml */
+    char buffer[4096];
+    snprintf(buffer, sizeof buffer,
+             "%s"
+             "<command>\n"
+             " <check>\n"
+             "  <host:check\n"
+             "   xmlns:host=\"urn:ietf:params:xml:ns:host-1.0\"\n"
+             "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd\">\n"
+             "    <host:name>%s</host:name>\n"
+             "  </host:check>\n"
+             " </check>\n"
+             "</command>\n"
+             "%s",
+             head,
+             host,
+             foot);
+
+    syslog(LOG_DEBUG,">> check host");
+    send_frame(buffer, strlen(buffer));
+
+    ezxml_t response;
+    if (read_response(&response)) {
+        ezxml_free(response);
+        return -1;
+    }
+
+    /* TODO: add namespace support */
+    ezxml_t x = ezxml_get(response,"response",0,"resData",0,"hos:chkData",0,"hos:cd",0,"hos:name",-1);
+    if (!x) {
+        syslog(LOG_ERR, "No <hos:name> in xml");
+        return -1;
+    }
+    const int avail = atoi(ezxml_attr(x, "avail"));
+    syslog(LOG_DEBUG, "Host %s %s", x->txt, avail ? "does not exist" : "exists");
+
+    ezxml_free(response);
+
+    if (avail)
+        return -1;
+    return 0;
+}
+
+
+int epp_create_host(void)
+{
+    /* construct xml */
+    char buffer[4096];
+    snprintf(buffer, sizeof buffer,
+             "%s"
+             "<command>\n"
+             " <create>\n"
+             "  <host:create\n"
+             "     xmlns:host=\"urn:ietf:params:xml:ns:host-1.0\"\n"
+             "     xsi:schemaLocation=\"urn:ietf:params:xml:ns:host-1.0 host-1.0.xsd\">\n"
+             "   <host:name>ns1.eppclient.se</host:name>\n"
+             "   <host:addr ip=\"v4\">192.0.0.22</host:addr>\n"
+             "  </host:create>\n"
+             " </create>\n"
+             "</command>\n"
+             "%s",
+             head,
+             foot);
+
+    syslog(LOG_DEBUG,">> create host");
+    send_frame(buffer, strlen(buffer));
+
+    if (read_response(NULL))
+        return -1;
+
+    return 0;
+}
+
+int epp_check_domain(void)
+{
+    /* construct xml */
+    char buffer[4096];
+    snprintf(buffer, sizeof buffer,
+             "%s"
+             "<command>\n"
+             " <check>\n"
+             "  <domain:check\n"
+             "   xmlns:domain=\"urn:ietf:params:xml:ns:domain-1.0\"\n"
+             "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd\">\n"
+             "    <domain:name>eppclient.se</domain:name>\n"
+             "  </domain:check>\n"
+             " </check>\n"
+             "</command>\n"
+             "%s",
+             head,
+             foot);
+
+    syslog(LOG_DEBUG,">> check domain");
+    send_frame(buffer, strlen(buffer));
+
+    ezxml_t response;
+    if (read_response(&response)) {
+        ezxml_free(response);
+        return -1;
+    }
+
+    /* TODO: add namespace support */
+    ezxml_t x = ezxml_get(response,"response",0,"resData",0,"dom:chkData",0,"dom:cd",0,"dom:name",-1);
+    if (!x) {
+        syslog(LOG_ERR, "No <dom:name> in xml");
+        return -1;
+    }
+    const int avail = atoi(ezxml_attr(x, "avail"));
+    syslog(LOG_DEBUG, "Domain %s is%s available", x->txt, avail ? "" : " not");
+
+    ezxml_free(response);
+
+    if (avail)
+        return 0;
+    return -1;
+}
+
+int epp_create_domain(void)
+{
+    /* construct xml */
+    char buffer[4096];
+    snprintf(buffer, sizeof buffer,
+             "%s"
+             "<command>\n"
+             " <create>\n"
+             "  <domain:create\n"
+             "   xmlns:domain=\"urn:ietf:params:xml:ns:domain-1.0\"\n"
+             "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd\">\n"
+             "    <domain:name>eppclient.se</domain:name>\n"
+             "    <domain:period unit=\"y\">1</domain:period>\n"
+             "    <domain:ns>\n"
+             "      <domain:hostObj>ns1.example.se</domain:hostObj>\n"
+             "      <domain:hostObj>ns2.example.se</domain:hostObj>\n"
+             "    </domain:ns>\n"
+             "    <domain:registrant>%s</domain:registrant>\n"
+             "    <domain:contact type=\"admin\">%s</domain:contact>\n"
+             "    <domain:contact type=\"tech\">%s</domain:contact>\n"
+             "    <domain:authInfo>\n"
+             "      <domain:pw>2fooBAR3+</domain:pw>\n"
+             "    </domain:authInfo>\n"
+             "  </domain:create>\n"
+             " </create>\n"
+             " <extension>\n"
+             "  <secDNS:create\n"
+             "   xmlns:secDNS=\"urn:ietf:params:xml:ns:secDNS-1.0\"\n"
+             "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:secDNS-1.0 secDNS-1.0.xsd\">\n"
+             "    <secDNS:dsData>\n"
+             "      <secDNS:keyTag>22133</secDNS:keyTag>\n"
+             "      <secDNS:alg>3</secDNS:alg>\n"
+             "      <secDNS:digestType>1</secDNS:digestType>\n"
+             "      <secDNS:digest>49FD46E6C4B45C55D4AC</secDNS:digest>\n"
+             "    </secDNS:dsData>\n"
+             "  </secDNS:create>\n"
+             " </extension>\n"
+             "</command>\n"
+             "%s",
+             head,
+             contactid,
+             contactid,
+             contactid,
+             foot);
+
+    syslog(LOG_DEBUG,">> create domain");
+    send_frame(buffer, strlen(buffer));
+
+    if (read_response(NULL))
+        return -1;
+
+    return 0;
+}
+
+int epp_hello(void)
+{
+    /* construct xml */
+    char buffer[4096];
+    snprintf(buffer, sizeof buffer,
+             "%s"
+             "<hello/>\n"
+             "%s",
+             head,
+             foot);
+
+    syslog(LOG_DEBUG,">> hello");
+    send_frame(buffer, strlen(buffer));
+
+    if (read_greeting())
+        return -1;
+
     return 0;
 }
