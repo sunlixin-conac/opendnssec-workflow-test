@@ -39,5 +39,6 @@
 
 int epp_login(SSL_CTX* sslctx);
 int epp_logout(void);
+int epp_change_key(void);
 
 #endif

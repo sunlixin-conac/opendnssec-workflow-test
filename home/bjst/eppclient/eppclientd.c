@@ -192,10 +192,11 @@ int count_jobs(void)
 
 void send_keys(void)
 {
-    epp_login(sslctx);
+    if (!epp_login(sslctx))
+        epp_change_key();
     epp_logout();
     exit(-1);
-    
+
     sqlite3_stmt* sth;
 
     /* get first job */

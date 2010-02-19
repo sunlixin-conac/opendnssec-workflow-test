@@ -2,13 +2,13 @@
 
 DEBUG = -g -DDEBUG
 #OPTIMIZE = -O2
-CFLAGS = -Wall -std=gnu99 $(DEBUG) $(OPTIMIZE)
+CFLAGS = -Wall -funsigned-char -std=gnu99 $(DEBUG) $(OPTIMIZE) -I/usr/include/libxml2
 LDFLAGS = $(DEBUG) $(OPTIMIZE)
 
 TARGETS = eppclientd eppclient
 
 all: $(TARGETS)
-eppclientd: eppclientd.o config.o epp.o ezxml.o -lsqlite3 -lssl
+eppclientd: eppclientd.o config.o epp.o -lsqlite3 -lssl -lxml2
 eppclient: eppclient.o config.o
 clean:
 	rm -f $(TARGETS) *.o
