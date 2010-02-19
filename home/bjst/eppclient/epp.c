@@ -265,7 +265,6 @@ static int login(xmlXPathContext* greeting)
         free(version);
         return -1;
     }
-    xml_free(greeting);
     
     /* construct login xml */
     char buffer[4096];
@@ -295,6 +294,9 @@ static int login(xmlXPathContext* greeting)
              config.user, config.password,
              version, lang,
              foot);
+
+    free(version);
+    free(lang);
 
     syslog(LOG_DEBUG,">> login");
     send_frame(buffer, strlen(buffer));
@@ -354,6 +356,8 @@ int epp_login(SSL_CTX* sslctx)
 
         close(sockfd);
     }
+    freeaddrinfo(ai);
+
     if (sockfd == -1) {
         syslog(LOG_ERR, "socket(): %s", strerror(errno));
         return -1;
@@ -392,12 +396,14 @@ int epp_login(SSL_CTX* sslctx)
             return -1;
     }
 
+    rc = 0;
     xmlXPathContext* greeting = read_greeting();
-    if (greeting)
-        if (login(greeting))
-            return -1;
+    if (greeting) {
+        rc = login(greeting);
+        xml_free(greeting);
+    }
 
-    return 0;
+    return rc;
 }
 
 int epp_change_key(void)

@@ -91,7 +91,7 @@ int init()
 #endif
     /* child (daemon) continues */
     setsid(); /* obtain a new process group */
-    for (i=getdtablesize();i>=0;--i)
+    for (i=getdtablesize()-1; i>=0; --i)
         close(i); /* close all descriptors */
     /* open dummy stdin/-out/-err */
     i=open("/dev/null",O_RDWR);
@@ -112,6 +112,7 @@ int init()
         if (pid)
             if (kill(pid, 0) == ESRCH)
                 unlink(config.pidfile);
+        close(fd);
     }
     fd = open(config.pidfile, O_RDWR|O_CREAT, 0640);
     if (fd < 0) {
@@ -164,6 +165,13 @@ int init()
     return pipe;
 }
 
+void cleanup(int pipe)
+{
+    close(pipe);
+    sqlite3_close(db);
+    SSL_CTX_free(sslctx);
+}
+
 int count_jobs(void)
 {
     sqlite3_stmt* sth;
@@ -195,7 +203,7 @@ void send_keys(void)
     if (!epp_login(sslctx))
         epp_change_key();
     epp_logout();
-    exit(-1);
+    return;
 
     sqlite3_stmt* sth;
 
@@ -366,8 +374,10 @@ int main()
             send_keys();
         }
 
-        sleep(1);
+        break;
     }
+
+    cleanup(pipe);
 
     return 0;
 }
