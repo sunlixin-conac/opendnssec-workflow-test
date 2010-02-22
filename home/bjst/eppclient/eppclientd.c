@@ -243,9 +243,10 @@ void send_keys(void)
     }
 
     if (!epp_login(sslctx)) {
-        epp_change_key(zone, keys, count);
-        epp_logout();
+        if (!epp_change_key(zone, keys, count))
+            epp_logout();
     }
+    epp_cleanup();
 
     for (int i=0; i<count; i++)
         free((void*)keys[i]);

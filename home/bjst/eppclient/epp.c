@@ -120,7 +120,7 @@ static xmlXPathContext* read_frame(void)
     int len = ntohl(*((uint32_t*)buffer));
     len -= 4;
 
-    if (len >= sizeof(buffer)) {
+    if (len >= (int)sizeof(buffer)) {
         len = sizeof(buffer) - 1; /* leave room for \0 */
         syslog(LOG_DEBUG,
                "Read frame is larger than buffer. Shrinking to %d bytes", len);
@@ -245,7 +245,7 @@ static xmlXPathContext* read_greeting(void)
     return response;
 }
 
-static void cleanup(void)
+void epp_cleanup(void)
 {
     SSL_shutdown(ssl);
     SSL_free(ssl);
@@ -326,8 +326,6 @@ int epp_logout(void)
 
     /* ignore result - server disconnects after <logout> */
 
-    cleanup();
-
     return 0;
 }
 
@@ -337,7 +335,7 @@ int epp_login(SSL_CTX* sslctx)
     static const char* service = "700";
 
     struct addrinfo* ai;
-    struct addrinfo hints = {0};
+    struct addrinfo hints;
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
@@ -419,13 +417,12 @@ static void bin2hex(char* src, char* dest, int bytes)
     *dest = 0;
 }
 
-int epp_change_key(char* zone, char** keys, int keycount)
+static int format_dsdata(char* zone, char* key, char* dest)
 {
     char line[1024];
 
-    snprintf(line, sizeof line, "%s 3600 IN DNSKEY %s", zone, keys[0]);
-    
     /* build a DNSKEY RR for digest and keytag calculation */
+    snprintf(line, sizeof line, "%s. 3600 IN DNSKEY %s", zone, key);
     ldns_rr* rr;
     int error = ldns_rr_new_frm_str(&rr, line, 0, NULL, NULL);
     if (error) {
@@ -445,13 +442,12 @@ int epp_change_key(char* zone, char** keys, int keycount)
     }
     ldns_rdf* owner = ldns_rr_owner(rr);
     int len = ldns_rdf_size(owner);
-    char buffer[4096];
-    memcpy(buffer, ldns_rdf_data(owner), ldns_rdf_size(owner));
-    memcpy(buffer + len, wiredata->_data, wiredata->_position);
+    memcpy(dest, ldns_rdf_data(owner), ldns_rdf_size(owner));
+    memcpy(dest + len, wiredata->_data, wiredata->_position);
     len += wiredata->_position;
 
     char digest[20];
-    ldns_sha1((unsigned char*)buffer, len, (unsigned char*)digest);
+    ldns_sha1((unsigned char*)dest, len, (unsigned char*)digest);
     char digest_hex[41];
     bin2hex(digest, digest_hex, 20);
 
@@ -462,43 +458,81 @@ int epp_change_key(char* zone, char** keys, int keycount)
     }
     ldns_buffer_free(wiredata);
 
-    snprintf(buffer, sizeof buffer,
-             "%s"
-             "<command>\n"
-             " <update>\n"
-             "  <domain:update\n"
-             "   xmlns:domain=\"urn:ietf:params:xml:ns:domain-1.0\"\n"
-             "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd\">\n"
-             "    <domain:name>%s</domain:name>\n"
-             "  </domain:update>\n"
-             " </update>\n"
-             " <extension>\n"
-             "  <secDNS:update\n"
-             "   xmlns:secDNS=\"urn:ietf:params:xml:ns:secDNS-1.0\"\n"
-             "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:secDNS-1.0 secDNS-1.0.xsd\">\n"
-             "   <secDNS:chg>\n"
-             "    <secDNS:dsData>\n"
-             "      <secDNS:keyTag>%d</secDNS:keyTag>\n"
-             "      <secDNS:alg>%d</secDNS:alg>\n"
-             "      <secDNS:digestType>1</secDNS:digestType>\n"
-             "      <secDNS:digest>%s</secDNS:digest>\n"
-             "    </secDNS:dsData>\n"
-             "   </secDNS:chg>\n"
-             "  </secDNS:update>\n"
-             " </extension>\n"
-             "</command>\n"
-             "%s",
-             head,
-             zone,
-             keytag,
-             ((char*)(algorithm->_data))[0],
-             digest_hex,
-             foot);
-
-    syslog(LOG_DEBUG,">> change key");
-    send_frame(buffer, strlen(buffer));
+    len = sprintf(dest,
+                  "    <secDNS:dsData>\n"
+                  "      <secDNS:keyTag>%d</secDNS:keyTag>\n"
+                  "      <secDNS:alg>%d</secDNS:alg>\n"
+                  "      <secDNS:digestType>1</secDNS:digestType>\n"
+                  "      <secDNS:digest>%s</secDNS:digest>\n"
+                  "    </secDNS:dsData>\n",
+                  keytag,
+                  ldns_rdf2native_int8(algorithm),
+                  digest_hex);
 
     ldns_rr_free(rr);
+    
+    return len;
+}
+
+int epp_change_key(char* zone, char** keys, int keycount)
+{
+    int outsize = 4096;
+    int outlen = 0;
+    char* outbuf = malloc(outsize);
+
+    outlen +=
+        sprintf(outbuf,
+                "%s"
+                "<command>\n"
+                " <update>\n"
+                "  <domain:update\n"
+                "   xmlns:domain=\"urn:ietf:params:xml:ns:domain-1.0\"\n"
+                "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd\">\n"
+                "    <domain:name>%s</domain:name>\n"
+                "  </domain:update>\n"
+                " </update>\n"
+                " <extension>\n"
+                "  <secDNS:update\n"
+                "   xmlns:secDNS=\"urn:ietf:params:xml:ns:secDNS-1.0\"\n"
+                "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:secDNS-1.0 secDNS-1.0.xsd\">\n"
+                "   <secDNS:chg>\n",
+                head,
+                zone);
+
+    for (int i=0; i<keycount; i++) {
+        char dsdata[4096];
+        int dslen = format_dsdata(zone, keys[i], dsdata);
+        if (dslen < 1) {
+            free(outbuf);
+            return -1;
+        }
+
+        /* make space for dsdata */
+        if (outlen + dslen > outsize) {
+            outsize *= 2;
+            outbuf = realloc(outbuf, outsize);
+        }
+        strcpy(outbuf + outlen, dsdata);
+        outlen += dslen;
+    }
+
+    /* make space for footer */
+    if (outlen + 100 > outsize) {
+        outsize *= 2;
+        outbuf = realloc(outbuf, outsize);
+    }
+
+    outlen += sprintf(outbuf + outlen,
+                      "   </secDNS:chg>\n"
+                      "  </secDNS:update>\n"
+                      " </extension>\n"
+                      "</command>\n"
+                      "%s",
+                      foot);
+    
+    syslog(LOG_DEBUG,">> change key");
+    send_frame(outbuf, outlen);
+    free(outbuf);
     
     if (read_response(NULL))
         return -1;
