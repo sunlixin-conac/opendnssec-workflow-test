@@ -40,6 +40,7 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+#include <ldns/ldns.h>
 
 #include "config.h"
 
@@ -64,7 +65,7 @@ static xmlXPathContext* xml_parse(char* string)
 
     xmlXPathContext* context = xmlXPathNewContext(doc);
     if(!context) {
-        syslog(LOG_DEBUG,"error: unable to create new XPath context\n");
+        syslog(LOG_DEBUG,"error: unable to create new XPath context");
         xmlFreeDoc(doc); 
         return NULL;
     }
@@ -91,7 +92,7 @@ static char* xml_get(xmlXPathContext* xml, char* path)
     }
     else
         syslog(LOG_DEBUG,
-               "Error: unable to evaluate xpath expression '%s'\n", path);
+               "Error: unable to evaluate xpath expression '%s'", path);
     
     return result;
 }
@@ -406,9 +407,61 @@ int epp_login(SSL_CTX* sslctx)
     return rc;
 }
 
-int epp_change_key(void)
+static void bin2hex(char* src, char* dest, int bytes)
 {
+    static const char int2hex[16] = "0123456789ABCDEF";
+
+    while (bytes--) {
+        *dest++ = int2hex[*src >> 4];
+        *dest++ = int2hex[*src & 15];
+        src++;
+    }
+    *dest = 0;
+}
+
+int epp_change_key(char* zone, char** keys, int keycount)
+{
+    char line[1024];
+
+    snprintf(line, sizeof line, "%s 3600 IN DNSKEY %s", zone, keys[0]);
+    
+    /* build a DNSKEY RR for digest and keytag calculation */
+    ldns_rr* rr;
+    int error = ldns_rr_new_frm_str(&rr, line, 0, NULL, NULL);
+    if (error) {
+        syslog(LOG_ERR, "ldns_rr_new_frm_str(%s) returned NULL", line);
+        return -1;
+    }
+
+    uint16_t keytag = ldns_calc_keytag(rr);
+
+    /* build a <secDNS:digest> (RFC4034 5.1.4) */
+    ldns_buffer* wiredata = ldns_buffer_new(1024);
+    error = ldns_rr_rdata2buffer_wire(wiredata, rr);
+    if (error) {
+        syslog(LOG_ERR, "ldns_rr_rdata2buffer_wire() returned %d (%s)",
+               error, ldns_get_errorstr_by_id(error));
+        return -1;
+    }
+    ldns_rdf* owner = ldns_rr_owner(rr);
+    int len = ldns_rdf_size(owner);
     char buffer[4096];
+    memcpy(buffer, ldns_rdf_data(owner), ldns_rdf_size(owner));
+    memcpy(buffer + len, wiredata->_data, wiredata->_position);
+    len += wiredata->_position;
+
+    char digest[20];
+    ldns_sha1((unsigned char*)buffer, len, (unsigned char*)digest);
+    char digest_hex[41];
+    bin2hex(digest, digest_hex, 20);
+
+    ldns_rdf* algorithm = ldns_rr_dnskey_algorithm(rr);
+    if (!algorithm) {
+        syslog(LOG_ERR, "ldns_rr_dnskey_algorithm() returned NULL");
+        return -1;
+    }
+    ldns_buffer_free(wiredata);
+
     snprintf(buffer, sizeof buffer,
              "%s"
              "<command>\n"
@@ -416,7 +469,7 @@ int epp_change_key(void)
              "  <domain:update\n"
              "   xmlns:domain=\"urn:ietf:params:xml:ns:domain-1.0\"\n"
              "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd\">\n"
-             "    <domain:name>eppclient.se</domain:name>\n"
+             "    <domain:name>%s</domain:name>\n"
              "  </domain:update>\n"
              " </update>\n"
              " <extension>\n"
@@ -425,10 +478,10 @@ int epp_change_key(void)
              "   xsi:schemaLocation=\"urn:ietf:params:xml:ns:secDNS-1.0 secDNS-1.0.xsd\">\n"
              "   <secDNS:chg>\n"
              "    <secDNS:dsData>\n"
-             "      <secDNS:keyTag>22133</secDNS:keyTag>\n"
-             "      <secDNS:alg>3</secDNS:alg>\n"
+             "      <secDNS:keyTag>%d</secDNS:keyTag>\n"
+             "      <secDNS:alg>%d</secDNS:alg>\n"
              "      <secDNS:digestType>1</secDNS:digestType>\n"
-             "      <secDNS:digest>0774AB2F48D0FBD0AB0FD3F5E80C495C48046E3D</secDNS:digest>\n"
+             "      <secDNS:digest>%s</secDNS:digest>\n"
              "    </secDNS:dsData>\n"
              "   </secDNS:chg>\n"
              "  </secDNS:update>\n"
@@ -436,11 +489,17 @@ int epp_change_key(void)
              "</command>\n"
              "%s",
              head,
+             zone,
+             keytag,
+             ((char*)(algorithm->_data))[0],
+             digest_hex,
              foot);
 
     syslog(LOG_DEBUG,">> change key");
     send_frame(buffer, strlen(buffer));
 
+    ldns_rr_free(rr);
+    
     if (read_response(NULL))
         return -1;
 

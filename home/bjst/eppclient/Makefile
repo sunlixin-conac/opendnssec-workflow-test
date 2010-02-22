@@ -8,7 +8,7 @@ LDFLAGS = $(DEBUG) $(OPTIMIZE)
 TARGETS = eppclientd eppclient
 
 all: $(TARGETS)
-eppclientd: eppclientd.o config.o epp.o -lsqlite3 -lssl -lxml2
+eppclientd: eppclientd.o config.o epp.o -lsqlite3 -lssl -lxml2 -lldns
 eppclient: eppclient.o config.o
 clean:
 	rm -f $(TARGETS) *.o

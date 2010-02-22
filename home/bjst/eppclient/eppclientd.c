@@ -44,6 +44,8 @@
 #include "config.h"
 #include "epp.h"
 
+#define MAX_KEY_COUNT 100 /* max # of keys per update */
+
 static sqlite3* db = NULL;
 static SSL_CTX* sslctx = NULL;
 
@@ -200,11 +202,6 @@ int count_jobs(void)
 
 void send_keys(void)
 {
-    if (!epp_login(sslctx))
-        epp_change_key();
-    epp_logout();
-    return;
-
     sqlite3_stmt* sth;
 
     /* get first job */
@@ -219,12 +216,14 @@ void send_keys(void)
         return;
     }
     int job = sqlite3_column_int(sth, 0);
-    const unsigned char* zone = sqlite3_column_text(sth, 1);
+    char* zone = (char*)sqlite3_column_text(sth, 1);
 
     /* get keys */
-    sqlite3_prepare_v2(db, "SELECT key FROM keys WHERE job = ?",
-                       -1, &sth, NULL);
-    
+    char sql[80];
+    char* keys[MAX_KEY_COUNT];
+    int count = 0;
+    sprintf(sql, "SELECT key FROM keys WHERE job = %d", job);
+    sqlite3_prepare_v2(db, sql, -1, &sth, NULL);
     while ((rc = sqlite3_step(sth))) {
         if (rc == 101)
             break;
@@ -235,7 +234,21 @@ void send_keys(void)
             sqlite3_finalize(sth);
             return;
         }
+
+        const unsigned char* ptr = sqlite3_column_text(sth, 0);
+        if (ptr)
+            keys[count++] = strdup((char*)ptr);
+        else
+            break;
     }
+
+    if (!epp_login(sslctx)) {
+        epp_change_key(zone, keys, count);
+        epp_logout();
+    }
+
+    for (int i=0; i<count; i++)
+        free((void*)keys[i]);
 }
 
 void store_keys(char* line)
