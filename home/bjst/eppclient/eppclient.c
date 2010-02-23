@@ -70,6 +70,11 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    if (argv[1][strlen(argv[1])-1] == '.') {
+        printf("Zone must not end with '.'\n");
+        return -1;
+    }
+    
     read_config();
     push_keys(argc, argv);
 
