@@ -2,7 +2,7 @@
 
 DEBUG = -g -DDEBUG
 #OPTIMIZE = -O2
-CFLAGS = -Wall -funsigned-char -std=gnu99 $(DEBUG) $(OPTIMIZE) -I/usr/include/libxml2
+CFLAGS = -Wall -Wextra -funsigned-char -std=gnu99 $(DEBUG) $(OPTIMIZE) -I/usr/include/libxml2
 LDFLAGS = $(DEBUG) $(OPTIMIZE)
 
 TARGETS = eppclientd eppclient

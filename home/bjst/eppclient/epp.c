@@ -247,9 +247,12 @@ static xmlXPathContext* read_greeting(void)
 
 void epp_cleanup(void)
 {
-    SSL_shutdown(ssl);
-    SSL_free(ssl);
-    close(sockfd);
+    if (ssl) {
+        SSL_shutdown(ssl);
+        SSL_free(ssl);
+    }
+    if (sockfd >= 0)
+        close(sockfd);
 }
 
 static int login(xmlXPathContext* greeting)
@@ -336,6 +339,7 @@ int epp_login(SSL_CTX* sslctx)
 
     struct addrinfo* ai;
     struct addrinfo hints;
+    memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;

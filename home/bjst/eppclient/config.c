@@ -65,6 +65,8 @@ void read_config(void)
                 strcpy(config.user, data);
             else if (!strcmp(label, "password"))
                 strcpy(config.password, data);
+            else if (!strcmp(label, "ackcommand"))
+                strcpy(config.ackcommand, data);
             else {
                 printf("Unknown config parameter: %s\n", label);
                 exit(-1);

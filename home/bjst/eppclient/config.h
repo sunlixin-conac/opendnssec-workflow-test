@@ -37,6 +37,7 @@ struct configdata {
     char pidfile[250];
     char user[80];
     char password[80];
+    char ackcommand[250];
 };
 
 extern struct configdata config;

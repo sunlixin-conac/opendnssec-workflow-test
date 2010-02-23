@@ -200,7 +200,30 @@ int count_jobs(void)
     return -1;
 }
 
-void send_keys(void)
+static int delete_job(int job)
+{
+    int rc;
+    char buf[80];
+    syslog(LOG_DEBUG, "Deleting job %d", job);
+    snprintf(buf, sizeof buf, "DELETE FROM keys WHERE job = %d;", job);
+    rc = sqlite3_exec(db, buf, 0,0,0);
+    snprintf(buf, sizeof buf, "DELETE FROM jobs WHERE job = %d;", job);
+    rc = sqlite3_exec(db, buf, 0,0,0);
+
+    return rc;
+}
+
+static void ack_server(char* zone)
+{
+    if (config.ackcommand) {
+        char cmdline[256];
+        snprintf(cmdline, sizeof cmdline, "%s %s", config.ackcommand, zone);
+        system(cmdline);
+        syslog(LOG_DEBUG, "Executing '%s'", cmdline);
+    }
+}
+
+static void send_keys(void)
 {
     sqlite3_stmt* sth;
 
@@ -243,8 +266,11 @@ void send_keys(void)
     }
 
     if (!epp_login(sslctx)) {
-        if (!epp_change_key(zone, keys, count))
+        if (!epp_change_key(zone, keys, count)) {
             epp_logout();
+            if (!delete_job(job))
+                ack_server(zone);
+        }
     }
     epp_cleanup();
 
@@ -255,8 +281,7 @@ void send_keys(void)
 void store_keys(char* line)
 {
     int rc;
-    char buf[1024];
-
+    
     /* dig up zone */
     char* zone = line;
     char* p = strchr(zone, ' ');
@@ -278,10 +303,7 @@ void store_keys(char* line)
     sqlite3_bind_text(sth, 1, zone, strlen(zone), SQLITE_STATIC);
     while (sqlite3_step(sth) == 100) {
         int job = sqlite3_column_int(sth, 0);
-        snprintf(buf, sizeof buf, "DELETE FROM keys WHERE job = %d;", job);
-        rc = sqlite3_exec(db, buf, 0,0,0);
-        snprintf(buf, sizeof buf, "DELETE FROM jobs WHERE job = %d;", job);
-        rc = sqlite3_exec(db, buf, 0,0,0);
+        rc = delete_job(job);
     }
     sqlite3_finalize(sth);
     
@@ -387,8 +409,7 @@ int main()
             syslog(LOG_DEBUG, "%d jobs in queue", count);
             send_keys();
         }
-
-        break;
+        sleep(1);
     }
 
     cleanup(pipe);
