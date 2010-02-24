@@ -1,5 +1,9 @@
 # $Id$
 
+AC_DEFUN([OPENDNSSEC_COMMON],[
+
+AC_MSG_NOTICE(Detecting common OpenDNSSEC settings)
+
 full_bindir=`eval eval eval eval eval echo "${bindir}" | sed "s#NONE#${prefix}#" | sed "s#NONE#${ac_default_prefix}#"`
 full_sbindir=`eval eval eval eval eval echo "${sbindir}" | sed "s#NONE#${prefix}#" | sed "s#NONE#${ac_default_prefix}#"`
 full_libdir=`eval eval eval eval eval echo "${libdir}" | sed "s#NONE#${prefix}#" | sed "s#NONE#${ac_default_prefix}#"`
@@ -29,3 +33,5 @@ OPENDNSSEC_FETCH_PIDFILE=$full_localstatedir/var/opendnssec/zone_fetcher.pid
 AC_SUBST([OPENDNSSEC_SIGNER_PIDFILE])
 AC_SUBST([OPENDNSSEC_ENFORCER_PIDFILE])
 AC_SUBST([OPENDNSSEC_FETCH_PIDFILE])
+
+])
