@@ -4,6 +4,7 @@ TARGETS = \
 	softHSM \
 	hsmbully \
 	OpenDNSSEC \
+	OpenDNSSEC/conf \
 	OpenDNSSEC/libhsm \
 	OpenDNSSEC/enforcer \
 	OpenDNSSEC/signer \
