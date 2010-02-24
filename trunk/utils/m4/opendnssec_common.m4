@@ -15,8 +15,8 @@ opendnssecsysconfdir=$full_sysconfdir/opendnssec
 opendnsseclocalstatedir="$full_localstatedir/opendnssec"
 
 OPENDNSSEC_CONFIG_DIR=$opendnssecsysconfdir
-OPENDNSSEC_SCHEMA_DIR=$opendnssecsysconfdir
-OPENDNSSEC_STATE_DIR=$opendnssecsysconfdir
+OPENDNSSEC_SCHEMA_DIR=$opendnssecdatadir
+OPENDNSSEC_STATE_DIR=$opendnsseclocalstatedir
 
 AC_SUBST([OPENDNSSEC_CONFIG_DIR])
 AC_SUBST([OPENDNSSEC_SCHEMA_DIR])
