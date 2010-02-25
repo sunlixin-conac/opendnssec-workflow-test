@@ -255,7 +255,7 @@ void epp_cleanup(void)
         close(sockfd);
 }
 
-static int login(xmlXPathContext* greeting)
+static int login(xmlXPathContext* greeting, char* registry)
 {
     char* version = xml_get(greeting, "//epp:svcMenu/epp:version");
     if (!version) {
@@ -269,6 +269,10 @@ static int login(xmlXPathContext* greeting)
         free(version);
         return -1;
     }
+
+    char* user = strdup(config_registry_value(registry, "clID"));
+    char* pass = strdup(config_registry_value(registry, "pw"));
+    char* ext = strdup(config_registry_value(registry, "svcExtension"));
     
     /* construct login xml */
     char buffer[4096];
@@ -288,17 +292,22 @@ static int login(xmlXPathContext* greeting)
              "   <objURI>urn:ietf:params:xml:ns:contact-1.0</objURI>\n"
              "   <svcExtension>\n"
              "    <extURI>urn:ietf:params:xml:ns:secDNS-1.0</extURI>\n"
-             "    <extURI>urn:se:iis:xml:epp:iis-1.1</extURI>\n" /* TODO: rm */
+             "    %s"
              "   </svcExtension>\n"
              "  </svcs>\n"
              " </login>\n"
              "</command>\n"
              "%s",
              head,
-             config.user, config.password,
+             user,
+             pass,
              version, lang,
+             ext,
              foot);
 
+    free(user);
+    free(pass);
+    free(ext);
     free(version);
     free(lang);
 
@@ -332,10 +341,10 @@ int epp_logout(void)
     return 0;
 }
 
-int epp_login(SSL_CTX* sslctx)
+int epp_login(SSL_CTX* sslctx, char* registry)
 {
-    static const char* host = "epptest.iis.se";
-    static const char* service = "700";
+    char* host = strdup(config_registry_value(registry, "host"));
+    char* port = strdup(config_registry_value(registry, "port"));
 
     struct addrinfo* ai;
     struct addrinfo hints;
@@ -343,11 +352,15 @@ int epp_login(SSL_CTX* sslctx)
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
-    if (getaddrinfo(host, service, &hints, &ai)) {
+    if (getaddrinfo(host, port, &hints, &ai)) {
         syslog(LOG_ERR, "getaddrinfo(%s,%s): %s",
-               host, service, strerror(errno));
+               host, port, strerror(errno));
+        free(host);
+        free(port);
         return -1;
     }
+    free(host);
+    free(port);
 
     for (struct addrinfo* a = ai; a; a = a->ai_next) {
         sockfd = socket(a->ai_family, a->ai_socktype, a->ai_protocol);
@@ -402,7 +415,7 @@ int epp_login(SSL_CTX* sslctx)
     rc = 0;
     xmlXPathContext* greeting = read_greeting();
     if (greeting) {
-        rc = login(greeting);
+        rc = login(greeting, registry);
         xml_free(greeting);
     }
 

@@ -58,8 +58,8 @@ void signal_handler(int sig)
 
 	case SIGTERM:
             syslog(LOG_INFO, "killed. exiting.");
-            unlink(config.pipe);
-            unlink(config.pidfile);
+            unlink(config_value("/eppclient/pipe"));
+            unlink(config_value("/eppclient/pidfile"));
             exit(0);
             break;
     }
@@ -68,10 +68,10 @@ void signal_handler(int sig)
 void init_sqlite(void)
 {
     /* prepare sqlite */
-    int rc = sqlite3_open(config.dbpath, &db);
+    const char* dbname = config_value("/eppclient/database");
+    int rc = sqlite3_open(dbname, &db);
     if (rc) {
-        syslog(LOG_ERR, "Can't open %s: %s",
-               config.dbpath, sqlite3_errmsg(db));
+        syslog(LOG_ERR, "Can't open %s: %s", dbname, sqlite3_errmsg(db));
         sqlite3_close(db);
         exit(1);
     }
@@ -106,19 +106,20 @@ int init()
 #endif
     read_config();
 
-    int fd = open(config.pidfile, O_RDONLY);
+    char* pidfile = config_value("/eppclient/pidfile");
+    int fd = open(pidfile, O_RDONLY);
     if (fd) {
         char buf[10] = {0};
         read(fd, buf, sizeof buf);
         int pid = atoi(buf);
         if (pid)
             if (kill(pid, 0) == ESRCH)
-                unlink(config.pidfile);
+                unlink(pidfile);
         close(fd);
     }
-    fd = open(config.pidfile, O_RDWR|O_CREAT, 0640);
+    fd = open(pidfile, O_RDWR|O_CREAT, 0640);
     if (fd < 0) {
-        syslog(LOG_ERR, "Pidfile %s: %s", config.pidfile, strerror(errno));
+        syslog(LOG_ERR, "Pidfile %s: %s", pidfile, strerror(errno));
         exit(1); /* can not open */
     }
     if (lockf(fd,F_TLOCK,0) < 0) {
@@ -150,15 +151,16 @@ int init()
     sslctx = SSL_CTX_new(SSLv23_client_method());
     SSL_CTX_set_options(sslctx, SSL_OP_NO_SSLv2); /* disable SSLv2 */
 
-    unlink(config.pipe);
-    if (mkfifo(config.pipe, 0660)) {
-        syslog(LOG_ERR, "%s: %s", config.pipe, strerror(errno));
+    char* pipename = config_value("/eppclient/pipe");
+    unlink(pipename);
+    if (mkfifo(pipename, 0660)) {
+        syslog(LOG_ERR, "%s: %s", pipename, strerror(errno));
         exit(1);
     }
 
-    int pipe = open(config.pipe, O_RDWR | O_NDELAY);
+    int pipe = open(pipename, O_RDWR | O_NDELAY);
     if (pipe < 0) {
-        syslog(LOG_ERR, "%s: %s", config.pipe, strerror(errno));
+        syslog(LOG_ERR, "%s: %s", pipename, strerror(errno));
         exit(1);
     }
     fchmod(pipe, 0660); /* let group write to pipe */
@@ -215,9 +217,10 @@ static int delete_job(int job)
 
 static void ack_server(char* zone)
 {
-    if (config.ackcommand) {
+    char* ack = config_value("/eppclient/ackcommand");
+    if (ack) {
         char cmdline[256];
-        snprintf(cmdline, sizeof cmdline, "%s %s", config.ackcommand, zone);
+        snprintf(cmdline, sizeof cmdline, ack, zone);
         system(cmdline);
         syslog(LOG_DEBUG, "Executing '%s'", cmdline);
     }
@@ -265,13 +268,45 @@ static void send_keys(void)
             break;
     }
 
-    if (!epp_login(sslctx)) {
-        if (!epp_change_key(zone, keys, count)) {
-            epp_logout();
-            if (!delete_job(job))
-                ack_server(zone);
+    /* find which registry to send keys to */
+    char* registry;
+    int i = 1;
+    while (1) {
+        char xpath[40];
+        snprintf(xpath, sizeof xpath, "/eppclient/registry[%d]/suffix", i);
+        registry = config_value(xpath);
+        if (!registry[0])
+            break;
+
+        int rlen = strlen(registry);
+        int zlen = strlen(zone);
+        if (zlen < rlen) {
+            syslog(LOG_ERR, "Invalid zone name '%s'", zone);
+            registry[0] = 0;
+            break;
+        }
+
+        if (!strcmp(zone + zlen - rlen, registry)) {
+            registry = strdup(registry);
+            break;
+        }
+
+        i++;
+    }
+
+    if (!registry[0])
+        syslog(LOG_WARNING, "Found no registry for zone '%s'", zone);
+    else {
+        if (!epp_login(sslctx, registry)) {
+            if (!epp_change_key(zone, keys, count)) {
+                epp_logout();
+                if (!delete_job(job))
+                    ack_server(zone);
+            }
         }
     }
+    free(registry);
+
     epp_cleanup();
 
     for (int i=0; i<count; i++)

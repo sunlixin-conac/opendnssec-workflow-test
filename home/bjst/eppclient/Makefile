@@ -9,6 +9,6 @@ TARGETS = eppclientd eppclient
 
 all: $(TARGETS)
 eppclientd: eppclientd.o config.o epp.o -lsqlite3 -lssl -lxml2 -lldns
-eppclient: eppclient.o config.o
+eppclient: eppclient.o config.o -lxml2
 clean:
 	rm -f $(TARGETS) *.o

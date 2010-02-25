@@ -31,17 +31,8 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-struct configdata {
-    char dbpath[250];
-    char pipe[250];
-    char pidfile[250];
-    char user[80];
-    char password[80];
-    char ackcommand[250];
-};
-
-extern struct configdata config;
-
 void read_config(void);
+char* config_value(char* key);
+char* config_registry_value(char* registry, char* value);
 
 #endif

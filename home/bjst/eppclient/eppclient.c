@@ -44,9 +44,10 @@ void send(int fd, char* string)
 
 void push_keys(int argc, char** argv)
 {
-    int fd = open(config.pipe, O_RDWR);
+    char* pipename = config_value("/eppclient/pipe");
+    int fd = open(pipename, O_RDWR);
     if (fd < 0) {
-        perror(config.pipe);
+        perror(pipename);
         exit(-1);
     }
 

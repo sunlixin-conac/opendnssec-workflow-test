@@ -33,49 +33,81 @@
 #include <string.h>
 #include <syslog.h>
 #include <errno.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
 #include "config.h"
 
 #define CONFIG_FILE     "eppclientd.conf"
 
-struct configdata config;
+static xmlXPathContext* context;
 
-void read_config(void)    
+char* config_registry_value(char* registry, char* value)
 {
-    memset(&config, 0, sizeof config);
-    
-    FILE* f = fopen(CONFIG_FILE, "r");
-    if (!f)
-        f = fopen("/etc/" CONFIG_FILE, "r");
-    if (!f)
-        f = fopen("/etc/opt/" CONFIG_FILE, "r");
-    if (!f)
-        f = fopen("/usr/local/etc/" CONFIG_FILE, "r");
-    if (f) {
-        char line[128];
-        while (fgets(line, sizeof line, f)) {
-            char* label = strtok(line, "\t =");
-            char* data = strtok(NULL, "\t =\n");
-            if (!strcmp(label, "database"))
-                strcpy(config.dbpath, data);
-            else if (!strcmp(label, "pipe"))
-                strcpy(config.pipe, data);
-            else if (!strcmp(label, "pidfile"))
-                strcpy(config.pidfile, data);
-            else if (!strcmp(label, "user"))
-                strcpy(config.user, data);
-            else if (!strcmp(label, "password"))
-                strcpy(config.password, data);
-            else if (!strcmp(label, "ackcommand"))
-                strcpy(config.ackcommand, data);
-            else {
-                printf("Unknown config parameter: %s\n", label);
-                exit(-1);
+    char path[80];
+    snprintf(path, sizeof path, "/eppclient/registry[suffix='%s']/%s",
+             registry, value);
+    return config_value(path);
+}
+
+char* config_value(char* path)
+{
+    static char result[256];
+    result[0] = 0;
+    int dlen = 0;
+
+    xmlXPathObject* obj = xmlXPathEvalExpression((xmlChar*)path, context);
+    if (obj) {
+        if (obj->nodesetval && obj->nodesetval->nodeNr) {
+            xmlNode* node = obj->nodesetval->nodeTab[0];
+            
+            if (node && node->children && node->children->content)
+                node = node->children;
+
+            while (node) {
+                strncpy(result + dlen, (char*)node->content, sizeof(result) - dlen);
+                dlen += strlen(result + dlen);
+
+                if (dlen == sizeof result) {
+                    result[sizeof result - 1] = 0;
+                    syslog(LOG_WARNING, "config_value: Result buffer full");
+                    break;
+                }
+
+                node = node->next;
             }
         }
+        xmlXPathFreeObject(obj);
     }
-    else {
+    else
+        syslog(LOG_DEBUG,
+               "Error: unable to evaluate xpath expression '%s'", path);
+
+    if (!result[0])
+        syslog(LOG_ERR, "No config value '%s'!", path);
+
+    return result;
+}
+
+void read_config(void)
+{
+    xmlDoc* doc = xmlParseFile(CONFIG_FILE);
+    if (!doc)
+        doc = xmlParseFile("/etc/" CONFIG_FILE);
+    if (!doc)
+        doc = xmlParseFile("/etc/opt/" CONFIG_FILE);
+    if (!doc)
+        doc = xmlParseFile("/usr/local/etc/" CONFIG_FILE);
+    if (!doc) {
         syslog(LOG_ERR, "%s: %s", CONFIG_FILE, strerror(errno));
         perror(CONFIG_FILE);
+        exit(-1);
+    }
+
+    context = xmlXPathNewContext(doc);
+    if(!context) {
+        syslog(LOG_DEBUG,"error: unable to create new XPath context");
+        xmlFreeDoc(doc); 
         exit(-1);
     }
 }
