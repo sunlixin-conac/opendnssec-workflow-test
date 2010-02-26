@@ -37,7 +37,7 @@
 #ifndef _EPP_H_
 #define _EPP_H_
 
-int epp_login(SSL_CTX* sslctx, char* zone);
+int epp_login(char* zone);
 int epp_logout(void);
 int epp_change_key(char* zone, char** keys, int keycount);
 void epp_cleanup(void);

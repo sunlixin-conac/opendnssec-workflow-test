@@ -39,7 +39,6 @@
 #include <sqlite3.h>
 #include <errno.h>
 #include <ctype.h>
-#include <openssl/ssl.h>
 
 #include "config.h"
 #include "epp.h"
@@ -47,7 +46,6 @@
 #define MAX_KEY_COUNT 100 /* max # of keys per update */
 
 static sqlite3* db = NULL;
-static SSL_CTX* sslctx = NULL;
 
 void signal_handler(int sig)
 {
@@ -147,10 +145,6 @@ int init()
     rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS keys (job NUMERIC, key TEXT);",0,0,0);
     rc = sqlite3_exec(db, "END TRANSACTION;",0,0,0);
 
-    SSL_library_init();
-    sslctx = SSL_CTX_new(SSLv23_client_method());
-    SSL_CTX_set_options(sslctx, SSL_OP_NO_SSLv2); /* disable SSLv2 */
-
     char* pipename = config_value("/eppclient/pipe");
     unlink(pipename);
     if (mkfifo(pipename, 0660)) {
@@ -173,7 +167,6 @@ void cleanup(int pipe)
 {
     close(pipe);
     sqlite3_close(db);
-    SSL_CTX_free(sslctx);
 }
 
 int count_jobs(void)
@@ -297,7 +290,7 @@ static void send_keys(void)
     if (!registry[0])
         syslog(LOG_WARNING, "Found no registry for zone '%s'", zone);
     else {
-        if (!epp_login(sslctx, registry)) {
+        if (!epp_login(registry)) {
             if (!epp_change_key(zone, keys, count)) {
                 epp_logout();
                 if (!delete_job(job))

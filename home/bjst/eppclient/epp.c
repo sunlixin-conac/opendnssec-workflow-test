@@ -34,8 +34,7 @@
 #include <errno.h>
 #include <syslog.h>
 #include <stdbool.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+#include <curl/curl.h>
 #include <unistd.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -52,8 +51,8 @@ static const char* head =
 
 static const char* foot = "</epp>\n";
 
-static int sockfd = -1;
-static SSL* ssl = NULL;
+static CURL* curl = NULL;
+static char curlerr[CURL_ERROR_SIZE];
 
 static xmlXPathContext* xml_parse(char* string)
 {
@@ -104,19 +103,61 @@ static void xml_free(xmlXPathContext* xml)
     xmlFreeDoc(doc);
 }
 
+/* curl_easy_recv() is non-blocking, so we may have to loop */
+static int curl_read(CURL* curl, char* dest, int len)
+{
+    int count = 0;
+    while (count < len) {
+        size_t got;
+        int rc = curl_easy_recv(curl, dest, len - count, &got);
+        if (rc && rc != CURLE_AGAIN) {
+            syslog(LOG_ERR, "recv error: %d (%s)", rc, curlerr);
+            return -1;
+        }
+            
+        count += got;
+
+        if (count < len) {
+            /* wait 100ms */
+            struct timespec delay = {0, 100000000};
+            nanosleep(&delay, NULL);
+        }
+    }
+
+    return 0;
+}
+
+/* curl_easy_send() is non-blocking, so we may have to loop */
+static int curl_write(CURL* curl, char* dest, int len)
+{
+    int count = 0;
+    while (count < len) {
+        size_t got;
+        int rc = curl_easy_send(curl, dest, len - count, &got);
+        if (rc && rc != CURLE_AGAIN) {
+            syslog(LOG_ERR, "send error: %d (%s)", rc, curlerr);
+            return -1;
+        }
+            
+        count += got;
+
+        if (count < len) {
+            /* wait 100ms */
+            struct timespec delay = {0, 100000000};
+            nanosleep(&delay, NULL);
+        }
+    }
+
+    return 0;
+}
+
 static xmlXPathContext* read_frame(void)
 {
     static char buffer[8192];
 
-    int rc = SSL_read(ssl, buffer, 4);
-    if (rc <= 0) {
-        syslog(LOG_ERR, "SSL_read(4) returned error %d (ret %d, errno %d)",
-               SSL_get_error(ssl, rc), rc, errno);
-        long err;
-        while ((err = ERR_get_error()))
-            syslog(LOG_ERR, "SSL error %ld", err);
+    if (curl_read(curl, buffer, 4))
         return NULL;
-    }
+
     int len = ntohl(*((uint32_t*)buffer));
     len -= 4;
 
@@ -126,12 +167,9 @@ static xmlXPathContext* read_frame(void)
                "Read frame is larger than buffer. Shrinking to %d bytes", len);
     }
 
-    rc = SSL_read(ssl, buffer, len);
-    if (rc <= 0) {
-        syslog(LOG_ERR, "SSL_read(%d) returned error %d",
-               len, SSL_get_error(ssl, rc));
+    if (curl_read(curl, buffer, len))
         return NULL;
-    }
+
     buffer[sizeof(buffer)-1] = 0;
     buffer[len] = 0;
 
@@ -148,23 +186,17 @@ static xmlXPathContext* read_frame(void)
 
 static int send_frame(char* ptr, int len)
 {
-    unsigned char buf[4];
+    char buf[4];
 
     *((uint32_t*)buf) = htonl(len+4);
 
-    int rc = SSL_write(ssl, buf, 4);
-    if (rc <= 0) {
-        syslog(LOG_ERR, "SSL_write(4) returned %d",
-               SSL_get_error(ssl, rc));
+    int rc = curl_write(curl, buf, 4);
+    if (rc)
         return -1;
-    }
 
-    rc = SSL_write(ssl, ptr, len);
-    if (rc <= 0) {
-        syslog(LOG_ERR, "SSL_write(%d) returned %d",
-               len, SSL_get_error(ssl, rc));
+    rc = curl_write(curl, ptr, len);
+    if (rc)
         return -1;
-    }
 
 #ifdef DEBUG
     FILE* f = fopen("output.xml", "w");
@@ -247,12 +279,9 @@ static xmlXPathContext* read_greeting(void)
 
 void epp_cleanup(void)
 {
-    if (ssl) {
-        SSL_shutdown(ssl);
-        SSL_free(ssl);
+    if (curl) {
+        curl_easy_cleanup(curl);
     }
-    if (sockfd >= 0)
-        close(sockfd);
 }
 
 static int login(xmlXPathContext* greeting, char* registry)
@@ -341,78 +370,32 @@ int epp_logout(void)
     return 0;
 }
 
-int epp_login(SSL_CTX* sslctx, char* registry)
+int epp_login(char* registry)
 {
     char* host = strdup(config_registry_value(registry, "host"));
     char* port = strdup(config_registry_value(registry, "port"));
+    char url[80];
+    snprintf(url, sizeof url, "https://%s:%s", host, port);
 
-    struct addrinfo* ai;
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
-    if (getaddrinfo(host, port, &hints, &ai)) {
-        syslog(LOG_ERR, "getaddrinfo(%s,%s): %s",
-               host, port, strerror(errno));
-        free(host);
-        free(port);
+    curl = curl_easy_init();
+    if (!curl) {
+        syslog(LOG_ERR, "Failed initializing curl");
         return -1;
     }
-    free(host);
-    free(port);
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1L);
+    curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
 
-    for (struct addrinfo* a = ai; a; a = a->ai_next) {
-        sockfd = socket(a->ai_family, a->ai_socktype, a->ai_protocol);
-        if (sockfd < 0)
-            continue;
-
-        if (connect(sockfd, a->ai_addr, a->ai_addrlen) >= 0)
-            break;
-
-        close(sockfd);
-    }
-    freeaddrinfo(ai);
-
-    if (sockfd == -1) {
-        syslog(LOG_ERR, "socket(): %s", strerror(errno));
+    int rc = curl_easy_perform(curl);
+    if (rc) {
+        syslog(LOG_ERR, "connect error: %s", curlerr);
         return -1;
     }
 
-    ssl = SSL_new(sslctx);
-    if (!ssl) {
-        syslog(LOG_ERR, "SSL_new(): %s",
-               ERR_error_string(ERR_get_error(), NULL));
-        return -1;
-    }
-
-    if (!SSL_set_fd(ssl, sockfd)) {
-        syslog(LOG_ERR, "SSL_set_fd(): %s",
-               ERR_error_string(ERR_get_error(), NULL));
-        return -1;
-    }
-
-    int rc = SSL_connect(ssl);
-    switch (rc) {
-        case 1:
-            /* success */
-            syslog(LOG_DEBUG, "SSL connection established");
-            break;
-
-        case 2:
-            /* connection shut down */
-            syslog(LOG_WARNING, "SSL_connect() returned %d",
-                   SSL_get_error(ssl, rc));
-            return -1;
-
-        default:
-            /* error */
-            syslog(LOG_ERR, "SSL_connect(): %s",
-                   ERR_error_string(ERR_get_error(), NULL));
-            return -1;
-    }
-
-    rc = 0;
     xmlXPathContext* greeting = read_greeting();
     if (greeting) {
         rc = login(greeting, registry);
