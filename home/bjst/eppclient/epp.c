@@ -376,6 +376,8 @@ int epp_login(char* registry)
     char* port = strdup(config_registry_value(registry, "port"));
     char url[80];
     snprintf(url, sizeof url, "https://%s:%s", host, port);
+    free(host);
+    free(port);
 
     curl = curl_easy_init();
     if (!curl) {
