@@ -1,0 +1,136 @@
+#!@RUBY@ -I@opendnsseclibdir@
+#
+# $Id$
+#
+# Copyright (c) 2009 Nominet UK. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+# GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+# IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+require 'kasp_auditor.rb'
+require 'optparse'
+require 'ostruct'
+
+include KASPAuditor
+
+class OptionsParser
+#
+    # Return a structure describing the options.
+    #
+    def self.parse(args)
+      # The options specified on the command line will be collected in *options*.
+      # We set default values here.
+      path = "@sysconfdir@/opendnssec/".sub("${prefix}", "@prefix@")
+      options = OpenStruct.new
+      options.enable_timeshift = @TIMESHIFT@
+      options.default_conf_file = path + "conf.xml"
+      options.zone_name = nil
+      options.signed_temp = nil
+
+      opts = OptionParser.new do |opts|
+        opts.banner = "Usage: ods-auditor [options]"
+
+        opts.separator ""
+        opts.separator "Specific options:"
+
+        # conf.xml
+        opts.on("-c", "--conf [PATH_TO_CONF_FILE]",
+                "Path to OpenDNSSEC configuration file",
+                "  (defaults to " + options.default_conf_file + ")") do |ext|
+          options.conf_file = ext
+        end
+
+        # kasp.xml
+        opts.on("-k", "--kasp [PATH_TO_KASP_FILE]",
+                "Path to KASP policy file",
+                "  (defaults to the path given in the configuration file)") do |ext|
+          options.kasp_file = ext
+        end
+
+        # zone_name
+        opts.on("-z", "--zone [ZONE_NAME]",
+                "Single zone to audit",
+                "  (defaults to audit all zones)") do |ext|
+          options.zone_name = ext
+        end
+
+        # signed_temp
+        opts.on("-s", "--signed [PATH_TO_SIGNED_FILE]",
+                "If a single zone is specified, then this option may override",
+                "  the specified signed file with another. This is for use by",
+                "  the signer.",
+                "  (defaults to the path given in the zone list)") do |ext|
+          options.signed_temp = ext
+        end
+
+
+        opts.on("-v", "--version", # Override default
+               "Display version information") do |x|
+           print "@VERSION@\n"
+           exit
+        end
+
+
+
+        opts.separator ""
+        opts.separator "Common options:"
+
+        # No argument, shows at tail.  This will print an options summary.
+        # Try it and see!
+        opts.on_tail("-h", "-?", "--help", "Show this message") do
+          puts opts
+          exit
+        end
+
+      end
+
+      begin
+        opts.parse!(args)
+      rescue OptionParser::InvalidOption => e
+        print "Invalid option : #{e}\n"
+        puts opts
+        exit
+      end
+      options
+    end  # parse()
+end
+
+  options = OptionsParser.parse(ARGV)
+runner = Runner.new
+if (options.conf_file)
+    runner.conf_file = options.conf_file
+else
+    runner.conf_file = options.default_conf_file
+end
+if (options.kasp_file)
+    runner.kasp_file = options.kasp_file
+end
+if (options.zone_name)
+  runner.zone_name = options.zone_name
+end
+if (options.signed_temp)
+  runner.signed_temp = options.signed_temp
+end
+if (options.enable_timeshift)
+  runner.enable_timeshift = true
+end
+runner.run()
