@@ -392,6 +392,41 @@ int epp_login(char* registry)
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
 
+    char* c = config_registry_value(registry, "clientcert/file");
+    if (c && c[0]) {
+        curl_easy_setopt(curl,CURLOPT_SSLCERT, c);
+
+        c = config_registry_value(registry, "clientcert/type");
+        if (!c[0]) {
+            syslog(LOG_ERR, "No client <clientcert><type> for registry %s",
+                   registry);
+            return -1;
+        }
+        curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE, c);
+
+        c = config_registry_value(registry, "clientkey/file");
+        if (!c[0]) {
+            syslog(LOG_ERR, "No <clientkey><file> for registry %s", registry);
+            return -1;
+        }
+        curl_easy_setopt(curl,CURLOPT_SSLKEY, c);
+
+        c = config_registry_value(registry, "clientkey/type");
+        if (!c[0]) {
+            syslog(LOG_ERR, "No <clientkey><type> for registry %s", registry);
+            return -1;
+        }
+        curl_easy_setopt(curl,CURLOPT_SSLKEYTYPE, c);
+        
+        c = config_registry_value(registry, "clientkey/password");
+        if (!c[0]) {
+            syslog(LOG_ERR, "No <clientkey><password> for registry %s",
+                   registry);
+            return -1;
+        }
+        curl_easy_setopt(curl,CURLOPT_KEYPASSWD, c);
+    }
+
     int rc = curl_easy_perform(curl);
     if (rc) {
         syslog(LOG_ERR, "connect error: %s", curlerr);

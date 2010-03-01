@@ -83,9 +83,6 @@ char* config_value(char* path)
         syslog(LOG_DEBUG,
                "Error: unable to evaluate xpath expression '%s'", path);
 
-    if (!result[0])
-        syslog(LOG_ERR, "No config value '%s'!", path);
-
     return result;
 }
 
