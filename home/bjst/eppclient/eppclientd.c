@@ -141,8 +141,9 @@ int init()
 
     /* ensure database has the necessary tables */
     int rc = sqlite3_exec(db, "BEGIN TRANSACTION;", 0,0,0);
-    rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS jobs (job INTEGER PRIMARY KEY, zone TEXT);",0,0,0);
+    rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS jobs (job INTEGER PRIMARY KEY, zone TEXT, firsttry INTEGER);",0,0,0);
     rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS keys (job NUMERIC, key TEXT);",0,0,0);
+    rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS registries (registry TEXT UNIQUE, lasttry INTEGER);",0,0,0);
     rc = sqlite3_exec(db, "END TRANSACTION;",0,0,0);
 
     char* pipename = config_value("/eppclient/pipe");
@@ -219,13 +220,55 @@ static void ack_server(char* zone)
     }
 }
 
+static time_t get_registry_time(char* registry)
+{
+    sqlite3_stmt* sth;
+    char sql[160];
+    snprintf(sql, sizeof sql,
+             "SELECT lasttry FROM registries WHERE registry = \"%s\"", registry);
+    sqlite3_prepare_v2(db, sql, -1, &sth, NULL);
+    int rc = sqlite3_step(sth);
+    if (rc < 100) {
+        syslog(LOG_ERR, "%d:sqlite says %s",
+               __LINE__, sqlite3_errmsg(db));
+        sqlite3_finalize(sth);
+        return 0;
+    }
+    int lasttry = sqlite3_column_int(sth, 0);
+    sqlite3_finalize(sth);
+
+    return lasttry;
+}
+
+static void set_registry_time(char* registry, time_t value)
+{
+    sqlite3_stmt* sth;
+    char sql[80];
+    snprintf(sql, sizeof sql, "INSERT OR REPLACE INTO registries(registry, lasttry) VALUES ('%s', %d)",
+             registry, (int)value);
+    sqlite3_prepare_v2(db, sql, -1, &sth, NULL);
+    sqlite3_step(sth);
+    sqlite3_finalize(sth);
+}
+
+static void set_job_time(int job, time_t value)
+{
+    sqlite3_stmt* sth;
+    char sql[80];
+    snprintf(sql, sizeof sql, "UPDATE jobs SET firsttry = %d WHERE job = %d",
+             (int)value, job);
+    sqlite3_prepare_v2(db, sql, -1, &sth, NULL);
+    sqlite3_step(sth);
+    sqlite3_finalize(sth);
+}
+
 static void send_keys(void)
 {
     sqlite3_stmt* sth;
 
     /* get first job */
     sqlite3_prepare_v2(db,
-                       "SELECT job,zone FROM jobs ORDER BY job LIMIT 1",
+                       "SELECT job,zone,firsttry FROM jobs ORDER BY job LIMIT 1",
                        -1, &sth, NULL);
     int rc = sqlite3_step(sth);
     if (rc < 100) {
@@ -236,6 +279,7 @@ static void send_keys(void)
     }
     int job = sqlite3_column_int(sth, 0);
     char* zone = (char*)sqlite3_column_text(sth, 1);
+    time_t firsttry = sqlite3_column_int(sth, 2);
 
     /* get keys */
     char sql[80];
@@ -287,21 +331,46 @@ static void send_keys(void)
         i++;
     }
 
-    if (!registry[0])
+    if (!registry[0]) {
         syslog(LOG_WARNING, "Found no registry for zone '%s'", zone);
-    else {
-        if (!epp_login(registry)) {
-            if (!epp_change_key(zone, keys, count)) {
-                epp_logout();
-                if (!delete_job(job))
-                    ack_server(zone);
-            }
+        goto end;
+    }
+
+    time_t lasttry = get_registry_time(registry);
+    time_t now = time(NULL);
+
+    if (firsttry) {
+        /* don't do more than 'maxrate' calls per hour */
+        int maxrate = atoi(config_registry_value(registry, "maxrate"));
+        if (maxrate && ((now - lasttry) < (3600/maxrate)))
+            goto end;
+            
+        int expiry = atoi(config_registry_value(registry, "expirytime"));
+        if (now - firsttry > expiry) {
+            syslog(LOG_INFO, "Keys for %s expired after %d seconds",
+                   zone, (int)(now - firsttry));
+            delete_job(job);
+            goto end;
         }
     }
-    free(registry);
 
+    syslog(LOG_DEBUG, "Connecting to registry %s for zone %s",
+           registry, zone);
+    if (!epp_login(registry)) {
+        if (!epp_change_key(zone, keys, count)) {
+            epp_logout();
+            if (!delete_job(job))
+                ack_server(zone);
+        }
+    }
     epp_cleanup();
 
+    if (!firsttry)
+        set_job_time(job, now);
+    set_registry_time(registry, now);
+
+  end:
+    free(registry);
     for (int i=0; i<count; i++)
         free((void*)keys[i]);
 }
@@ -433,10 +502,8 @@ int main()
         read_client_pipe(pipe);
 
         int count = count_jobs();
-        if (count) {
-            syslog(LOG_DEBUG, "%d jobs in queue", count);
+        if (count)
             send_keys();
-        }
         sleep(1);
     }
 
