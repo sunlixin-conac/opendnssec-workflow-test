@@ -9,7 +9,8 @@ TARGETS = \
 	OpenDNSSEC/enforcer \
 	OpenDNSSEC/signer \
 	OpenDNSSEC/auditor \
-	OpenDNSSEC/xml
+	OpenDNSSEC/xml \
+	OpenDNSSEC/plugins/eppclient
 
 all:
 
