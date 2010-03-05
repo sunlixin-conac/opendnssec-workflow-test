@@ -7,6 +7,7 @@ CONFIGURE_ARGS = \
 	--with-cunit=/usr/local \
 	--with-ldns=/opt/ldns \
 	--with-libxml2=/usr \
+	--with-libcurl=/usr/local \
 	--with-botan=/usr/local \
 	--enable-timeshift
 
