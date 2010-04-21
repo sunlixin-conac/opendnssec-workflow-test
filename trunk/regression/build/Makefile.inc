@@ -1,7 +1,7 @@
 # $Id$
 
 BUILDDIR =	obj
-SRCDIR=		../../../..
+SRCDIR=		../../../../..
 
 
 all: build
