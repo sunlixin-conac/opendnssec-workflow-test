@@ -5,6 +5,7 @@ SRCDIR=		../../../../..
 
 SOFTHSM=	softHSM
 OPENDNSSEC=	OpenDNSSEC
+HSMBULLY=	hsmbully
 
 
 all: build
@@ -30,8 +31,8 @@ configure-softhsm:
 	cd $(BUILDDIR)/$(SOFTHSM); $(SRCDIR)/$(SOFTHSM)/configure $(CONFIGURE_ARGS)
 	
 configure-hsmbully:
-	-mkdir -p $(BUILDDIR)/hsmbully
-	cd $(BUILDDIR)/hsmbully; $(SRCDIR)/hsmbully/configure $(CONFIGURE_ARGS)
+	-mkdir -p $(BUILDDIR)/$(HSMBULLY)
+	cd $(BUILDDIR)/$(HSMBULLY); $(SRCDIR)/$(HSMBULLY)/configure $(CONFIGURE_ARGS)
 
 
 build-opendnssec: configure-opendnssec
@@ -41,7 +42,7 @@ build-softhsm: configure-softhsm
 	cd $(BUILDDIR)/$(SOFTHSM); $(MAKE)
 	
 build-hsmbully: configure-hsmbully
-	cd $(BUILDDIR)/hsmbully; $(MAKE)
+	cd $(BUILDDIR)/$(HSMBULLY); $(MAKE)
 
 
 install-opendnssec:
@@ -51,7 +52,7 @@ install-softhsm:
 	cd $(BUILDDIR)/$(SOFTHSM); $(SUDO) $(MAKE) install
 
 install-hsmbully:
-	cd $(BUILDDIR)/hsmbully; $(SUDO) $(MAKE) install
+	cd $(BUILDDIR)/$(HSMBULLY); $(SUDO) $(MAKE) install
 
 
 clean:
