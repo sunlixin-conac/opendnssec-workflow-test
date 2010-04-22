@@ -3,49 +3,52 @@
 BUILDDIR =	obj
 SRCDIR=		../../../../..
 
+SOFTHSM=	softHSM
+OPENDNSSEC=	OpenDNSSEC
+
 
 all: build
 
-build: build-softHSM build-OpenDNSSEC
+build: build-softhsm build-opendnssec
     
-install: install-softHSM install-OpenDNSSEC
+install: install-softhsm install-opendnssec
 
 
-OpenDNSSEC: build-OpenDNSSEC
+opendnssec: build-opendnssec
 
-softHSM: build-softHSM
+softhsm: build-softhsm
 
 hsmbully: build-hsmbully
 
 
-configure-OpenDNSSEC:
-	-mkdir -p $(BUILDDIR)/OpenDNSSEC
-	cd $(BUILDDIR)/OpenDNSSEC; $(SRCDIR)/OpenDNSSEC/configure $(CONFIGURE_ARGS)
+configure-opendnssec:
+	-mkdir -p $(BUILDDIR)/$(OPENDNSSEC)
+	cd $(BUILDDIR)/$(OPENDNSSEC); $(SRCDIR)/$(OPENDNSSEC)/configure $(CONFIGURE_ARGS)
 
-configure-softHSM:
-	-mkdir -p $(BUILDDIR)/softHSM
-	cd $(BUILDDIR)/softHSM; $(SRCDIR)/softHSM/configure $(CONFIGURE_ARGS)
+configure-softhsm:
+	-mkdir -p $(BUILDDIR)/$(SOFTHSM)
+	cd $(BUILDDIR)/$(SOFTHSM); $(SRCDIR)/$(SOFTHSM)/configure $(CONFIGURE_ARGS)
 	
 configure-hsmbully:
 	-mkdir -p $(BUILDDIR)/hsmbully
 	cd $(BUILDDIR)/hsmbully; $(SRCDIR)/hsmbully/configure $(CONFIGURE_ARGS)
 
 
-build-OpenDNSSEC: configure-OpenDNSSEC
-	cd $(BUILDDIR)/OpenDNSSEC; $(MAKE)
+build-opendnssec: configure-opendnssec
+	cd $(BUILDDIR)/$(OPENDNSSEC); $(MAKE)
 
-build-softHSM: configure-softHSM
-	cd $(BUILDDIR)/softHSM; $(MAKE)
+build-softhsm: configure-softhsm
+	cd $(BUILDDIR)/$(SOFTHSM); $(MAKE)
 	
 build-hsmbully: configure-hsmbully
 	cd $(BUILDDIR)/hsmbully; $(MAKE)
 
 
-install-OpenDNSSEC:
-	cd $(BUILDDIR)/OpenDNSSEC; $(SUDO) $(MAKE) install
+install-opendnssec:
+	cd $(BUILDDIR)/$(OPENDNSSEC); $(SUDO) $(MAKE) install
 
-install-softHSM:
-	cd $(BUILDDIR)/softHSM; $(SUDO) $(MAKE) install
+install-softhsm:
+	cd $(BUILDDIR)/$(SOFTHSM); $(SUDO) $(MAKE) install
 
 install-hsmbully:
 	cd $(BUILDDIR)/hsmbully; $(SUDO) $(MAKE) install
