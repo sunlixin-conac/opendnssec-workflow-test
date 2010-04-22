@@ -13,7 +13,9 @@ CONFIGURE_ARGS = \
 	--with-botan=/opt/local \
 	--with-pkcs11-softhsm=$(PREFIX)/lib/libsofthsm.dylib \
 	--with-pkcs11-etoken=/usr/local/lib/libeTPkcs11.dylib \
-	--with-pkcs11-opensc=/Library/OpenSC/lib/pkcs11/opensc-pkcs11.so
+	--with-pkcs11-opensc=/Library/OpenSC/lib/pkcs11/opensc-pkcs11.so \
+	--enable-timeshift \
+	--enable-eppclient
 
 SUDO = sudo
 MAKE = make
