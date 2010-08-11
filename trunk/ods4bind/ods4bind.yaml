@@ -1,0 +1,30 @@
+# $Id: ods4bind.yaml 9052 2010-06-24 12:36:00Z jakob $
+
+OpenDNSSEC:
+    # path to the OpenDNSSEC zonelist file
+    zonelist: zonelist.xml
+
+BIND:
+    # main BIND configuration file (not currently used)
+    config: /etc/named.conf
+    
+    # paths to where BIND expects keys (named.conf key-directory)
+    keysdir: /var/named/keys
+    
+    # where ods4bind will store temporary files
+    tempdir: /var/named/tmp
+
+    # path to various BIND binaries
+    rndc: /opt/isc/sbin/rndc
+    dnssec-keyfromlabel: /opt/isc/sbin/dnssec-keyfromlabel
+    dnssec-settime: /opt/isc/sbin/dnssec-settime
+    dnssec-signzone: /opt/isc/sbin/dnssec-signzone
+
+    # number of CPUs passed to dnssec-signzone (default: 1)
+    ncpu: 4
+
+    # OpenSSL Engine (default: pkcs11)
+    engine: pkcs11
+
+    # OpenSSL key label prefix (default: null)
+    #labelprefix: pkcs11:object=
