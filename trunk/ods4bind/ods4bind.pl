@@ -460,7 +460,7 @@ sub extract_keys {
             unless ($keyfile) {
                 message_error("Failed extracting keys for zone %s, label %s",
                     $zone, $label);
-                return undef;
+                return ();
             }
 
             chomp $keyfile;
@@ -470,7 +470,7 @@ sub extract_keys {
             unless (-f $filename) {
                 message_error("Failed extracting keys for zone %s, label %s",
                     $zone, $label);
-                return undef;
+                return ();
             }
         }
 
