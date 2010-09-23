@@ -5,6 +5,7 @@ SRCDIR=		../../../../..
 
 SOFTHSM=	softHSM
 OPENDNSSEC=	OpenDNSSEC
+TESTING=	pkcs11-testing
 HSMBULLY=	hsmbully
 
 
@@ -19,8 +20,9 @@ opendnssec: build-opendnssec
 
 softhsm: build-softhsm
 
-hsmbully: build-hsmbully
+testing: build-testing
 
+hsmbully: build-hsmbully
 
 configure-opendnssec:
 	-mkdir -p $(BUILDDIR)/$(OPENDNSSEC)
@@ -30,6 +32,10 @@ configure-softhsm:
 	-mkdir -p $(BUILDDIR)/$(SOFTHSM)
 	cd $(BUILDDIR)/$(SOFTHSM); $(SRCDIR)/$(SOFTHSM)/configure $(CONFIGURE_ARGS)
 	
+configure-testing:
+	-mkdir -p $(BUILDDIR)/$(TESTING)
+	cd $(BUILDDIR)/$(TESTING); $(SRCDIR)/$(TESTING)/configure $(CONFIGURE_ARGS)
+
 configure-hsmbully:
 	-mkdir -p $(BUILDDIR)/$(HSMBULLY)
 	cd $(BUILDDIR)/$(HSMBULLY); $(SRCDIR)/$(HSMBULLY)/configure $(CONFIGURE_ARGS)
@@ -41,6 +47,9 @@ build-opendnssec: configure-opendnssec
 build-softhsm: configure-softhsm
 	cd $(BUILDDIR)/$(SOFTHSM); $(MAKE)
 	
+build-testing: configure-testing
+	cd $(BUILDDIR)/$(TESTING); $(MAKE)
+
 build-hsmbully: configure-hsmbully
 	cd $(BUILDDIR)/$(HSMBULLY); $(MAKE)
 
