@@ -456,6 +456,13 @@ sub extract_keys {
         } else {
             open(KEYFROMLABEL, "$cmd_extract |");
             $keyfile = <KEYFROMLABEL>;
+
+            unless ($keyfile) {
+                message_error("Failed extracting keys for zone %s, label %s",
+                    $zone, $label);
+                return undef;
+            }
+
             chomp $keyfile;
             close(KEYFROMLABEL);
 
