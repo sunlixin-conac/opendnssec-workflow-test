@@ -466,8 +466,10 @@ sub extract_keys {
             chomp $keyfile;
             close(KEYFROMLABEL);
 
+            message_debug("Keyfile: %s", $keyfile);
+
             my $filename = sprintf("%s/%s", $dir, $keyfile);
-            unless (-f $filename) {
+            unless (-f "$filename.private") {
                 message_error("Failed extracting keys for zone %s, label %s",
                     $zone, $label);
                 return ();
