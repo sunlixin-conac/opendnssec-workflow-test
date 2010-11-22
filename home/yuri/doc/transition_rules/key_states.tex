@@ -360,16 +360,19 @@ but can not, it won't.
 	\begin{equation}
 		\left.
 		\begin{split}
-			Goal(k)=H & \wedge ksk \not \in Roles(k)\\
+			%~ Goal(k)=H & \wedge 
+			ksk \not \in Roles(k)\\
 			\\
-			Goal(k)=H 	& \wedge T_{now} \geq T_{whatever}
+			%~ Goal(k)=H 	& \wedge 
+			T_{now} \geq T_{whatever}
 		\end{split}
 		\right\} \rightarrow H(Ds(k))
 	\end{equation}
 
 	\begin{equation}
 		\begin{split}
-			Goal(k)=H 	& \wedge T_{now} < T_{whatever} \\
+			%~ Goal(k)=H 	& \wedge 
+			T_{now} < T_{whatever}
 						& \rightarrow [event]
 		\end{split}
 	\end{equation}
@@ -526,9 +529,11 @@ but can not, it won't.
 	\begin{equation}
 		\left.
 		\begin{split}
-			Goal(K) &=H \wedge ksk \not \in Roles(k)\\
+			%~ Goal(K) &=H \wedge 
+			ksk \not \in Roles(k)\\
 			\\
-			Goal(k)&=H \wedge T_{now} \geq T_{whatever}
+			%~ Goal(k)&=H \wedge 
+			T_{now} \geq T_{whatever}
 			%~ \\
 			%~ Goal(k)&=C \wedge State(k_{ds})=C
 		\end{split}
@@ -538,7 +543,8 @@ but can not, it won't.
 	Else, schedule event.
 	\begin{equation}
 		\begin{split}
-			Goal(k)=H \wedge T_{now} < T_{whatever} \rightarrow event(T_{whatever})
+			%~ Goal(k)=H \wedge 
+			T_{now} < T_{whatever} \rightarrow event(T_{whatever})
 		\end{split}
 	\end{equation}
 \end{minipage}}
@@ -580,12 +586,27 @@ Don't wait till signatures are propagated.
 		\end{split}
 	\end{equation}
 
-Enough time passed to propagate signatures.
+Enough time passed to propagate signatures. Or if we do a smooth 
+transition 
 	\begin{equation}
+		\left.
 		\begin{split}
-			Goal(k)=O \wedge T_{now} \geq T_{whatever} \rightarrow O(Rrsig(k))
+			Goal(k)=O &\wedge T_{now} \geq T_{whatever} \\
+			\\
+			Goal(k)=O & \wedge AllowSmooth \\
+					& \wedge \forall r \in Roles(k) (\\
+						& \exists k' \in \mathbb{K} ( \\
+							& Alg(k') = Alg(k) \\
+							& \wedge r \in Roles(k') \\
+							& \wedge O(Dnskey(k')) \\
+							& \wedge O(Rrsig(k')) \\
+						)
+					)
 		\end{split}
+		 \right\} \rightarrow O(Rrsig(k))
 	\end{equation}
+	
+
 
 Not enough time passed to propagate signatures.
 	\begin{equation}
@@ -632,16 +653,19 @@ Not enough time passed to propagate signatures.
 	\begin{equation}
 		\left.
 		\begin{split}
-			Goal(k)=H &\wedge H(Dnskey(k)) \\
+			%~ Goal(k)=H &\wedge 
+			H(Dnskey(k)) \\
 			\\
-			Goal(k)=H &\wedge T_{now} \geq T_{whatever} 
+			%~ Goal(k)=H &\wedge 
+			T_{now} \geq T_{whatever} 
 		\end{split}
 		\right\} \rightarrow H(Rrsig(k))
 	\end{equation}
 
 	\begin{equation}
 		\begin{split}
-			Goal(k)=H \wedge T_{now} < T_{whatever} \rightarrow event(T_{whatever})
+			%~ Goal(k)=H \wedge 
+			T_{now} < T_{whatever} \rightarrow event(T_{whatever})
 		\end{split}
 	\end{equation}
 \end{minipage}}
