@@ -20,7 +20,7 @@ propagated ZSK.
 \begin{displaymath}
 \begin{array}{l}
 ConsistentKeys \equiv \{ k | k\in\mathbb{K}, \\
-\hskip 1cm	\neg H(Ds(k)) \rightarrow O(Dnskey(k)) \wedge \\
+\hskip 1cm	Roles(k) \subseteq {ksk} \rightarrow (\neg H(Ds(k)) \rightarrow O(Dnskey(k))) \wedge \\
 \hskip 1cm	\neg H(Dnskey(k)) \rightarrow O(Rrsig(k)) \wedge \\
 \hskip 1cm	( \\
 \hskip 2cm		H(Dnskey(k)) \vee \\
@@ -47,7 +47,7 @@ SafeKeys \equiv \{ k | k\in\mathbb{K}, \\
 \hskip 3cm 				Alg(k') = Alg(k) \wedge \\
 \hskip 3cm 				r \in Roles(k') \wedge \\
 \hskip 3cm 				l \in ConsistentKeys \wedge \\
-\hskip 3cm 				\neg H(Ds(k)) \rightarrow O(Ds(k')) \wedge \\
+\hskip 3cm 				r = ksk \rightarrow (\neg H(Ds(k)) \rightarrow O(Ds(k'))) \wedge \\
 \hskip 3cm 				\neg H(Dnskey(k)) \rightarrow O(Dnskey(k')) \\
 \hskip 2cm 			)\\
 \hskip 1cm 		)\\
