@@ -1,0 +1,192 @@
+\documentclass{article}
+
+\usepackage{amssymb,amsmath}
+
+\parindent 0pt
+\parskip 5pt
+
+\newcommand{\logor}{\mathbin{\vee}}
+
+\title{Life, Universe, and Everything}
+
+\begin{document}
+
+\maketitle
+
+A consistent key(context) is defined as a key that does not introduce 
+internal inconsistencies. A (partially) propagated KSK must have a fully
+propagated ZSK.
+
+\begin{displaymath}
+\begin{array}{l}
+ConsistentKeys \equiv \{ k | k\in\mathbb{K}, \\
+\hskip 1cm	\neg H(Ds(k)) \rightarrow O(Dnskey(k)) \wedge \\
+\hskip 1cm	\neg H(Dnskey(k)) \rightarrow O(Rrsig(k)) \wedge \\
+\hskip 1cm	( \\
+\hskip 2cm		H(Dnskey(k)) \vee \\
+\hskip 2cm		ksk=Roles(k) \rightarrow \exists k' \in \mathbb{K} \cdot (\\
+\hskip 3cm			zsk \in Roles(k') \wedge \\
+\hskip 3cm			a=Alg(k') \wedge \\
+\hskip 3cm			O(Dnskey(k')) \wedge \\
+\hskip 3cm			O(Rrsig(k'))\\
+\hskip 2cm		)\\
+\hskip 1cm	)\\
+\}
+\end{array}
+\end{displaymath}
+
+SafeKeys are keys that might be internally inconsistent but for which
+a consistent counterpart exists.
+
+\begin{displaymath}
+\begin{array}{l}
+SafeKeys \equiv \{ k | k\in\mathbb{K}, \\
+\hskip 1cm 		k \in ConsistentKeys \vee \\
+\hskip 1cm 		\forall r \in Roles(k) \cdot ( \\
+\hskip 2cm 			\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 3cm 				Alg(k') = Alg(k) \wedge \\
+\hskip 3cm 				r \in Roles(k') \wedge \\
+\hskip 3cm 				k \in ConsistentKeys \wedge \\
+\hskip 3cm 				\neg H(Ds(k)) \rightarrow O(Ds(k')) \wedge \\
+\hskip 3cm 				\neg H(Dnskey(k)) \rightarrow O(Dnskey(k')) \\
+\hskip 2cm 			)\\
+\hskip 1cm 		)\\
+\}
+\end{array}
+\end{displaymath}
+
+A zone is valid if no single key breaks validity and at least one complete
+chain for any algorithm exists. An insecure zone is represented by a NULL
+key.
+
+\begin{displaymath}
+\begin{array}{l}
+Valid(\mathbb{K}) \Leftrightarrow \\
+\hskip 1cm	\forall k \in \mathbb{K} \cdot k \in SafeKeys \wedge \\
+\hskip 1cm	\exists k \in \mathbb{K} \cdot ( \\
+\hskip 2cm		ksk \in Roles(k) \wedge \\
+\hskip 2cm		O(Ds(k)) \wedge \\
+\hskip 2cm		O(Dnskey(k)) \wedge \\
+\hskip 2cm		O(Rrsig(k)) \wedge \\
+\hskip 2cm		\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 3cm			zsk \in Roles(k') \wedge \\
+\hskip 3cm			O(Dnskey(k')) \wedge \\
+\hskip 3cm			O(Rrsig(k')) \wedge \\
+\hskip 3cm			Alg(k)=Alg(k')\\
+\hskip 2cm		)\\
+\hskip 1cm	)
+\end{array}
+\end{displaymath}
+
+\end{document}
+
+%~ new old version
+
+Every zone apex contains keys, each of which has an algorithm.
+It is an explicit requirement that all algorithms in the zone apex are serviced.
+To capture the set of algorithms in the zone apex, we define:
+
+\begin{eqnarray*}
+\emph{AlgsNeeded} &\equiv& \{ Alg(k) | k\in\mathbb{K}, \neg H(Ds(k)) \logor \neg H(Dnskey(k))
+\end{eqnarray*}
+
+Keys are valid if they have a DNSKEY record, a DS record (which is mimiced by
+Yuri's logic for a ZSK) and if they create RRSIG records:
+
+\begin{eqnarray*}
+\emph{ValidKeys} &\equiv& \{k|k\in\mathbb{K}, O(Dnskey(k)), O(Ds(k)), O(Rrsig(k))\}
+\end{eqnarray*}
+
+Keys are built into valid chains, that include a KSK and a key (possibly the
+same) that fulfills the role of ZSK.
+
+\begin{eqnarray*}
+\emph{ValidChains} &\equiv& \{z|z\in\emph{ValidKeys}, zsk\in Roles(z),\\
+			&& \phantom{\{z|} \exists k\in\emph{ValidKeys}\cdot ksk\in Roles(k), Alg(k)=Alg(z)\}
+\end{eqnarray*}
+
+Note that it is assumed that the RRSIG represented in a key cover all
+resource record; we do not treat individual resource records separately.
+
+The situation in which the zone is not bogus is now described by
+
+\begin{displaymath}
+\begin{array}{l}
+\forall a\in\emph{AlgsNeeded}\cdot (\\
+\hskip 1cm\exists c\in\emph{ValidChains}\cdot a=Alg(c)~\vee\\
+\hskip 1cm\forall k\in\mathbb{K}\cdot (Alg(k)=a~\wedge\\
+\hskip 1cm\phantom{\forall k\in\mathbb{K}\cdot(}(H(Ds(k))~\vee~O(Dnskey(k)))~\wedge\\
+\hskip 1cm\phantom{\forall k\in\mathbb{K}\cdot(}(H(Dnskey(k))~\vee~O(Rrsig(k)))\\
+\hskip 1cm\phantom{\forall k\in\mathbb{K}\cdot})~\vee~(\forall r\in Roles(k)\cdot \exists k'\in\mathbb{K}\cdot Alg(k')=a~\wedge\\
+\hskip 1cm\phantom{\forall k\in\mathbb{K}\cdot)~\vee~(\forall r\in Roles(k)\cdot \exists k'\in\mathbb{K}\cdot}r\in Roles(k')~\wedge\\
+\hskip 1cm\phantom{\forall k\in\mathbb{K}\cdot)~\vee~(\forall r\in Roles(k)\cdot \exists k'\in\mathbb{K}\cdot}O(Dnskey(k')~\wedge O(Rrsig(k')\\
+\hskip 1cm\phantom{\forall k\in\mathbb{K}\cdot~\vee~})\\
+\hskip 1cm\phantom{\forall k\in\mathbb{K}\cdot})
+\end{array}
+\end{displaymath}
+
+\end{document}
+
+
+%
+% TRAILER: OLDER VERSION
+%
+
+Keys may sign for other keys.  However, since (1)~keys are always tied
+to a zone's apex, and (2)~any signature on keys signs all keys at once,
+it is safe to say that there will never be more than 2 levels of keys,
+such as the KSK and ZSK.  It would be possible to have multiple ZSK in
+parallel under a KSK, but there can never be sequences of more than two keys.
+
+We therefore follow the practical terms of KSK and ZSK, even if they are
+not formal names; we do take into account that one key can act both in the
+rols of ZSK and KSK.
+%
+\begin{eqnarray}
+\emph{ValidKSK} &\equiv& \{ k | k\in\mathbb{K}, O(Dnskey(k)), O(Ds(k)) \}\\
+\emph{ValidZSK} &\equiv& \{ z | z\in\mathbb{K}, O(Dnskey(z)), \nonumber \\
+		&&\phantom{\{ z | }\exists k\in\emph{ValidKSK}\cdot z\in Signed(Rrsig(k))\}\\
+\emph{ValidKeys} &\equiv& \emph{ValidKSK} \cup \emph{ValidZSK}\\
+\emph{ValidRR} &\equiv& \{ r | r\in\mathbb{R}, \neg H(r), \nonumber \\
+		&&\phantom{\{ r | }\exists k\in\emph{ValidKeys}\cdot r\in Signed(Rrsig(k)) \}
+\end{eqnarray}
+
+A trivial way of meeting the DNSSEC requirements is not to have a DS published in the parent:
+
+\begin{displaymath}
+\forall k\in\mathbb{K}\cdot H(Ds(k))
+\end{displaymath}
+
+A more sportive approach is to have DS records in the parent and still maintain
+a valid zone.  The requirement for that is to have all resource records
+signed unless they are DNSKEY or RRSIG records:
+
+\begin{displaymath}
+\forall a\in\emph{AlgsNeeded}\cdot
+\forall r\in\mathbb{R}\cdot
+r\in ValidRR \cup \{ Dnskey(k)|k\in\mathbb{K} \} \cup \{ Rrsig(k)|k\in\mathbb{K} \}
+\end{displaymath}
+
+
+\clearpage
+\section{Notes}
+
+We used \emph{Signed} to map from an RRSIG resource record to the set of
+resource records that are signed by it.
+
+It feels a bit indirect to have to access types of records by looking at
+their position in $\mathbb{K}$.
+
+The definition of zone apex is vague to me.  Can $\mathbb{K}$ hold keys
+outside the zone apex, and if so, how do we distinguish them?  Is the
+property $ksk\in Roles(k)$ really the same as being in the zone's apex?
+
+The definition of $\mathbb{R}$ is a set of all possible resource records.
+What is its scope?  If it is limited to a zone, it cannot include the DS
+reference from the parent.  If it is broader than a zone, for instance
+worldwide, do the formalisms above still hold?  (Making zones explicitly
+visible can help solve this.  A mapping from $\mathbb{R}$ to a zone type
+$\mathbb{Z}$ would help, along with a relation
+$Parent:\mathbb{Z}\mapsto\mathbb{Z}$ to derive a parent zone.
+
+\end{document}
