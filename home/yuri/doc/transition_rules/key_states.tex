@@ -343,7 +343,8 @@ but can not, it won't.
 				& Alg(k) = Alg(k') \\
 				& \wedge ksk \in Roles(k') \\
 				%~ & \wedge State(k'_{ds}) = P \\
-				& \wedge O(Dnskey(k')) \\
+				%~ & \wedge O(Dnskey(k')) \\
+				& \wedge \neg H(Dnskey(k')) \\
 				& \wedge O(Rrsig(k'))
 				)
 		\end{split}
