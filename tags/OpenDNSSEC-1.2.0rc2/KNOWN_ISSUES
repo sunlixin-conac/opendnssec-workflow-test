@@ -1,0 +1,60 @@
+$Id$
+
+OpenDNSSEC 1.2.0 - Known Restrictions
+
+The following are the known problems and/or restrictions of release 1.2.0 of
+OpenDNSSEC.
+
+
+Limitations on Number of Zones
+------------------------------
+
+Owing to contention in the key management database, performance is degraded if
+OpenDNSSEC is used to sign large numbers of zones that do not share common
+keys. The problem is worse if SQLite is used for the key and signature manager
+database.
+
+As a workaround, we suggest that either the same key is used for all zones, or
+that the number of zones be limited to about 5,000.
+
+This will be addressed in a future release of the software.
+
+
+Incompatibility in TSIG Key
+---------------------------
+
+When setting up a TSIG key for the zone fetcher component, it should be noted
+that the SHA algorithm family used by OpenDNSSEC is incompatible with the
+BIND-9, due to a problem in the latter's cryptographic library.
+
+The problem is fixed in the upcoming BIND-9.7 release; in the meantime, avoid
+using TSIG authentication between the zone fetcher and the upstream
+nameserver.
+
+
+Issue with rolling from one algorithm to another
+------------------------------------------------
+
+The current version will handle key rollovers that also change algorithm just the
+same as any other key rollover. This is not sufficient; and so rolling between
+algorithms is broken and should not be done with the current system.
+
+
+Handling of external command calls
+----------------------------------
+
+External commands (e.g. NotifyCommand or DelegationSignerSubmitCommand) are 
+called with popen. This can lead to errors with these external scripts not
+being noticed by OpenDNSSEC. It is therefore recommended that when writing
+scripts like these that they log enough information for the user to tell
+independently if they failed.
+
+
+Auditor does not handle $INCLUDE statements
+-------------------------------------------
+
+The $INCLUDE statement can be used in the unsigned zone to include data from
+other zone files. The problem is that the included files are not copied to 
+the working directory of the signer. We can thus not guarantee that the Audit 
+operation is atomic. After the signer reads in the zone and before the audit, 
+the include files could have been edited.
