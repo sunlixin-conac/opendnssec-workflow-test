@@ -72,19 +72,23 @@ def goal(k):  return k.goal
 def alg(k):   return k.alg
 def roles(k): return k.roles
 def state(r): return r.state
+def H(r):     return state(r) == HIDDEN
+def R(r):     return state(r) == RUMOURED
+def O(r):     return state(r) == OMNIPRESENT
+def S(r):     return state(r) == SQUASHED
 
 def valid(kc):
     ConsistentKeys = filter(lambda k: 
-        impl(roles(k).issubset(set(["ksk"])), impl(state(ds(k)) != HIDDEN, state(dnskey(k)) == OMNIPRESENT)) and
-        impl(state(dnskey(k)) != HIDDEN, state(rrsig(k)) == OMNIPRESENT) and
+        impl(roles(k).issubset(set(["ksk"])), impl(not H(ds(k)), O(dnskey(k)))) and
+        impl(not H(dnskey(k)), O(rrsig(k))) and
         (
-            state(ds(k)) == HIDDEN or
+            H(ds(k)) or
             impl(roles(k).issubset(set(["ksk"])), 
                 exists(kc, lambda l:
                     "zsk" in roles(l) and
                     alg(l) == alg(k) and
-                    state(dnskey(l)) == OMNIPRESENT and
-                    state(rrsig(l)) == OMNIPRESENT
+                    O(dnskey(l)) and
+                    O(rrsig(l))
                 )
             )
         
@@ -99,8 +103,8 @@ def valid(kc):
                 alg(k)==alg(l) and
                 r in roles(l) and
                 l in ConsistentKeys and
-                impl(r=="ksk", impl(state(ds(k)) != HIDDEN, state(ds(l)) == OMNIPRESENT)) and
-                impl(state(dnskey(k)) != HIDDEN, state(dnskey(l)) == OMNIPRESENT)
+                impl(r=="ksk", impl(not H(ds(k)), O(ds(l)))) and
+                impl(not H(dnskey(k)), O(dnskey(l)))
             )
         )
     , kc)
@@ -110,43 +114,43 @@ def valid(kc):
         k in SafeKeys and
         exists(kc, lambda k:
             "ksk" in roles(k) and
-            state(ds(k)) == OMNIPRESENT and
-            state(dnskey(k)) == OMNIPRESENT and
-            state(rrsig(k)) == OMNIPRESENT and
+            O(ds(k)) and
+            O(dnskey(k)) and
+            O(rrsig(k)) and
             exists(kc, lambda l:
                 "zsk" in roles(l) and
-                state(dnskey(l)) == OMNIPRESENT and
-                state(rrsig(l)) == OMNIPRESENT and
+                O(dnskey(l)) and
+                O(rrsig(l)) and
                 alg(k)==alg(l)
             )
         )
     )
 
 def proc_ds(kc, k, ds_record):
-    if state(ds_record) == HIDDEN:
+    if H(ds_record):
         if goal(k) == OMNIPRESENT:
             if not "ksk" in roles(k):
                 return RUMOURED
-            if state(k.records["dnskey"]) == OMNIPRESENT:
+            if O(k.records["dnskey"]):
                 return RUMOURED
             if exists(kc, lambda l:
                     alg(l) == alg(k) and
                     "ksk" in roles(l) and
-                    state(ds(l)) == OMNIPRESENT and
-                    state(dnskey(l)) == OMNIPRESENT and
-                    state(rrsig(l)) == OMNIPRESENT):
+                    O(ds(l)) and
+                    O(dnskey(l)) and
+                    O(rrsig(l))):
                 return RUMOURED
 
-    elif state(ds_record) == RUMOURED:
+    elif R(ds_record):
         if goal(k) == HIDDEN:
             return SQUASHED
-        if goal(k) ==OMNIPRESENT:
+        if goal(k) == OMNIPRESENT:
             if not "ksk" in roles(k):
                 return OMNIPRESENT
             if ds_record.time <= k.time:
                 return OMNIPRESENT
 
-    elif state(ds_record) == OMNIPRESENT:
+    elif O(ds_record):
         if goal(k) == HIDDEN:
             #~ if not "ksk" in roles(k):
                 #~ return SQUASHED
@@ -154,9 +158,9 @@ def proc_ds(kc, k, ds_record):
                     exists(kc, lambda l: k!=l and
                         alg(k) == alg(l) and
                         r in roles(l) and
-                        state(ds(l)) == OMNIPRESENT and
-                        state(dnskey(l)) == OMNIPRESENT and
-                        state(rrsig(l)) == OMNIPRESENT)):
+                        O(ds(l)) and
+                        O(dnskey(l)) and
+                        O(rrsig(l)))):
                 debug(k, "ds P->C (12) Another key with alg(k)=%s is ready."%str(alg(k)))
                 return SQUASHED
             if "ksk" in roles(k) and \
@@ -165,27 +169,27 @@ def proc_ds(kc, k, ds_record):
                             alg(k) == alg(l) and
                             r in roles(l),
                             lambda l:
-                                state(ds(l)) == HIDDEN)
+                                H(ds(l)))
                         and exists(kc, lambda l:
                             k!=l and
                             r in roles(l) and
-                            state(ds(l)) == OMNIPRESENT and
-                            state(dnskey(l)) == OMNIPRESENT and
-                            state(rrsig(l)) == OMNIPRESENT)):
+                            O(ds(l)) and
+                            O(dnskey(l)) and
+                            O(rrsig(l)))):
                 debug(k, "ds P->C (12) All ds with same alg,role are in C|G and there is another key for each role")
                 return SQUASHED
             if not "ksk" in roles(k) and\
                     not exists(kc, lambda l: k != l and
                     "ksk" in roles(l) and
                     alg(k) == alg(l) and
-                    #~ state(ds(l)) == OMNIPRESENT and
-                    #~ state(dnskey(l)) == OMNIPRESENT and
-                    state(dnskey(l)) != HIDDEN and
-                    state(rrsig(l)) == OMNIPRESENT):
+                    #~ O(ds(l)) and
+                    #~ O(dnskey(l)) and
+                    not H(dnskey(l)) and
+                    O(rrsig(l))):
                 debug(k, "ds P->C (12) there not a ksk requiring me.")
                 return SQUASHED
 
-    elif state(ds_record) == SQUASHED:
+    elif S(ds_record):
         #~ if goal(k) == HIDDEN:
         if not "ksk" in roles(k):
             return HIDDEN
@@ -194,38 +198,38 @@ def proc_ds(kc, k, ds_record):
     return state(ds_record)
 
 def proc_dnskey(kc, k, dnskey_record):
-    if state(dnskey_record) == HIDDEN:
+    if H(dnskey_record):
         if goal(k) == OMNIPRESENT:
-            if state(rrsig(k)) == OMNIPRESENT and "zsk" in roles(k):
+            if O(rrsig(k)) and "zsk" in roles(k):
                 return RUMOURED
-            if state(rrsig(k)) == OMNIPRESENT and  \
+            if O(rrsig(k)) and  \
                     exists(kc, lambda l:
                         alg(k) == alg(l) and
                         "zsk" in roles(l) and
-                        state(ds(l)) == OMNIPRESENT and
-                        state(dnskey(l)) == OMNIPRESENT and
-                        state(rrsig(l)) == OMNIPRESENT):
+                        O(ds(l)) and
+                        O(dnskey(l)) and
+                        O(rrsig(l))):
                 return RUMOURED
             if forall(roles(k), lambda x: True, lambda r:
                     exists(kc, lambda l:
                         k!=l and
                         alg(k) == alg(l) and
                         r in roles(l) and
-                        state(ds(l)) == OMNIPRESENT and
-                        state(dnskey(l)) == OMNIPRESENT and
-                        state(rrsig(l)) == OMNIPRESENT)):
+                        O(ds(l)) and
+                        O(dnskey(l)) and
+                        O(rrsig(l)))):
                 return RUMOURED
     
-    elif state(dnskey_record) == RUMOURED:
+    elif R(dnskey_record):
         if goal(k) == HIDDEN:
             return SQUASHED
         if goal(k) == OMNIPRESENT:
             if dnskey_record.time <= k.time:
                 return OMNIPRESENT
                 
-    elif state(dnskey_record) == OMNIPRESENT:
+    elif O(dnskey_record):
         if goal(k) == HIDDEN:
-            if state(ds(k)) == HIDDEN and state(rrsig(k)) == HIDDEN:
+            if H(ds(k)) and H(rrsig(k)):
                 debug(k, "dnskey P->C (20) DS and RRSIG already ceased")
                 return SQUASHED
             #~ if not AllowSmooth:
@@ -234,28 +238,28 @@ def proc_dnskey(kc, k, dnskey_record):
                     k!=l and
                     alg(k) == alg(l) and
                     r in roles(l) and
-                    state(ds(l)) == OMNIPRESENT and
-                    state(dnskey(l)) == OMNIPRESENT and
-                    state(rrsig(l)) == OMNIPRESENT)):
+                    O(ds(l)) and
+                    O(dnskey(l)) and
+                    O(rrsig(l)))):
                 debug(k, "dnskey P->C (20) For each role another key is ready")
                 return SQUASHED
-            if state(ds(k)) == HIDDEN and \
+            if H(ds(k)) and \
                     forall(roles(k), lambda x: True, lambda r:
                     forall(kc, lambda l: 
                         k!=l and
                         alg(k) == alg(l) and
                         r in roles(l), lambda l:
-                        state(dnskey(l)) == HIDDEN)
+                        H(dnskey(l)))
                     and exists(kc, lambda l:
                         k!=l and
                         r in roles(l) and
-                        state(ds(l)) == OMNIPRESENT and
-                        state(dnskey(l)) == OMNIPRESENT and
-                        state(rrsig(l)) == OMNIPRESENT)):
+                        O(ds(l)) and
+                        O(dnskey(l)) and
+                        O(rrsig(l)))):
                 debug(k, "dnskey P->C (20) DS is ceased and for role there is no DNSKEY with the same alg rumoured")
                 return SQUASHED
                         
-    elif state(dnskey_record) == SQUASHED:
+    elif S(dnskey_record):
         #~ if goal(k) == HIDDEN:
         #~ if not "ksk" in roles(k) and not AllowSmooth:
         if not "ksk" in roles(k):
@@ -266,31 +270,31 @@ def proc_dnskey(kc, k, dnskey_record):
     return state(dnskey_record)
 
 def proc_rrsig(kc, k, rrsig_record):
-    if state(rrsig_record) == HIDDEN:
+    if H(rrsig_record):
         if goal(k) == OMNIPRESENT:
             #~ if not AllowSmooth:
                 #~ return RUMOURED
-            #~ if state(dnskey(k)) == OMNIPRESENT:
+            #~ if O(dnskey(k)):
                 #~ return RUMOURED
             return RUMOURED
         
-    elif state(rrsig_record) == RUMOURED:
+    elif R(rrsig_record):
         if goal(k) == HIDDEN:
             return SQUASHED
         if goal(k) == OMNIPRESENT:
             if rrsig_record.time <= k.time:
                 return OMNIPRESENT
-            #~ if AllowSmooth and state(dnskey(k)) == OMNIPRESENT and \
+            #~ if AllowSmooth and O(dnskey(k)) and \
                     #~ forall(roles(k), lambda x: True,
                     #~ lambda r: exists(kc, lambda l: alg(k)==alg(l) and
                     #~ r in roles(l) and
-                    #~ state(dnskey(l)) == OMNIPRESENT and
-                    #~ state(rrsig(l)) == OMNIPRESENT)):
+                    #~ O(dnskey(l)) and
+                    #~ O(rrsig(l)))):
                 #~ return OMNIPRESENT
 
-    elif state(rrsig_record) == OMNIPRESENT:
+    elif O(rrsig_record):
         if goal(k) == HIDDEN:
-            if state(dnskey(k)) == HIDDEN:
+            if H(dnskey(k)):
                 debug(k, "rrsig P->C (28) DNSKEY is ceased")
                 return SQUASHED
             if forall(roles(k), lambda x: True, lambda r:
@@ -298,15 +302,15 @@ def proc_rrsig(kc, k, rrsig_record):
                         k!=l and
                         alg(k) == alg(l) and
                         r in roles(l) and
-                        state(ds(l)) == OMNIPRESENT and
-                        state(dnskey(l)) == OMNIPRESENT and
-                        state(rrsig(l)) == OMNIPRESENT)):
+                        O(ds(l)) and
+                        O(dnskey(l)) and
+                        O(rrsig(l)))):
                 debug(k, "rrsig P->C (28) For all roles there is another key ready")
                 return SQUASHED
     
-    elif state(rrsig_record) == SQUASHED:
+    elif S(rrsig_record):
         #~ if goal(k) == HIDDEN:
-        if state(dnskey(k)) == HIDDEN:
+        if H(dnskey(k)):
             return HIDDEN
         if rrsig_record.time <= k.time:
             return HIDDEN 
@@ -439,9 +443,9 @@ printkc(kc)
 print "\t\tSTART ENFORCER\n"
 
 while True:
-    kc = set(filter(lambda k: not(state(ds(k)) == HIDDEN and 
-                            state(dnskey(k)) == HIDDEN and 
-                            state(rrsig(k)) == HIDDEN and 
+    kc = set(filter(lambda k: not(H(ds(k)) and 
+                            H(dnskey(k)) and 
+                            H(rrsig(k)) and 
                             goal(k) == HIDDEN), kc))
     for k in kc: k.goal = choice([OMNIPRESENT, HIDDEN])
     if randint(0, 1):
