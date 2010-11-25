@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 from random import randint, sample, choice
 
-VERBOSE = True
-#~ VERBOSE = False
+VERBOSE = 2
 
 HIDDEN      = " "
 RUMOURED    = "+"
@@ -26,7 +25,6 @@ class Key:
         self.records = {"ds": Record(initstate),
                         "dnskey": Record(initstate),
                         "rrsig": Record(initstate)}
-        self.time = 0
     
     def __repr__(self):
         return self.name
@@ -39,13 +37,10 @@ def printkc(kc):
             str(k.records["ds"].state), str(k.records["dnskey"].state), 
             str(k.records["rrsig"].state), str(k.goal), str(k.alg), 
             str(",".join(list(roles(k)))))
-    if not valid(kc):
-        print "!!!!!!!!!!!!!!  [bogus]  !!!!!!!!!!!!!!"
-        exit(1)
     print ""
 
 def debug(k, s):
-    if VERBOSE:
+    if VERBOSE > 1:
         print "-", str(k), str(s)
 
 def exists(some_set, condition):
@@ -126,7 +121,7 @@ def valid(kc):
         )
     )
 
-def proc_ds(kc, k, ds_record):
+def proc_ds(kc, k, ds_record, now):
     if H(ds_record):
         if goal(k) == OMNIPRESENT:
             if not "ksk" in roles(k):
@@ -147,7 +142,7 @@ def proc_ds(kc, k, ds_record):
         if goal(k) == OMNIPRESENT:
             if not "ksk" in roles(k):
                 return OMNIPRESENT
-            if ds_record.time <= k.time:
+            if ds_record.time <= now:
                 return OMNIPRESENT
 
     elif O(ds_record):
@@ -193,11 +188,11 @@ def proc_ds(kc, k, ds_record):
         #~ if goal(k) == HIDDEN:
         if not "ksk" in roles(k):
             return HIDDEN
-        if ds_record.time <= k.time:
+        if ds_record.time <= now:
             return HIDDEN
     return state(ds_record)
 
-def proc_dnskey(kc, k, dnskey_record):
+def proc_dnskey(kc, k, dnskey_record, now):
     if H(dnskey_record):
         if goal(k) == OMNIPRESENT:
             if O(rrsig(k)) and "zsk" in roles(k):
@@ -224,7 +219,7 @@ def proc_dnskey(kc, k, dnskey_record):
         if goal(k) == HIDDEN:
             return SQUASHED
         if goal(k) == OMNIPRESENT:
-            if dnskey_record.time <= k.time:
+            if dnskey_record.time <= now:
                 return OMNIPRESENT
                 
     elif O(dnskey_record):
@@ -264,12 +259,12 @@ def proc_dnskey(kc, k, dnskey_record):
         #~ if not "ksk" in roles(k) and not AllowSmooth:
         if not "ksk" in roles(k):
             return HIDDEN
-        if dnskey_record.time <= k.time:
+        if dnskey_record.time <= now:
             return HIDDEN
                 
     return state(dnskey_record)
 
-def proc_rrsig(kc, k, rrsig_record):
+def proc_rrsig(kc, k, rrsig_record, now):
     if H(rrsig_record):
         if goal(k) == OMNIPRESENT:
             #~ if not AllowSmooth:
@@ -282,7 +277,7 @@ def proc_rrsig(kc, k, rrsig_record):
         if goal(k) == HIDDEN:
             return SQUASHED
         if goal(k) == OMNIPRESENT:
-            if rrsig_record.time <= k.time:
+            if rrsig_record.time <= now:
                 return OMNIPRESENT
             #~ if AllowSmooth and O(dnskey(k)) and \
                     #~ forall(roles(k), lambda x: True,
@@ -312,48 +307,53 @@ def proc_rrsig(kc, k, rrsig_record):
         #~ if goal(k) == HIDDEN:
         if H(dnskey(k)):
             return HIDDEN
-        if rrsig_record.time <= k.time:
+        if rrsig_record.time <= now:
             return HIDDEN 
             
     return state(rrsig_record)
 
-def proc_key(kc, k):
+def proc_key(kc, k, now):
     changed = False
     for rrtype, record in k.records.items():
         newstate = state(record)
         if rrtype == "ds":
-            newstate = proc_ds(kc, k, record)
+            newstate = proc_ds(kc, k, record, now)
         elif rrtype == "dnskey":
-            newstate = proc_dnskey(kc, k, record)
+            newstate = proc_dnskey(kc, k, record, now)
         elif rrtype == "rrsig":
-            newstate = proc_rrsig(kc, k, record)
+            newstate = proc_rrsig(kc, k, record, now)
 
         if newstate != state(record):
             record.state = newstate
-            record.time = k.time + 1
+            record.time = now + 1
             changed |= True
     return changed
 
-def enforce_step(kc):
+def enforce_step(kc, now):
     upd = False
     changed = True
     while changed:
         changed = False
         for k in kc:
-            changed |= proc_key(kc, k)
+            changed |= proc_key(kc, k, now)
         upd |= changed
+    if VERBOSE > 0: printkc(kc)
+    if not valid(kc):
+        printkc(kc)
+        print "!!!!!!!!!!!!!!  [bogus]  !!!!!!!!!!!!!!"
+        exit(1)
     return upd
     
 def enforce(kc):
+    now = 0
     print "\t\tBEGIN STATE"
     printkc(kc)
     print "\t\tSTART ENFORCER\n"
     upd = True
     while upd:
-        upd = enforce_step(kc)
-        printkc(kc)
-        for k in kc: k.time += 1
-        print "\t\tADVANCING TIME"
+        upd = enforce_step(kc, now)
+        now += 1
+        if VERBOSE > 0: print "\t\tADVANCING TIME"
     print "\t\tEND ENFORCER"
 
 
@@ -442,7 +442,10 @@ print "\t\tBEGIN STATE"
 printkc(kc)
 print "\t\tSTART ENFORCER\n"
 
+now = 0
+
 while True:
+#~ for i in range(6):
     kc = set(filter(lambda k: not(H(ds(k)) and 
                             H(dnskey(k)) and 
                             H(rrsig(k)) and 
@@ -452,9 +455,9 @@ while True:
         kc.add(Key("r"+str(randint(100, 999)), randint(0, 2), 
             set(sample(["ksk", "zsk"], randint(1, 2))), OMNIPRESENT, HIDDEN))
 
-    enforce_step(kc)
-    printkc(kc)
-    for k in kc: k.time += 1
-    print "\t\tADVANCING TIME"
-
-print "\t\tEND ENFORCER"
+    enforce_step(kc, now)
+    if VERBOSE > 0: print "\t\tADVANCING TIME"
+    now += 1
+print "\t\tEND ENFORCER\n"
+print "\t\tEND STATE"
+printkc(kc)

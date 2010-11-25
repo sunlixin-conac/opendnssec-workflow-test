@@ -1,4 +1,4 @@
-\documentclass[twoside,english]{article}
+\documentclass[twoside,english]{paper}
 %~ \usepackage{booktabs}
 \usepackage{graphicx}
 %~ \usepackage{subfigure}
@@ -13,23 +13,69 @@
 \renewcommand{\setminus}{\mathrel{\backslash}}
 \newcommand{\powerset}{\mathopen{\mathbb{P}}\ensuremath{\,}}
 
-\title{Key States}
+\newcommand{\mathbox}[1]{\fbox{\begin{minipage}{\linewidth}#1\end{minipage}}}
+%~ \newcommand{\mathbox}[1]{#1}
+
+\title{DNSSEC Key State Transitions}
 \author{Yuri Schaeffer, Yuri@NLnetLabs.nl}
 \date{\today}
 
-\parindent 0pt
-\parskip 5pt
+%~ \parindent 0pt
+%~ \parskip 5pt
 
 \begin{document}
-\maketitle{}
-
+\maketitle
 \tableofcontents
 
-\section{Key State}
+\section{Introduction}
 
-As Matthijs pointed out the state of a key can be described with individual
-states for each component (DS, DNSKEY, RRSIG). Since these are all 
-resource records I hope to use a common state diagram for all types.
+During a key rollover each involved key has a state. Matthijs 
+Mekking pointed out that the statemachine for this key can be 
+represented as three individual smaller state machines: The state at 
+the parent, the private key state, and the public key state. 
+
+That idea is the basis for this document. A cache centered rather 
+than a rollover centered approach is choosen and the three different 
+state machines are generalized to one type of state machine. The three
+state machines now represent the public records associated with a key 
+(\textsc{ds}, \textsc{dnskey}, \textsc{rrsig}). The state of each record is defined by its 
+reputation among all DNS caches in the world. 
+
+With this we are able to formalize the boundries of DNSSEC and make
+precise statements about the validity of a zone with respect to DNSSEC.
+This has two levels: One of them is that we can judge any invariant of
+states on validity. The other is that for each state we know under
+what exact circumstances we can me a transition to the next state.
+
+\section{Cache Centered Approach}
+
+The cache centered approach uses a few extra concepts. Each key has 
+a goal, an internal desire to be either known to all caches around 
+the world or no caches at all. A system can make any state 
+transition as long as it makes sure that the validity of a zone in 
+general is not compromized. This does also imply that a key's goal can
+be changed at any time without the zone going bogus. E.g. if a key has
+a desire to disappear but is the only key left it will stay on duty for
+as long as necessary. Also, new keys can be introduced at any time.
+
+Using a cache centered approach has a number of advantages. Here, in 
+contrast to a rollover centered approach, keys have no direct 
+relation to each other. The system does not try to roll from one 
+specific key to another specific key but rather satisfy all goals 
+while remaining valid as a whole. Essentially the rollover is a side 
+effect of the strive to satisfy key goals. New keys can be 
+introduced and goals can be redefined at any time without a problem. 
+This makes the system agile, robust, and capable of handling unexpected
+situations.
+
+This point of view makes sense because the identities validating the 
+zone are viewing it from a cache's perspective. If we make sure any 
+possible view on the data is valid at any point in time we have done 
+enough.
+
+
+
+\subsection{Key States}
 
 TODO:
 Regardless of the record type we can define 5 basic states. The 
@@ -59,69 +105,69 @@ To summarize:
        % \item[$C$] Ceased, the record is cashed nowhere.
 \end{description} 
 
-\section{State Transition}
+%~ \section{State Transition}
 
-Let $\mathbb{R}$ be the set of possible resource records, according to the
-RFCs.  Note that this includes all possible records, including many
-that make no sense to any zone owner anywhere.
+%~ Let $\mathbb{R}$ be the set of possible resource records, according to the
+%~ RFCs.  Note that this includes all possible records, including many
+%~ that make no sense to any zone owner anywhere.
 
 % Yuri: \powerset(X) means the set of all subsets of X
 
-Model a cache as the set of resource records from $\mathbb{R}$ that it currently
-holds.  The type of the cache is $C:\powerset(\mathbb{R})$.  We will assume
-that every cache adheres to the timing constraints imposed upon it by RFCs.
-These constraints cannot be made explicit in this model, because this model
-captures the (possible) situation(s) at a certain point in time.  A more
-elaborate model, such as a Petri net, may add timing and thus capture the
-additional detail.
+%~ Model a cache as the set of resource records from $\mathbb{R}$ that it currently
+%~ holds.  The type of the cache is $C:\powerset(\mathbb{R})$.  We will assume
+%~ that every cache adheres to the timing constraints imposed upon it by RFCs.
+%~ These constraints cannot be made explicit in this model, because this model
+%~ captures the (possible) situation(s) at a certain point in time.  A more
+%~ elaborate model, such as a Petri net, may add timing and thus capture the
+%~ additional detail.
+%~ 
+%~ \begin{figure}[t]
+	%~ \begin{tabular}{lll}
+	%~ $\emptyset$ & Empty set & $\emptyset = \{ \}$ \\
+	%~ $X\cup Y$ & Union between two sets & $\{1,2\} \cup \{2,3\} = \{1,2,3\}$ \\
+	%~ $X\cap Y$ & Intersection of two sets & $\{1,2\} \cap \{2,3\} = \{2\}$ \\
+	%~ $X\setminus Y$ & Set subtraction & $\{1,2\}\setminus \{2,3\} = \{1\}$ \\
+	%~ $\union X$ & Union iterated over set elements & $\union\{X,Y,Z\} = X\cup Y\cup Z$ \\
+	%~ $\intersection X$ & Intersection over set elements & $\intersection\{X,Y,Z\} = X\cap Y\cap Z$ \\
+	%~ $\powerset(X)$ & Powerset, or set of all subsets & $\powerset(\{1,2\}) = \{ \emptyset, \{1\}, \{2\}, \{1,2\}\}$ \\
+	%~ \end{tabular}
+	%~ \caption{Mathematical notation used}
+%~ \end{figure}
 
-\begin{figure}[t]
-	\begin{tabular}{lll}
-	$\emptyset$ & Empty set & $\emptyset = \{ \}$ \\
-	$X\cup Y$ & Union between two sets & $\{1,2\} \cup \{2,3\} = \{1,2,3\}$ \\
-	$X\cap Y$ & Intersection of two sets & $\{1,2\} \cap \{2,3\} = \{2\}$ \\
-	$X\setminus Y$ & Set subtraction & $\{1,2\}\setminus \{2,3\} = \{1\}$ \\
-	$\union X$ & Union iterated over set elements & $\union\{X,Y,Z\} = X\cup Y\cup Z$ \\
-	$\intersection X$ & Intersection over set elements & $\intersection\{X,Y,Z\} = X\cap Y\cap Z$ \\
-	$\powerset(X)$ & Powerset, or set of all subsets & $\powerset(\{1,2\}) = \{ \emptyset, \{1\}, \{2\}, \{1,2\}\}$ \\
-	\end{tabular}
-	\caption{Mathematical notation used}
-\end{figure}
-
-\paragraph{Caches.}
-It is particularly useful to model a set $\mathbb{C}\subseteq\powerset(\mathbb{R})$ of all
-possible caches around the World, as this represents all possible states
-that could challenge a DNSSEC signer to behave properly.  Again, this
-model will not capture the timing constraints that define precisely what
-subset of $\powerset(\mathbb{R})$ actually forms $\mathbb{C}$.
+%~ \paragraph{Caches.}
+%~ It is particularly useful to model a set $\mathbb{C}\subseteq\powerset(\mathbb{R})$ of all
+%~ possible caches around the World, as this represents all possible states
+%~ that could challenge a DNSSEC signer to behave properly.  Again, this
+%~ model will not capture the timing constraints that define precisely what
+%~ subset of $\powerset(\mathbb{R})$ actually forms $\mathbb{C}$.
 
 % Yuri: Meestal gebruik je \mathbb alleen voor speciale (meta) gevallen
 
-Based on these definitions, we can derive a meaningful partition of the
-resource records $\mathbb{R}$ depending on how widely it is published:
-%
-\begin{eqnarray}\label{states}
-	\emph{Hidden} &=& \mathbb{R}~\setminus~\unionprefix \mathbb{C} \\
-	\emph{Propagating} &=& \unionprefix \mathbb{C}~\setminus~\intersectionprefix \mathbb{C} \\
-	\emph{Omnipresent} &=& \intersectionprefix \mathbb{C}
-\end{eqnarray}
+%~ Based on these definitions, we can derive a meaningful partition of the
+%~ resource records $\mathbb{R}$ depending on how widely it is published:
+%~ 
+%~ \begin{eqnarray}\label{states}
+	%~ \emph{Hidden} &=& \mathbb{R}~\setminus~\unionprefix \mathbb{C} \\
+	%~ \emph{Propagating} &=& \unionprefix \mathbb{C}~\setminus~\intersectionprefix \mathbb{C} \\
+	%~ \emph{Omnipresent} &=& \intersectionprefix \mathbb{C}
+%~ \end{eqnarray}
 
-\paragraph{Setting a goal.}
-The above partition of $\mathbb{R}$ suffices to know what can be relied upon from the
-caches in the World.  But, since DNS is not a static system, this state will evolve
-with time.  Specifically, the \emph{Propagating} state is a temporary one that will be
-departed as soon as the right TTL timing has passed.  This however, can go either
-way; it depends on a new model element which way.  This model element is the goal
-set for a resource record: Does it want to be \emph{Omnipresent} or \emph{Hidden}?
-
-We therefore introduce another set named $\emph{Announced}\subseteq\mathbb{R}$ to hold
-those resource records whose goal it is to end up in $\emph{Omnipresent}$.  Based on
-this, it is possible to partition $\emph{Propagating}$ even further:
-%
-\begin{eqnarray}\label{states}
-	\emph{Rumoured} &=& \emph{Propagating} \cap \emph{Announced}\\
-	\emph{Squashed} &=& \emph{Propagating} \setminus \emph{Announced}
-\end{eqnarray}
+%~ \paragraph{Setting a goal.}
+%~ The above partition of $\mathbb{R}$ suffices to know what can be relied upon from the
+%~ caches in the World.  But, since DNS is not a static system, this state will evolve
+%~ with time.  Specifically, the \emph{Propagating} state is a temporary one that will be
+%~ departed as soon as the right TTL timing has passed.  This however, can go either
+%~ way; it depends on a new model element which way.  This model element is the goal
+%~ set for a resource record: Does it want to be \emph{Omnipresent} or \emph{Hidden}?
+%~ 
+%~ We therefore introduce another set named $\emph{Announced}\subseteq\mathbb{R}$ to hold
+%~ those resource records whose goal it is to end up in $\emph{Omnipresent}$.  Based on
+%~ this, it is possible to partition $\emph{Propagating}$ even further:
+%~ %
+%~ \begin{eqnarray}\label{states}
+	%~ \emph{Rumoured} &=& \emph{Propagating} \cap \emph{Announced}\\
+	%~ \emph{Squashed} &=& \emph{Propagating} \setminus \emph{Announced}
+%~ \end{eqnarray}
 
 \begin{figure}[t]
 	\centering
@@ -218,14 +264,79 @@ but can not, it won't.
 	%~ \\$backupfor(k', k) \leftrightarrow k' \not = k \wedge Alg(k)=Alg(k') \wedge kskready(k')$
 %~ \end{itemize}
 
+\section{DNSSEC Validity}
+
+A consistent key(context) is defined as a key that does not introduce 
+internal inconsistencies. A (partially) propagated KSK must have a fully
+propagated ZSK.
+
+\begin{displaymath}
+\begin{array}{l}
+ConsistentKeys \equiv \{ k | k\in\mathbb{K}, \\
+\hskip 1cm	Roles(k) \subseteq {ksk} \rightarrow (\neg H(Ds(k)) \rightarrow O(Dnskey(k))) \wedge \\
+\hskip 1cm	\neg H(Dnskey(k)) \rightarrow O(Rrsig(k)) \wedge \\
+\hskip 1cm	( \\
+\hskip 2cm		H(Dnskey(k)) \vee \\
+\hskip 2cm		ksk=Roles(k) \rightarrow \exists k' \in \mathbb{K} \cdot (\\
+\hskip 3cm			zsk \in Roles(k') \wedge \\
+\hskip 3cm			Alg(k)=Alg(k') \wedge \\
+\hskip 3cm			O(Dnskey(k')) \wedge \\
+\hskip 3cm			O(Rrsig(k'))\\
+\hskip 2cm		)\\
+\hskip 1cm	)\\
+\}
+\end{array}
+\end{displaymath}
+
+SafeKeys are keys that might be internally inconsistent but for which
+a consistent counterpart exists.
+
+\begin{displaymath}
+\begin{array}{l}
+SafeKeys \equiv \{ k | k\in\mathbb{K}, \\
+\hskip 1cm 		k \in ConsistentKeys \vee \\
+\hskip 1cm 		\forall r \in Roles(k) \cdot ( \\
+\hskip 2cm 			\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 3cm 				Alg(k') = Alg(k) \wedge \\
+\hskip 3cm 				r \in Roles(k') \wedge \\
+\hskip 3cm 				l \in ConsistentKeys \wedge \\
+\hskip 3cm 				r = ksk \rightarrow (\neg H(Ds(k)) \rightarrow O(Ds(k'))) \wedge \\
+\hskip 3cm 				\neg H(Dnskey(k)) \rightarrow O(Dnskey(k')) \\
+\hskip 2cm 			)\\
+\hskip 1cm 		)\\
+\}
+\end{array}
+\end{displaymath}
+
+A zone is valid if no single key breaks validity and at least one complete
+chain for any algorithm exists. An insecure zone is represented by a NULL
+key.
+
+\begin{displaymath}
+\begin{array}{l}
+Valid(\mathbb{K}) \Leftrightarrow \\
+\hskip 1cm	\forall k \in \mathbb{K} \cdot k \in SafeKeys \wedge \\
+\hskip 1cm	\exists k \in \mathbb{K} \cdot ( \\
+\hskip 2cm		ksk \in Roles(k) \wedge \\
+\hskip 2cm		O(Ds(k)) \wedge \\
+\hskip 2cm		O(Dnskey(k)) \wedge \\
+\hskip 2cm		O(Rrsig(k)) \wedge \\
+\hskip 2cm		\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 3cm			zsk \in Roles(k') \wedge \\
+\hskip 3cm			O(Dnskey(k')) \wedge \\
+\hskip 3cm			O(Rrsig(k')) \wedge \\
+\hskip 3cm			Alg(k)=Alg(k')\\
+\hskip 2cm		)\\
+\hskip 1cm	)
+\end{array}
+\end{displaymath}
+
+\section{Transition Rules}
 \subsection{Transition rules for $Ds(k)$}
 
-%~ \subsubsection{$State(k_{ds}) = H$}
-\subsubsection{$H(Ds(k))$}
-%~ \subsubsection{$H(State(Ds(k)))$}
+\subsubsection*{$H(Ds(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
-
+\mathbox{
 	%~ DS was never published so we can do a quick transition
 	%~ \begin{equation}
 		%~ \begin{split}
@@ -255,11 +366,11 @@ but can not, it won't.
 		\end{split}
 		\right\}\rightarrow [submit], R(Ds(k)) 
 	\end{equation}
-\end{minipage}}
+}
 
-\subsubsection{$R(Ds(k))$}
+\subsubsection*{$R(Ds(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 	
 	Nothing should depend on this RR yet.
 	\begin{equation}
@@ -290,11 +401,11 @@ but can not, it won't.
 						& \rightarrow [event]
 		\end{split}
 	\end{equation}
-\end{minipage}}
+}
 
-\subsubsection{$O(Ds(k))$}
+\subsubsection*{$O(Ds(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	%~ A non-KSK can be set to withdrawn.
 	%~ \begin{equation}
@@ -350,11 +461,11 @@ but can not, it won't.
 		\end{split}
 		\right\} \rightarrow S(Ds(k)) \\
 	\end{equation}
-\end{minipage}}
+}
 
-\subsubsection{$S(Ds(k))$}
+\subsubsection*{$S(Ds(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	We must wait till at least $T_{whatever}$ before transition to State 
 	Ceased. As a bonus, ZSKs may transition immediately.
@@ -377,14 +488,14 @@ but can not, it won't.
 						& \rightarrow [event]
 		\end{split}
 	\end{equation}
-\end{minipage}}
+}
 
 
-\subsection{Transition rules for $k_{dnskey}$}
+\subsection{Transition rules for $Dnskey(k)$}
 
-\subsubsection{$H(Dnskey(k))$}
+\subsubsection*{$H(Dnskey(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	%~ We want to move away from this key and DNSKEY was never published, retire immediately.
 	%~ \begin{equation}
@@ -422,11 +533,11 @@ but can not, it won't.
 		\end{split}
 		\right\} \rightarrow R(Dnskey(k))
 	\end{equation}
-\end{minipage}}
+}
 
-\subsubsection{$R(Dnskey(k))$}
+\subsubsection*{$R(Dnskey(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	Skip the propagated state. Nobody heard of it anyway.
 	\begin{equation}
@@ -449,11 +560,11 @@ but can not, it won't.
 			Goal(k)=O \wedge T_{now} < T_{whatever} \rightarrow event(T_{whatever})
 		\end{split}
 	\end{equation}
-\end{minipage}}
+}
 
-\subsubsection{$O(Dnskey(k))$}
+\subsubsection*{$O(Dnskey(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	If not part of a chain, withdraw. If there is still a DS make sure 
 	there is some other valid chain for this algorithm. If none for 
@@ -496,7 +607,7 @@ but can not, it won't.
 		\end{split}
 		\right\} \rightarrow S(Dnskey(k))
 	\end{equation}
-\end{minipage}}
+}
 
 			%~ Goal(k)=C 	& \wedge State(k_{ds})=C \\
 						%~ & \wedge State(k_{rrsig})=C \\
@@ -519,9 +630,9 @@ but can not, it won't.
 						%~ & \wedge Roles(k) \subseteq Roles(k') \\
 
 
-\subsubsection{$S(Dnskey(k))$}
+\subsubsection*{$S(Dnskey(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	State may transition to Ceased given enough time passed to propagate 
 	change. 
@@ -548,13 +659,13 @@ but can not, it won't.
 			T_{now} < T_{whatever} \rightarrow event(T_{whatever})
 		\end{split}
 	\end{equation}
-\end{minipage}}
+}
 
-\subsection{Transition rules for $k_{rrsig}$}
+\subsection{Transition rules for $Rrsig(k)$}
 
-\subsubsection{$H(Rrsig(k))$}
+\subsubsection*{$H(Rrsig(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	%~ Nobody ever saw this signatures, we won't need it.
 	%~ \begin{equation}
@@ -574,11 +685,11 @@ but can not, it won't.
 		%~ \right\} 
 		\rightarrow R(Rrsig(k))
 	\end{equation}
-\end{minipage}}
+}
 
-\subsubsection{$R(Rrsig(k))$}
+\subsubsection*{$R(Rrsig(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 Don't wait till signatures are propagated.
 	\begin{equation}
@@ -615,12 +726,12 @@ Not enough time passed to propagate signatures.
 			Goal(k)=O \wedge T_{now} < T_{whatever} \rightarrow event(T_{whatever})
 		\end{split}
 	\end{equation}
-\end{minipage}}
+}
 
 
-\subsubsection{$O(Rrsig(k))$}
+\subsubsection*{$O(Rrsig(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	If the dnskey is gone from all caches can we withdraw the 
 	signatures. We may break the chain if other valid keys are 
@@ -644,11 +755,11 @@ Not enough time passed to propagate signatures.
 		\end{split}
 		\right\} \rightarrow S(Rrsig(k))
 	\end{equation}
-\end{minipage}}
+}
 
-\subsubsection{$S(Rrsig(k))$}
+\subsubsection*{$S(Rrsig(k))$}
 
-\fbox{\begin{minipage}{\linewidth}
+\mathbox{
 
 	Dnskey is gone so no one needs these signatures.
 	\begin{equation}
@@ -669,7 +780,7 @@ Not enough time passed to propagate signatures.
 			T_{now} < T_{whatever} \rightarrow event(T_{whatever})
 		\end{split}
 	\end{equation}
-\end{minipage}}
+}
 
 
 \end{document}
