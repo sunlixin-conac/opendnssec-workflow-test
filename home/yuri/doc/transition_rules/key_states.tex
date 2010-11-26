@@ -1,4 +1,4 @@
-\documentclass[twoside,english]{paper}
+\documentclass[twoside,english, a4paper]{article}
 %~ \usepackage{booktabs}
 \usepackage{graphicx}
 %~ \usepackage{subfigure}
@@ -16,7 +16,7 @@
 \newcommand{\mathbox}[1]{\fbox{\begin{minipage}{\linewidth}#1\end{minipage}}}
 %~ \newcommand{\mathbox}[1]{#1}
 
-\title{DNSSEC Key State Transitions}
+\title{\textsc{Dnssec} Key State Transitions \\ \small The Grand Unified Theory of Everything \textsc{Dnssec} ;)}
 \author{Yuri Schaeffer, Yuri@NLnetLabs.nl}
 \date{\today}
 
@@ -68,41 +68,63 @@ introduced and goals can be redefined at any time without a problem.
 This makes the system agile, robust, and capable of handling unexpected
 situations.
 
-This point of view makes sense because the identities validating the 
-zone are viewing it from a cache's perspective. If we make sure any 
-possible view on the data is valid at any point in time we have done 
-enough.
+This point of view makes sense since the identities validating the 
+zone are viewing it from a cache's perspective. We only have to make 
+sure every
+possible view on the data is valid at any point in time.
 
+\subsection{Key States} \label{sec:keystates}
 
+A key has two pieces of public information which are 
+represented by three resource records: DS, DNSKEY, and RRSIG. Each of 
+wich can be known to a different set of caches and thus require their
+own state machine (Figure~\ref{fig:states}). When we say a key has 
+goal \emph{X} we mean that it wants to move all three records to state
+\emph{X}.
 
-\subsection{Key States}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.5]{states.pdf}
+	\caption{State diagram for individual records.}
+	\label{fig:states}
+\end{figure}
 
-TODO:
-Regardless of the record type we can define 5 basic states. The 
-distinctive property is its existence in caches world wide, so we 
-choose a cache oriented approach. A record 
-starts in a Generated state, $G$. Since the record is never 
-published yet there is no cache having\footnote{When we say a record 
-is in cache we explicitly mean that there are no old versions in 
-cache with an unexpired TTL. Having to fetch a record from the 
-authorities is also considered in cache.} this record. The next state is 
-Submitted, $S$. In this state the record could be known to \emph
-{any} cache, but might as well be none. As for all state the exact 
-meaning depends on the record type, e.g. Submitted may mean emailed 
-to parent or published in zone. State three is Propagated, $P$, 
-which means all caches have the record or can obtain it. In the 
-Withdrawn $W$ state not all caches have the record or are able to 
-get it. Finally Ceased $C$ denotes no cache will try to use the 
-record any longer.
+The state of a resource record is defined by its reputation in 
+world's caches. There are 2 certain states, \emph{Hidden} and \emph
+{Omnipresent}. In the first state a resource record is not available 
+in any cache (anymore). Simularly in the latter state we are sure 
+all caches have a copy of the record or can at least obtain it (i.e. 
+they have no old unexpired resource record set).
 
-To summarize:
+The two other states represent uncertainty: \emph{Rumoured} and \emph
+{Squashed}. The seperation is a bit artifical as they more or less 
+mean the same. Both represent that some caches do and some don't 
+know about the resource record. However, in our model actions (which 
+are observable by the outside world) are only taken on state 
+transitions. If the goal of a key changes while a record is in an 
+uncertain state the records repution does not imidiatly change. We 
+do however must explicitly tell the component responsable for 
+publishing the record to introduce or withdraw it. This transition 
+is represented by the dashed arrow in Figure~\ref{fig:states}.
+
+Since DNS involves caches and TTLs, it is entirely possible for a 
+record being in the \emph{Rumoured} state while in fact every cache 
+in the world holds the record. The problem is the uncertanty, we have
+no way to know a record is fully propageted other than waiting the
+worst case propagation time. This is also true for the \emph{Squashed}
+state.
+
+\paragraph{Summary.} A record is always in one of these four states:
 
 \begin{description}
-       \item[$G$] The record is not used.
-       \item[$S$] Submitted, some caches might have seen the record.
-       \item[$P$] Propagated, all caches have seen the record or will see it.
-       \item[$W$] Withdrawn, some caches are unable to get the record.
-       % \item[$C$] Ceased, the record is cashed nowhere.
+       \item[\emph{Hidden}:] 		
+			The record is in no cache at all.
+       \item[\emph{Rumoured}:] 		
+			The record is published but not every cache might be aware.
+       \item[\emph{Omnipresent}:]
+			Every cache has this record.
+       \item[\emph{Squashed}:]
+			The record is withdrawn but some caches might still have it.
 \end{description} 
 
 %~ \section{State Transition}
@@ -169,91 +191,121 @@ To summarize:
 	%~ \emph{Squashed} &=& \emph{Propagating} \setminus \emph{Announced}
 %~ \end{eqnarray}
 
-\begin{figure}[t]
-	\centering
-	\includegraphics[scale=0.5]{states.pdf}
-	\caption{State diagram for individual key components.}
-	\label{fig:states}
-\end{figure}
 
-\paragraph{Predicate logic.}
-The definitions above are in terms of set theory.  Although entirely equivalent, it is
-probably useful to write the same thing in terms of predicate logic.  We introduce the
-following boolean functions on $\mathbb{R}$, with shorthand names for reference in the
-remaining pages of this document.
+
+%~ \paragraph{Predicate logic.}
+%~ The definitions above are in terms of set theory.  Although entirely equivalent, it is
+%~ probably useful to write the same thing in terms of predicate logic.  We introduce the
+%~ following boolean functions on $\mathbb{R}$, with shorthand names for reference in the
+%~ remaining pages of this document.
+
+\paragraph{Formal definition of record states.} Let $r$ be a record, $Anounced$ the 
+collection of records that are activaly publicated, and $\mathbb{C}$
+the collection of all caches in the world. The states are defined by:
 
 \begin{displaymath}
 \begin{array}{lllll}
-       H(r) & \equiv & r\in\emph{Hidden} &=& \forall c \in \mathbb{C}: r \not \in c \\
-       R(r) & \equiv & r\in\emph{Rumoured} &=& (\exists c \in \mathbb{C}: r \not \in c) \wedge (\exists c \in \mathbb{C}: r\in c) \wedge r\in\emph{Announced}\\
-       O(r) & \equiv & r\in\emph{Omnipresent} &=& \forall c \in \mathbb{C}: r \in c \\
-       S(r) & \equiv & r\in\emph{Squashed} &=& (\exists c \in \mathbb{C}: r \not \in c) \wedge (\exists c \in \mathbb{C}: r \in c)\wedge r\notin\emph{Announced} \\
-       %~ C(r) & \equiv & G(r)
+       r\in Hidden      & \equiv & H(r) &=& \forall c \in \mathbb{C} \cdot r \not \in c \\
+       r\in Rumoured    & \equiv & R(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r\in c \wedge r\in Announced\\
+       r\in Omnipresent & \equiv & O(r) &=& \forall c \in \mathbb{C} \cdot r \in c \\
+       r\in Squashed    & \equiv & S(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r \in c \wedge r \notin Announced \\
 \end{array}
 \end{displaymath}
 
+\subsection{Keyring}
 
+Although zones can share key material the records are published 
+independently. As a result each zone must have its own collection of
+key states. Let us refer to this collection as a keyring denoted 
+by $\mathbb{K}$. We can
+define DNSSEC validity over a keyring (see Section~\ref{validity}).
+It is required that every state transition of a resource record does 
+not compromize the validity of the keyring as a whole.
 
-\subsection{Definitions}
+In case a key's goal is to be \emph{Hidden} and all three involved
+records are in state \emph{Hidden}, the key may be removed from the
+keyring. Similar, if a key is in none of the keychains it could be
+purged from the keystore.
 
-Keys do not stand on their own, but actually require a number of resource records in
-their context.  Specifically, a key and its context can be described as a tuple
-$\langle\emph{ds},\emph{dnskey},emph{rrsig}\rangle$ with the resource records for
-a DS, DNSKEY and RRSIG record, all for the same signing key.  Define the type
-$K=\mathbb{R}\times\mathbb{R}\times\mathbb{R}$ represent such key with context.
+\subsection{Key Operations}
 
-\newcommand{\state}{\emph{State}}
-\newcommand{\stateDS}{\emph{State}_\textrm{DS}}
-\newcommand{\stateDNSKEY}{\emph{State}_\textrm{DNSKEY}}
-\newcommand{\stateRRSIG}{\emph{State}_\textrm{RRSIG}}
-
-Now define the following functions to capture the state $H$, $R$, $O$ or 
-$S$
-for each of the three components of a key with context tuple:
-\begin{eqnarray*}
-	\state(r) &\equiv& H\textrm{, if $r\in\emph{Hidden}$}\\
-	          &\equiv& R\textrm{, if $r\in\emph{Rumoured}$}\\
-	          &\equiv& O\textrm{, if $r\in\emph{Omnipresent}$}\\
-	          &\equiv& S\textrm{, if $r\in\emph{Squashed}$}\\
-	\stateDS(r,x,y) &\equiv& \state(r)\\
-	\stateDNSKEY(x,r,y) &\equiv& \state(r)\\
-	\stateRRSIG(x,y,r) &\equiv& \state(r)
-\end{eqnarray*}
+A key and its context can be described as a tuple of states $\langle 
+Ds,Dnskey,Rrsig\rangle$ for the resource records DS, DNSKEY and RRSIG.
+We define the following operations on keys:
 
 \begin{itemize}
-	%~ \item $\mathbb{C}$ is a set of all caches
-	%~ \item Cache $c \in \mathbb{C}$, a set of record sets r
-	\item Key $k = \langle ds, dnskey, rrsig\rangle$, a tuple of states
-	\item Key chain $\mathbb{K}$, a set of keys
-	%~ \item $State(r) \in \{H, R, O, S\}$, with r one from k.
-	\item $Goal(k) \in \{O, H\}$
-	\item $Roles(k) \subseteq \{ksk, zsk\}$
-	\item $Alg(k) \in \mathbb{N}$, Algorithm number of key
+	\item $Ds(k)$, state of DS record belonging key $k$.
+	\item $Dnskey(k)$, state of DNSKEY record belonging key $k$.
+	\item $Rrsig(k)$, state of RRSIG record belonging key $k$.
+	\item $Goal(k) \in \{Omnipresent, Hidden\}$, the state each record
+		should move towards.
+	\item $Roles(k) \subseteq \{zsk,ksk\}$ exluding $\emptyset$, the 
+		role(s) a key $k$ should be used for.
+	\item $Alg(k)$, algorithm of key $k$ for which a transitive equivalence
+		is defined.
 \end{itemize}
 
-Each zone has its own key chain (but not necessarily unique key 
-material). A key chain is a collection of keys currently involved with 
-the zone, regardless of their state. The key itself consists of three 
-states, one for each record involved. It also defines a goal to which
-the records should try to move.
+%~ Keys do not stand on their own, but actually require a number of 
+%~ resource records in their context.  Specifically, a key and its 
+%~ context can be described as a tuple 
+%~ $\langle\emph{ds},\emph{dnskey},emph{rrsig}\rangle$ with the 
+%~ resource records for a DS, DNSKEY and RRSIG record, all for the same 
+%~ signing key.  Define the type 
+%~ $K=\mathbb{R}\times\mathbb{R}\times\mathbb{R}$ represent such key 
+%~ with context.
+%~ 
+%~ \newcommand{\state}{\emph{State}}
+%~ \newcommand{\stateDS}{\emph{State}_\textrm{DS}}
+%~ \newcommand{\stateDNSKEY}{\emph{State}_\textrm{DNSKEY}}
+%~ \newcommand{\stateRRSIG}{\emph{State}_\textrm{RRSIG}}
+%~ 
+%~ Now define the following functions to capture the state $H$, $R$, $O$ or 
+%~ $S$
+%~ for each of the three components of a key with context tuple:
+%~ \begin{eqnarray*}
+	%~ \state(r) &\equiv& H\textrm{, if $r\in\emph{Hidden}$}\\
+	          %~ &\equiv& R\textrm{, if $r\in\emph{Rumoured}$}\\
+	          %~ &\equiv& O\textrm{, if $r\in\emph{Omnipresent}$}\\
+	          %~ &\equiv& S\textrm{, if $r\in\emph{Squashed}$}\\
+	%~ \stateDS(r,x,y) &\equiv& \state(r)\\
+	%~ \stateDNSKEY(x,r,y) &\equiv& \state(r)\\
+	%~ \stateRRSIG(x,y,r) &\equiv& \state(r)
+%~ \end{eqnarray*}
 
-Each record is evaluated individually for the next state transition. 
-If it not already reached its goal, it will try to move towards it 
-provided the result is a valid DNSSEC configuration. This way only a 
-small set of conditions is evaluated each time. 
+%~ \begin{itemize}
+	%%\item $\mathbb{C}$ is a set of all caches
+	%%\item Cache $c \in \mathbb{C}$, a set of record sets r
+	%~ \item Key $k = \langle ds, dnskey, rrsig\rangle$, a tuple of states
+	%~ \item Key chain $\mathbb{K}$, a set of keys
+	%%\item $State(r) \in \{H, R, O, S\}$, with r one from k.
+	%~ \item $Goal(k) \in \{O, H\}$
+	%~ \item $Roles(k) \subseteq \{ksk, zsk\}$
+	%~ \item $Alg(k) \in \mathbb{N}$, Algorithm number of key
+%~ \end{itemize}
 
-Roll overs are not explicitly defined but derived from the 
-set of rules. As a result the system or a user could insert a new key 
-at any time in the process. For example a user has a dual key signing 
-scheme and sets the goal of all current keys to Ceased. Then he inserts
-a combined ZSK/KSK. From here the system will figure out the (save) way
-to having the new key introduced. It might finish pending roll overs 
-but if possible will try to discard the old keys as soon as possible.
-
-Setting the goal of all your keys to ceased without first introducing 
-a new key has no implication for the validity of the zone. The system 
-always maintains a valid configuration. If it wants to remove old keys 
-but can not, it won't.
+%~ Each zone has its own key chain (but not necessarily unique key 
+%~ material). A key chain is a collection of keys currently involved with 
+%~ the zone, regardless of their state. The key itself consists of three 
+%~ states, one for each record involved. It also defines a goal to which
+%~ the records should try to move.
+%~ 
+%~ Each record is evaluated individually for the next state transition. 
+%~ If it not already reached its goal, it will try to move towards it 
+%~ provided the result is a valid DNSSEC configuration. This way only a 
+%~ small set of conditions is evaluated each time. 
+%~ 
+%~ Roll overs are not explicitly defined but derived from the 
+%~ set of rules. As a result the system or a user could insert a new key 
+%~ at any time in the process. For example a user has a dual key signing 
+%~ scheme and sets the goal of all current keys to Ceased. Then he inserts
+%~ a combined ZSK/KSK. From here the system will figure out the (save) way
+%~ to having the new key introduced. It might finish pending roll overs 
+%~ but if possible will try to discard the old keys as soon as possible.
+%~ 
+%~ Setting the goal of all your keys to ceased without first introducing 
+%~ a new key has no implication for the validity of the zone. The system 
+%~ always maintains a valid configuration. If it wants to remove old keys 
+%~ but can not, it won't.
 
 %~ \subsection{Shorthands}
 %~ 
@@ -264,10 +316,24 @@ but can not, it won't.
 	%~ \\$backupfor(k', k) \leftrightarrow k' \not = k \wedge Alg(k)=Alg(k') \wedge kskready(k')$
 %~ \end{itemize}
 
-\section{DNSSEC Validity}
+\section{DNSSEC Validity} \label{validity}
 
-A consistent key(context) is defined as a key that does not introduce 
-internal inconsistencies. A (partially) propagated KSK must have a fully
+With the definitions of Section~\ref{sec:keystates} and beyond we can
+express the validity of a zone with respect to DNSSEC. After each state
+transition it must still hold. If not, the zone might be treated as
+\emph{bogus} by some or all validators. This check does only takes the 
+total set of states in to account, it has no notion of time. It can
+only guarantee every cache has a consistent view on the data when all
+transitions respected the time contraint and it was ran after each
+transition.
+
+This check is not intended to be used by key management software but
+functions to validate our transition model, either empirical or by 
+formal proof.
+
+\paragraph{Consistent Keys}
+A consistent key is defined as a key that does not introduce 
+internal inconsistencies. Additionally, a (partially) propagated KSK must have a fully
 propagated ZSK.
 
 \begin{displaymath}
@@ -288,6 +354,7 @@ ConsistentKeys \equiv \{ k | k\in\mathbb{K}, \\
 \end{array}
 \end{displaymath}
 
+\paragraph{Safe Keys}
 SafeKeys are keys that might be internally inconsistent but for which
 a consistent counterpart exists.
 
@@ -308,9 +375,9 @@ SafeKeys \equiv \{ k | k\in\mathbb{K}, \\
 \end{array}
 \end{displaymath}
 
-A zone is valid if no single key breaks validity and at least one complete
-chain for any algorithm exists. An insecure zone is represented by a NULL
-key.
+\paragraph{Validity} A zone or keyring is valid if no single key 
+breaks validity and at least one complete chain for any algorithm 
+exists. An insecure zone is represented by a \textsc{null} key.
 
 \begin{displaymath}
 \begin{array}{l}
@@ -332,6 +399,14 @@ Valid(\mathbb{K}) \Leftrightarrow \\
 \end{displaymath}
 
 \section{Transition Rules}
+
+The transition rules are explicitly written in such a way that at 
+least one valid chain is being kept; a zone can not go insecure\footnote{
+This prevents the system taking an 'insecure shortcut' to a new key.}. To support the insecure concept one could introduce a 
+\textsc{null} key. The \textsc{null} key has it's unique (\textsc 
+{null}-)algorithm. Its resource records have state but no actual 
+public data. This key can be rolled in and out like any other key.
+
 \subsection{Transition rules for $Ds(k)$}
 
 \subsubsection*{$H(Ds(k))$}
