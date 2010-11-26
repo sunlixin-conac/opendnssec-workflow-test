@@ -29,19 +29,19 @@
 
 \section{Introduction}
 
-During a key rollover each involved key has a state. Matthijs 
-Mekking pointed out that the statemachine for this key can be 
+During a key roll over each involved key has a state. Matthijs 
+Mekking pointed out that the state-machine for this key can be 
 represented as three individual smaller state machines: The state at 
 the parent, the private key state, and the public key state. 
 
 That idea is the basis for this document. A cache centered rather 
-than a rollover centered approach is choosen and the three different 
+than a roll-over centered approach is chosen and the three different 
 state machines are generalized to one type of state machine. The three
 state machines now represent the public records associated with a key 
 (\textsc{ds}, \textsc{dnskey}, \textsc{rrsig}). The state of each record is defined by its 
 reputation among all DNS caches in the world. 
 
-With this we are able to formalize the boundries of DNSSEC and make
+With this we are able to formalize the boundaries of DNSSEC and make
 precise statements about the validity of a zone with respect to DNSSEC.
 This has two levels: One of them is that we can judge any invariant of
 states on validity. The other is that for each state we know under
@@ -53,16 +53,16 @@ The cache centered approach uses a few extra concepts. Each key has
 a goal, an internal desire to be either known to all caches around 
 the world or no caches at all. A system can make any state 
 transition as long as it makes sure that the validity of a zone in 
-general is not compromized. This does also imply that a key's goal can
+general is not compromised. This does also imply that a key's goal can
 be changed at any time without the zone going bogus. E.g. if a key has
 a desire to disappear but is the only key left it will stay on duty for
 as long as necessary. Also, new keys can be introduced at any time.
 
 Using a cache centered approach has a number of advantages. Here, in 
-contrast to a rollover centered approach, keys have no direct 
+contrast to a roll-over centered approach, keys have no direct 
 relation to each other. The system does not try to roll from one 
 specific key to another specific key but rather satisfy all goals 
-while remaining valid as a whole. Essentially the rollover is a side 
+while remaining valid as a whole. Essentially the roll-over is a side 
 effect of the strive to satisfy key goals. New keys can be 
 introduced and goals can be redefined at any time without a problem. 
 This makes the system agile, robust, and capable of handling unexpected
@@ -77,7 +77,7 @@ possible view on the data is valid at any point in time.
 
 A key has two pieces of public information which are 
 represented by three resource records: DS, DNSKEY, and RRSIG. Each of 
-wich can be known to a different set of caches and thus require their
+which can be known to a different set of caches and thus require their
 own state machine (Figure~\ref{fig:states}). When we say a key has 
 goal \emph{X} we mean that it wants to move all three records to state
 \emph{X}.
@@ -92,25 +92,25 @@ goal \emph{X} we mean that it wants to move all three records to state
 The state of a resource record is defined by its reputation in 
 world's caches. There are 2 certain states, \emph{Hidden} and \emph
 {Omnipresent}. In the first state a resource record is not available 
-in any cache (anymore). Simularly in the latter state we are sure 
+in any cache (anymore). Similarly in the latter state we are sure 
 all caches have a copy of the record or can at least obtain it (i.e. 
 they have no old unexpired resource record set).
 
 The two other states represent uncertainty: \emph{Rumoured} and \emph
-{Squashed}. The seperation is a bit artifical as they more or less 
+{Squashed}. The separation is a bit artificial as they more or less 
 mean the same. Both represent that some caches do and some don't 
 know about the resource record. However, in our model actions (which 
 are observable by the outside world) are only taken on state 
 transitions. If the goal of a key changes while a record is in an 
-uncertain state the records repution does not imidiatly change. We 
-do however must explicitly tell the component responsable for 
+uncertain state the records reputation does not immediately change. We 
+do however must explicitly tell the component responsible for 
 publishing the record to introduce or withdraw it. This transition 
 is represented by the dashed arrow in Figure~\ref{fig:states}.
 
 Since DNS involves caches and TTLs, it is entirely possible for a 
 record being in the \emph{Rumoured} state while in fact every cache 
-in the world holds the record. The problem is the uncertanty, we have
-no way to know a record is fully propageted other than waiting the
+in the world holds the record. The problem is the uncertainty, we have
+no way to know a record is fully propagated other than waiting the
 worst case propagation time. This is also true for the \emph{Squashed}
 state.
 
@@ -200,7 +200,7 @@ state.
 %~ remaining pages of this document.
 
 \paragraph{Formal definition of record states.} Let $r$ be a record, $Anounced$ the 
-collection of records that are activaly publicated, and $\mathbb{C}$
+collection of records that are actively published, and $\mathbb{C}$
 the collection of all caches in the world. The states are defined by:
 
 \begin{displaymath}
@@ -220,7 +220,7 @@ key states. Let us refer to this collection as a keyring denoted
 by $\mathbb{K}$. We can
 define DNSSEC validity over a keyring (see Section~\ref{validity}).
 It is required that every state transition of a resource record does 
-not compromize the validity of the keyring as a whole.
+not compromise the validity of the keyring as a whole.
 
 In case a key's goal is to be \emph{Hidden} and all three involved
 records are in state \emph{Hidden}, the key may be removed from the
@@ -239,7 +239,7 @@ We define the following operations on keys:
 	\item $Rrsig(k)$, state of RRSIG record belonging key $k$.
 	\item $Goal(k) \in \{Omnipresent, Hidden\}$, the state each record
 		should move towards.
-	\item $Roles(k) \subseteq \{zsk,ksk\}$ exluding $\emptyset$, the 
+	\item $Roles(k) \subseteq \{zsk,ksk\}$ excluding $\emptyset$, the 
 		role(s) a key $k$ should be used for.
 	\item $Alg(k)$, algorithm of key $k$ for which a transitive equivalence
 		is defined.
@@ -324,7 +324,7 @@ transition it must still hold. If not, the zone might be treated as
 \emph{bogus} by some or all validators. This check does only takes the 
 total set of states in to account, it has no notion of time. It can
 only guarantee every cache has a consistent view on the data when all
-transitions respected the time contraint and it was ran after each
+transitions respected the time constraint and it was ran after each
 transition.
 
 This check is not intended to be used by key management software but
