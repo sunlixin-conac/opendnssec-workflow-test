@@ -1,17 +1,13 @@
 \documentclass[twoside,english, a4paper]{article}
-%~ \usepackage{booktabs}
 \usepackage{graphicx}
-%~ \usepackage{subfigure}
-%~ \usepackage{histogr}
-%~ \usepackage{rotating}
 \usepackage{amssymb,amsmath}
 
-\newcommand{\union}{\mathrel{\cup}}
-\newcommand{\unionprefix}{\mathopen{\cup}\ensuremath{\,}}
-\newcommand{\intersection}{\mathrel{\cap}}
-\newcommand{\intersectionprefix}{\mathopen{\cap}\ensuremath{\,}}
-\renewcommand{\setminus}{\mathrel{\backslash}}
-\newcommand{\powerset}{\mathopen{\mathbb{P}}\ensuremath{\,}}
+%~ \newcommand{\union}{\mathrel{\cup}}
+%~ \newcommand{\unionprefix}{\mathopen{\cup}\ensuremath{\,}}
+%~ \newcommand{\intersection}{\mathrel{\cap}}
+%~ \newcommand{\intersectionprefix}{\mathopen{\cap}\ensuremath{\,}}
+%~ \renewcommand{\setminus}{\mathrel{\backslash}}
+%~ \newcommand{\powerset}{\mathopen{\mathbb{P}}\ensuremath{\,}}
 
 \newcommand{\mathbox}[1]{\fbox{\begin{minipage}{\linewidth}#1\end{minipage}}}
 %~ \newcommand{\mathbox}[1]{#1}
@@ -336,7 +332,7 @@ A consistent key is defined as a key that does not introduce
 internal inconsistencies. Additionally, a (partially) propagated KSK must have a fully
 propagated ZSK.
 
-\begin{displaymath}
+\begin{equation}
 \begin{array}{l}
 ConsistentKeys \equiv \{ k | k\in\mathbb{K}, \\
 \hskip 1cm	Roles(k) \subseteq {ksk} \rightarrow (\neg H(Ds(k)) \rightarrow O(Dnskey(k))) \wedge \\
@@ -352,13 +348,13 @@ ConsistentKeys \equiv \{ k | k\in\mathbb{K}, \\
 \hskip 1cm	)\\
 \}
 \end{array}
-\end{displaymath}
+\end{equation}
 
 \paragraph{Safe Keys}
 SafeKeys are keys that might be internally inconsistent but for which
 a consistent counterpart exists.
 
-\begin{displaymath}
+\begin{equation}
 \begin{array}{l}
 SafeKeys \equiv \{ k | k\in\mathbb{K}, \\
 \hskip 1cm 		k \in ConsistentKeys \vee \\
@@ -373,13 +369,13 @@ SafeKeys \equiv \{ k | k\in\mathbb{K}, \\
 \hskip 1cm 		)\\
 \}
 \end{array}
-\end{displaymath}
+\end{equation}
 
 \paragraph{Validity} A zone or keyring is valid if no single key 
 breaks validity and at least one complete chain for any algorithm 
 exists. An insecure zone is represented by a \textsc{null} key.
 
-\begin{displaymath}
+\begin{equation}
 \begin{array}{l}
 Valid(\mathbb{K}) \Leftrightarrow \\
 \hskip 1cm	\forall k \in \mathbb{K} \cdot k \in SafeKeys \wedge \\
@@ -396,7 +392,7 @@ Valid(\mathbb{K}) \Leftrightarrow \\
 \hskip 2cm		)\\
 \hskip 1cm	)
 \end{array}
-\end{displaymath}
+\end{equation}
 
 \section{Transition Rules}
 
