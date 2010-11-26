@@ -2,22 +2,12 @@
 \usepackage{graphicx}
 \usepackage{amssymb,amsmath}
 
-%~ \newcommand{\union}{\mathrel{\cup}}
-%~ \newcommand{\unionprefix}{\mathopen{\cup}\ensuremath{\,}}
-%~ \newcommand{\intersection}{\mathrel{\cap}}
-%~ \newcommand{\intersectionprefix}{\mathopen{\cap}\ensuremath{\,}}
-%~ \renewcommand{\setminus}{\mathrel{\backslash}}
-%~ \newcommand{\powerset}{\mathopen{\mathbb{P}}\ensuremath{\,}}
-
 \newcommand{\mathbox}[1]{\fbox{\begin{minipage}{\linewidth}#1\end{minipage}}}
 %~ \newcommand{\mathbox}[1]{#1}
 
 \title{\textsc{Dnssec} Key State Transitions \\ \small The Grand Unified Theory of Everything \textsc{Dnssec} ;)}
 \author{Yuri Schaeffer, Yuri@NLnetLabs.nl}
 \date{\today}
-
-%~ \parindent 0pt
-%~ \parskip 5pt
 
 \begin{document}
 \maketitle
@@ -123,78 +113,6 @@ state.
 			The record is withdrawn but some caches might still have it.
 \end{description} 
 
-%~ \section{State Transition}
-
-%~ Let $\mathbb{R}$ be the set of possible resource records, according to the
-%~ RFCs.  Note that this includes all possible records, including many
-%~ that make no sense to any zone owner anywhere.
-
-% Yuri: \powerset(X) means the set of all subsets of X
-
-%~ Model a cache as the set of resource records from $\mathbb{R}$ that it currently
-%~ holds.  The type of the cache is $C:\powerset(\mathbb{R})$.  We will assume
-%~ that every cache adheres to the timing constraints imposed upon it by RFCs.
-%~ These constraints cannot be made explicit in this model, because this model
-%~ captures the (possible) situation(s) at a certain point in time.  A more
-%~ elaborate model, such as a Petri net, may add timing and thus capture the
-%~ additional detail.
-%~ 
-%~ \begin{figure}[t]
-	%~ \begin{tabular}{lll}
-	%~ $\emptyset$ & Empty set & $\emptyset = \{ \}$ \\
-	%~ $X\cup Y$ & Union between two sets & $\{1,2\} \cup \{2,3\} = \{1,2,3\}$ \\
-	%~ $X\cap Y$ & Intersection of two sets & $\{1,2\} \cap \{2,3\} = \{2\}$ \\
-	%~ $X\setminus Y$ & Set subtraction & $\{1,2\}\setminus \{2,3\} = \{1\}$ \\
-	%~ $\union X$ & Union iterated over set elements & $\union\{X,Y,Z\} = X\cup Y\cup Z$ \\
-	%~ $\intersection X$ & Intersection over set elements & $\intersection\{X,Y,Z\} = X\cap Y\cap Z$ \\
-	%~ $\powerset(X)$ & Powerset, or set of all subsets & $\powerset(\{1,2\}) = \{ \emptyset, \{1\}, \{2\}, \{1,2\}\}$ \\
-	%~ \end{tabular}
-	%~ \caption{Mathematical notation used}
-%~ \end{figure}
-
-%~ \paragraph{Caches.}
-%~ It is particularly useful to model a set $\mathbb{C}\subseteq\powerset(\mathbb{R})$ of all
-%~ possible caches around the World, as this represents all possible states
-%~ that could challenge a DNSSEC signer to behave properly.  Again, this
-%~ model will not capture the timing constraints that define precisely what
-%~ subset of $\powerset(\mathbb{R})$ actually forms $\mathbb{C}$.
-
-% Yuri: Meestal gebruik je \mathbb alleen voor speciale (meta) gevallen
-
-%~ Based on these definitions, we can derive a meaningful partition of the
-%~ resource records $\mathbb{R}$ depending on how widely it is published:
-%~ 
-%~ \begin{eqnarray}\label{states}
-	%~ \emph{Hidden} &=& \mathbb{R}~\setminus~\unionprefix \mathbb{C} \\
-	%~ \emph{Propagating} &=& \unionprefix \mathbb{C}~\setminus~\intersectionprefix \mathbb{C} \\
-	%~ \emph{Omnipresent} &=& \intersectionprefix \mathbb{C}
-%~ \end{eqnarray}
-
-%~ \paragraph{Setting a goal.}
-%~ The above partition of $\mathbb{R}$ suffices to know what can be relied upon from the
-%~ caches in the World.  But, since DNS is not a static system, this state will evolve
-%~ with time.  Specifically, the \emph{Propagating} state is a temporary one that will be
-%~ departed as soon as the right TTL timing has passed.  This however, can go either
-%~ way; it depends on a new model element which way.  This model element is the goal
-%~ set for a resource record: Does it want to be \emph{Omnipresent} or \emph{Hidden}?
-%~ 
-%~ We therefore introduce another set named $\emph{Announced}\subseteq\mathbb{R}$ to hold
-%~ those resource records whose goal it is to end up in $\emph{Omnipresent}$.  Based on
-%~ this, it is possible to partition $\emph{Propagating}$ even further:
-%~ %
-%~ \begin{eqnarray}\label{states}
-	%~ \emph{Rumoured} &=& \emph{Propagating} \cap \emph{Announced}\\
-	%~ \emph{Squashed} &=& \emph{Propagating} \setminus \emph{Announced}
-%~ \end{eqnarray}
-
-
-
-%~ \paragraph{Predicate logic.}
-%~ The definitions above are in terms of set theory.  Although entirely equivalent, it is
-%~ probably useful to write the same thing in terms of predicate logic.  We introduce the
-%~ following boolean functions on $\mathbb{R}$, with shorthand names for reference in the
-%~ remaining pages of this document.
-
 \paragraph{Formal definition of record states.} Let $r$ be a record, $Anounced$ the 
 collection of records that are actively published, and $\mathbb{C}$
 the collection of all caches in the world. The states are defined by:
@@ -240,77 +158,6 @@ We define the following operations on keys:
 	\item $Alg(k)$, algorithm of key $k$ for which a transitive equivalence
 		is defined.
 \end{itemize}
-
-%~ Keys do not stand on their own, but actually require a number of 
-%~ resource records in their context.  Specifically, a key and its 
-%~ context can be described as a tuple 
-%~ $\langle\emph{ds},\emph{dnskey},emph{rrsig}\rangle$ with the 
-%~ resource records for a DS, DNSKEY and RRSIG record, all for the same 
-%~ signing key.  Define the type 
-%~ $K=\mathbb{R}\times\mathbb{R}\times\mathbb{R}$ represent such key 
-%~ with context.
-%~ 
-%~ \newcommand{\state}{\emph{State}}
-%~ \newcommand{\stateDS}{\emph{State}_\textrm{DS}}
-%~ \newcommand{\stateDNSKEY}{\emph{State}_\textrm{DNSKEY}}
-%~ \newcommand{\stateRRSIG}{\emph{State}_\textrm{RRSIG}}
-%~ 
-%~ Now define the following functions to capture the state $H$, $R$, $O$ or 
-%~ $S$
-%~ for each of the three components of a key with context tuple:
-%~ \begin{eqnarray*}
-	%~ \state(r) &\equiv& H\textrm{, if $r\in\emph{Hidden}$}\\
-	          %~ &\equiv& R\textrm{, if $r\in\emph{Rumoured}$}\\
-	          %~ &\equiv& O\textrm{, if $r\in\emph{Omnipresent}$}\\
-	          %~ &\equiv& S\textrm{, if $r\in\emph{Squashed}$}\\
-	%~ \stateDS(r,x,y) &\equiv& \state(r)\\
-	%~ \stateDNSKEY(x,r,y) &\equiv& \state(r)\\
-	%~ \stateRRSIG(x,y,r) &\equiv& \state(r)
-%~ \end{eqnarray*}
-
-%~ \begin{itemize}
-	%%\item $\mathbb{C}$ is a set of all caches
-	%%\item Cache $c \in \mathbb{C}$, a set of record sets r
-	%~ \item Key $k = \langle ds, dnskey, rrsig\rangle$, a tuple of states
-	%~ \item Key chain $\mathbb{K}$, a set of keys
-	%%\item $State(r) \in \{H, R, O, S\}$, with r one from k.
-	%~ \item $Goal(k) \in \{O, H\}$
-	%~ \item $Roles(k) \subseteq \{ksk, zsk\}$
-	%~ \item $Alg(k) \in \mathbb{N}$, Algorithm number of key
-%~ \end{itemize}
-
-%~ Each zone has its own key chain (but not necessarily unique key 
-%~ material). A key chain is a collection of keys currently involved with 
-%~ the zone, regardless of their state. The key itself consists of three 
-%~ states, one for each record involved. It also defines a goal to which
-%~ the records should try to move.
-%~ 
-%~ Each record is evaluated individually for the next state transition. 
-%~ If it not already reached its goal, it will try to move towards it 
-%~ provided the result is a valid DNSSEC configuration. This way only a 
-%~ small set of conditions is evaluated each time. 
-%~ 
-%~ Roll overs are not explicitly defined but derived from the 
-%~ set of rules. As a result the system or a user could insert a new key 
-%~ at any time in the process. For example a user has a dual key signing 
-%~ scheme and sets the goal of all current keys to Ceased. Then he inserts
-%~ a combined ZSK/KSK. From here the system will figure out the (save) way
-%~ to having the new key introduced. It might finish pending roll overs 
-%~ but if possible will try to discard the old keys as soon as possible.
-%~ 
-%~ Setting the goal of all your keys to ceased without first introducing 
-%~ a new key has no implication for the validity of the zone. The system 
-%~ always maintains a valid configuration. If it wants to remove old keys 
-%~ but can not, it won't.
-
-%~ \subsection{Shorthands}
-%~ 
-%~ \begin{itemize}
-	%~ \item This key is a KSK and active; we can rely on it. 
-	%~ \\$kskready(k) \leftrightarrow ksk \in Roles(k) \wedge State(k_{ds}) = P \wedge State(k_{dnskey}) = P \wedge State(k_{rrsig}) = P$
-	%~ \item If k' is a backup for k, k can safely be removed
-	%~ \\$backupfor(k', k) \leftrightarrow k' \not = k \wedge Alg(k)=Alg(k') \wedge kskready(k')$
-%~ \end{itemize}
 
 \section{DNSSEC Validity} \label{validity}
 
@@ -408,13 +255,6 @@ public data. This key can be rolled in and out like any other key.
 \subsubsection*{$H(Ds(k))$}
 
 \mathbox{
-	%~ DS was never published so we can do a quick transition
-	%~ \begin{equation}
-		%~ \begin{split}
-			%~ Goal(k)=C \rightarrow State(k_{ds})=C
-		%~ \end{split}
-	%~ \end{equation}
-
 	If k is not a KSK the DS state does not matter. If is \emph{is}, before
 	submitting either DNSKEY must be propagated or an other key with the 
 	same algorithm should be ready.
@@ -477,14 +317,6 @@ public data. This key can be rolled in and out like any other key.
 \subsubsection*{$O(Ds(k))$}
 
 \mathbox{
-
-	%~ A non-KSK can be set to withdrawn.
-	%~ \begin{equation}
-		%~ \begin{split}
-			%~ Goal(k)=C \wedge ksk \not \in Roles(k) \rightarrow S(Ds(k))
-		%~ \end{split}
-	%~ \end{equation}
-
 	DS may go in State W if it refers to nothing.
 	Or if there are other keys with the same algorithm which are valid.
 	Or we don't break other keys and we have some other valid key(s).
@@ -567,14 +399,6 @@ public data. This key can be rolled in and out like any other key.
 \subsubsection*{$H(Dnskey(k))$}
 
 \mathbox{
-
-	%~ We want to move away from this key and DNSKEY was never published, retire immediately.
-	%~ \begin{equation}
-		%~ \begin{split}
-			%~ Goal(k)=C \rightarrow State(k_{dnskey})=C
-		%~ \end{split}
-	%~ \end{equation}
-
 	If the signatures are propagated we may submit the Dnskey. 
 	Some other valid key is also acceptable.
 	\begin{equation}
@@ -680,27 +504,6 @@ public data. This key can be rolled in and out like any other key.
 	\end{equation}
 }
 
-			%~ Goal(k)=C 	& \wedge State(k_{ds})=C \\
-						%~ & \wedge State(k_{rrsig})=C \\
-			%~ \\
-			%~ Goal(k)=C 	& \wedge State(k_{ds})=C \\
-						%~ & \wedge (\exists k' \in \mathbb{K}: k' \not = k \\
-						%~ & \wedge Alg(k) = Alg(k')\\
-						%~ & \wedge State(k'_{dnskey}) = P \\
-						%~ & \wedge State(k'_{rrsig}) = P) \\
-						%~ & \wedge Roles(k) \subseteq Roles(k') \\
-			%~ \\
-			%~ Goal(k)=C 	& \wedge (\exists k' \in \mathbb{K}: k' \not = k \\
-						%~ & \wedge Alg(k) = Alg(k')\\
-						%~ & \wedge State(k'_{dnskey}) = P \\
-						%~ & \wedge State(k'_{rrsig}) = P) \\
-						%~ & \wedge (\exists k' \in \mathbb{K}: k' \not = k \\
-						%~ & \wedge Alg(k) = Alg(k')\\
-						%~ & \wedge State(k'_{dsy}) = P \\
-						%~ & \wedge State(k'_{dnskey}) = P) \\
-						%~ & \wedge Roles(k) \subseteq Roles(k') \\
-
-
 \subsubsection*{$S(Dnskey(k))$}
 
 \mathbox{
@@ -737,15 +540,6 @@ public data. This key can be rolled in and out like any other key.
 \subsubsection*{$H(Rrsig(k))$}
 
 \mathbox{
-
-	%~ Nobody ever saw this signatures, we won't need it.
-	%~ \begin{equation}
-		%~ \begin{split}
-			%~ Goal(k)=C
-		%~ \end{split}
-		%~ \rightarrow State(k_{rrsig})=C
-	%~ \end{equation}
-
 	Signatures for ZSKs can be introduced. For KSKs there must be a 
 	valid ZSK.
 	\begin{equation}
