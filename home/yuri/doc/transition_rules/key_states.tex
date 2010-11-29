@@ -109,6 +109,8 @@ state.
 			The record is published but not every cache might be aware.
        \item[\emph{Omnipresent}:]
 			Every cache has this record.
+			Or (Section~\ref{redifined-propagated}) a
+			sibling record.
        \item[\emph{Squashed}:]
 			The record is withdrawn but some caches might still have it.
 \end{description} 
@@ -209,7 +211,7 @@ SafeKeys \equiv \{ k | k\in\mathbb{K}, \\
 \hskip 2cm 			\exists k' \in \mathbb{K} \cdot ( \\
 \hskip 3cm 				Alg(k') = Alg(k) \wedge \\
 \hskip 3cm 				r \in Roles(k') \wedge \\
-\hskip 3cm 				l \in ConsistentKeys \wedge \\
+\hskip 3cm 				k' \in ConsistentKeys \wedge \\
 \hskip 3cm 				r = ksk \rightarrow (\neg H(Ds(k)) \rightarrow O(Ds(k'))) \wedge \\
 \hskip 3cm 				\neg H(Dnskey(k)) \rightarrow O(Dnskey(k')) \\
 \hskip 2cm 			)\\
@@ -224,7 +226,7 @@ exists. An insecure zone is represented by a \textsc{null} key.
 
 \begin{equation}
 \begin{array}{l}
-Valid(\mathbb{K}) \Leftrightarrow \\
+Valid(\mathbb{K}) \equiv \\
 \hskip 1cm	\forall k \in \mathbb{K} \cdot k \in SafeKeys \wedge \\
 \hskip 1cm	\exists k \in \mathbb{K} \cdot ( \\
 \hskip 2cm		ksk \in Roles(k) \wedge \\
@@ -240,6 +242,58 @@ Valid(\mathbb{K}) \Leftrightarrow \\
 \hskip 1cm	)
 \end{array}
 \end{equation}
+
+
+
+\section{Additional Considerations}
+
+\subsection{Couple "RRSIG DNSKEY" with DNSKEY State}
+
+It would be better to couple the signature over the DNSKEY set with
+the state of the DNSKEY. There is really no use case to publish these
+seperately, plus they always travel simultaniously. As a consequence
+a combined key can describe to sign the data in the zone but not the
+DNSKEY set and vice versa.
+
+Currently for the sake of uniformity a \emph{zsk} has a DS. I propose
+to introduce a distinction between ksk, zsk, and ksk+zsk. 
+
+\begin{description}
+\item ksk: DS, DNSKEY
+\item zsk: DNSKEY, RRSIG
+\item ksk+zsk: DS, DNSKEY, RRSIG
+\end{description}
+
+
+\subsection{Urges}
+
+
+
+\subsection{Omnipresent Sets of Keys}
+\label{redifined-propagated}
+
+Our model defines the cache availablility for each key related resource
+record. This intruduces a problem for the RRSG for a \emph{zsk} which
+does not represent a single record but in fact a whole collection. 
+In the simpelest situation signatures can be replaced by new signatures 
+as an atomic operation. It is also valid however to sign a subset of
+the data with one key and the rest with another key (possibly $n$ keys).
+
+Partial signing with multiple keys is a valid situation and a 
+feature of the current signer. This enables a smooth transition 
+between keys, with as goal to spread out the workload for a signer. 
+As enforcer we don't have information which record sets are signed 
+with which key (because we don't want to have too much state). To 
+support a smooth transition while ensuring we are maintaining a 
+valid zone, we allow a set of keys to be 
+responsible for signing. One of which should be in omnipresent state.
+If a key is part of this set it can move to the Omnipresent state for 
+free, but it adds a restriction for leaving that set.
+
+\subsection{5011 Hack}
+
+extra F state between O and S. Conditions $O\rightarrow S \equiv O\rightarrow F + F\rightarrow S$.
+O-F: set revoke bit. F-S: wait till bit propagated. 
 
 \section{Transition Rules}
 

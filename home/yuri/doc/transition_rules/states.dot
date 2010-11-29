@@ -7,5 +7,7 @@ digraph {
     O->S;
     S->H;
 
+    O->F->S
+
     R->S [ style = "dotted" ];    
 }
