@@ -52,6 +52,7 @@ def exists(some_set, condition):
 def forall(some_set, precondition, condition):
     for elem in some_set:
         if precondition(elem) and not condition(elem):
+            #~ print elem
             return False
     return True
 
@@ -73,53 +74,77 @@ def O(r):     return state(r) == OMNIPRESENT
 def S(r):     return state(r) == SQUASHED
 
 def valid(kc):
-    ConsistentKeys = filter(lambda k: 
-        impl(roles(k).issubset(set(["ksk"])), impl(not H(ds(k)), O(dnskey(k)))) and
-        impl(not H(dnskey(k)), O(rrsig(k))) and
-        (
-            H(ds(k)) or
-            impl(roles(k).issubset(set(["ksk"])), 
-                exists(kc, lambda l:
-                    "zsk" in roles(l) and
-                    alg(l) == alg(k) and
-                    O(dnskey(l)) and
-                    O(rrsig(l))
-                )
-            )
-        
-        )        
-    , kc)
-    debug("ConsistentKeys", ConsistentKeys)
-    
-    SafeKeys = filter(lambda k: 
-        k in ConsistentKeys or
-        forall(roles(k), lambda x: True, lambda r:
-            exists(kc, lambda l: 
-                alg(k)==alg(l) and
-                r in roles(l) and
-                l in ConsistentKeys and
-                impl(r=="ksk", impl(not H(ds(k)), O(ds(l)))) and
-                impl(not H(dnskey(k)), O(dnskey(l)))
-            )
-        )
-    , kc)
-    debug("SafeKeys", SafeKeys)
-    
     return forall(kc, lambda x: True, lambda k:
-        k in SafeKeys and
-        exists(kc, lambda k:
-            "ksk" in roles(k) and
-            O(ds(k)) and
-            O(dnskey(k)) and
-            O(rrsig(k)) and
-            exists(kc, lambda l:
-                "zsk" in roles(l) and
-                O(dnskey(l)) and
-                O(rrsig(l)) and
-                alg(k)==alg(l)
-            )
+        (
+            impl(not H(ds(k))     and "ksk" in roles(k), exists(kc, lambda l:
+                alg(k) == alg(l) and
+                O(ds(l)) and 
+                O(dnskey(l)) and 
+                "ksk" in roles(l)
+            ))
+            or O(dnskey(k))
         )
-    )
+        and
+        (
+            impl(not H(dnskey(k)), exists(kc, lambda m:
+                alg(k) == alg(m) and
+                O(dnskey(m)) and 
+                O(rrsig(m)) and 
+                "zsk" in roles(m)
+            )) 
+            or O(rrsig(k))
+        )
+    ) and \
+    exists(kc, lambda n: O(ds(n)) and "ksk" in roles(n))
+
+#~ def valid(kc):
+    #~ ConsistentKeys = filter(lambda k: 
+        #~ impl(roles(k).issubset(set(["ksk"])), impl(not H(ds(k)), O(dnskey(k)))) and
+        #~ impl(not H(dnskey(k)), O(rrsig(k))) and
+        #~ (
+            #~ H(ds(k)) or
+            #~ impl(roles(k).issubset(set(["ksk"])), 
+                #~ exists(kc, lambda l:
+                    #~ "zsk" in roles(l) and
+                    #~ alg(l) == alg(k) and
+                    #~ O(dnskey(l)) and
+                    #~ O(rrsig(l))
+                #~ )
+            #~ )
+        #~ 
+        #~ )        
+    #~ , kc)
+    #~ debug("ConsistentKeys", ConsistentKeys)
+    #~ 
+    #~ SafeKeys = filter(lambda k: 
+        #~ k in ConsistentKeys or
+        #~ forall(roles(k), lambda x: True, lambda r:
+            #~ exists(kc, lambda l: 
+                #~ alg(k)==alg(l) and
+                #~ r in roles(l) and
+                #~ l in ConsistentKeys and
+                #~ impl(r=="ksk", impl(not H(ds(k)), O(ds(l)))) and
+                #~ impl(not H(dnskey(k)), O(dnskey(l)))
+            #~ )
+        #~ )
+    #~ , kc)
+    #~ debug("SafeKeys", SafeKeys)
+    #~ 
+    #~ return forall(kc, lambda x: True, lambda k:
+        #~ k in SafeKeys and
+        #~ exists(kc, lambda k:
+            #~ "ksk" in roles(k) and
+            #~ O(ds(k)) and
+            #~ O(dnskey(k)) and
+            #~ O(rrsig(k)) and
+            #~ exists(kc, lambda l:
+                #~ "zsk" in roles(l) and
+                #~ O(dnskey(l)) and
+                #~ O(rrsig(l)) and
+                #~ alg(k)==alg(l)
+            #~ )
+        #~ )
+    #~ )
 
 def proc_ds(kc, k, ds_record, now):
     if H(ds_record):

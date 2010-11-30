@@ -243,7 +243,32 @@ Valid(\mathbb{K}) \equiv \\
 \end{array}
 \end{equation}
 
+\subsection{DNSSEC Validity (2)}
 
+The above rules can be greatly simplified under the assumption that 
+a key in the DNSKEY set always also signs that set. Also, a having 
+DS record implies a ksk. 
+
+\begin{equation}
+\begin{array}{l}
+				\exists k \in \mathbb{K} \cdot O(Ds(k))
+				\wedge \\
+				\forall k \in \mathbb{K} \cdot (\\
+\hskip 1cm			(O(Dnskey(k)) \vee \\
+\hskip 1cm			\neg H(Ds(k)) \rightarrow \exists k' \in \mathbb{K} \cdot (\\
+\hskip 2cm				Alg(k) = Alg(k') \wedge \\
+\hskip 2cm				O(Ds(k')) \wedge \\
+\hskip 2cm				O(Dnskey(k')) \wedge \\
+\hskip 2cm				ksk \in Roles(k'))) \\
+\hskip 1cm			\wedge\\
+\hskip 1cm			(zsk \in Roles(k) \wedge O(Rrsig(k)) \vee \\
+\hskip 1cm			\neg H(Dnskey(k)) \rightarrow \exists k' \in \mathbb{K} \cdot (\\
+\hskip 2cm				Alg(k) = Alg(k') \wedge \\
+\hskip 2cm				O(Dnskey(k')) \wedge \\
+\hskip 2cm				O(Rrsig(k')) \wedge \\
+\hskip 2cm				zsk \in Roles(k'))))
+\end{array}
+\end{equation}
 
 \section{Additional Considerations}
 
@@ -258,6 +283,8 @@ DNSKEY set and vice versa.
 Currently for the sake of uniformity a \emph{zsk} has a DS. I propose
 to introduce a distinction between ksk, zsk, and ksk+zsk. 
 
+rrsig is overloaded.
+
 \begin{description}
 \item ksk: DS, DNSKEY
 \item zsk: DNSKEY, RRSIG
@@ -265,8 +292,14 @@ to introduce a distinction between ksk, zsk, and ksk+zsk.
 \end{description}
 
 
+
 \subsection{Urges}
 
+minimize DS set
+
+minimize RRSIG count
+
+minimize RRSIG flux
 
 
 \subsection{Omnipresent Sets of Keys}
