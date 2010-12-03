@@ -1,0 +1,81 @@
+\documentclass{article}
+
+\usepackage{amssymb,amsmath}
+
+\parindent 0pt
+\parskip 5pt
+
+\newcommand{\logor}{\mathbin{\vee}}
+
+\title{Life, Universe, and Everything}
+
+\begin{document}
+
+\maketitle
+
+A consistent key(context) is defined as a key that does not introduce 
+internal inconsistencies. A (partially) propagated KSK must have a fully
+propagated ZSK.
+
+\begin{displaymath}
+\begin{array}{l}
+ConsistentKeys \equiv \{ k | k\in\mathbb{K}, \\
+\hskip 1cm	Roles(k) \subseteq {ksk} \rightarrow (\neg H(Ds(k)) \rightarrow O(Dnskey(k))) \wedge \\
+\hskip 1cm	\neg H(Dnskey(k)) \rightarrow O(Rrsig(k)) \wedge \\
+\hskip 1cm	( \\
+\hskip 2cm		H(Dnskey(k)) \vee \\
+\hskip 2cm		ksk=Roles(k) \rightarrow \exists k' \in \mathbb{K} \cdot (\\
+\hskip 3cm			zsk \in Roles(k') \wedge \\
+\hskip 3cm			Alg(k)=Alg(k') \wedge \\
+\hskip 3cm			O(Dnskey(k')) \wedge \\
+\hskip 3cm			O(Rrsig(k'))\\
+\hskip 2cm		)\\
+\hskip 1cm	)\\
+\}
+\end{array}
+\end{displaymath}
+
+SafeKeys are keys that might be internally inconsistent but for which
+a consistent counterpart exists.
+
+\begin{displaymath}
+\begin{array}{l}
+SafeKeys \equiv \{ k | k\in\mathbb{K}, \\
+\hskip 1cm 		k \in ConsistentKeys \vee \\
+\hskip 1cm 		\forall r \in Roles(k) \cdot ( \\
+\hskip 2cm 			\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 3cm 				Alg(k') = Alg(k) \wedge \\
+\hskip 3cm 				r \in Roles(k') \wedge \\
+\hskip 3cm 				l \in ConsistentKeys \wedge \\
+\hskip 3cm 				r = ksk \rightarrow (\neg H(Ds(k)) \rightarrow O(Ds(k'))) \wedge \\
+\hskip 3cm 				\neg H(Dnskey(k)) \rightarrow O(Dnskey(k')) \\
+\hskip 2cm 			)\\
+\hskip 1cm 		)\\
+\}
+\end{array}
+\end{displaymath}
+
+A zone is valid if no single key breaks validity and at least one complete
+chain for any algorithm exists. An insecure zone is represented by a NULL
+key.
+
+\begin{displaymath}
+\begin{array}{l}
+Valid(\mathbb{K}) \Leftrightarrow \\
+\hskip 1cm	\forall k \in \mathbb{K} \cdot k \in SafeKeys \wedge \\
+\hskip 1cm	\exists k \in \mathbb{K} \cdot ( \\
+\hskip 2cm		ksk \in Roles(k) \wedge \\
+\hskip 2cm		O(Ds(k)) \wedge \\
+\hskip 2cm		O(Dnskey(k)) \wedge \\
+\hskip 2cm		O(Rrsig(k)) \wedge \\
+\hskip 2cm		\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 3cm			zsk \in Roles(k') \wedge \\
+\hskip 3cm			O(Dnskey(k')) \wedge \\
+\hskip 3cm			O(Rrsig(k')) \wedge \\
+\hskip 3cm			Alg(k)=Alg(k')\\
+\hskip 2cm		)\\
+\hskip 1cm	)
+\end{array}
+\end{displaymath}
+
+\end{document}
