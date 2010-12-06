@@ -288,16 +288,14 @@ formal proof.
 \hskip 1cm				\exists k' \in \mathbb{K} \cdot (\\
 \hskip 2cm				Alg(k) = Alg(k') \wedge \\
 \hskip 2cm				O(Ds(k')) \wedge \\
-\hskip 2cm				O(Dnskey(k')) \wedge \\
-\hskip 2cm				ksk \in Roles(k'))) \\
+\hskip 2cm				O(Dnskey(k')) )) \\
 \hskip 1cm			\wedge\\
 \hskip 1cm			(H(Dnskey(k)) \vee \\
 \hskip 1cm			O(Rrsig(k)) \vee \\
 \hskip 1cm			\exists k' \in \mathbb{K} \cdot (\\
 \hskip 2cm				Alg(k) = Alg(k') \wedge \\
 \hskip 2cm				O(Dnskey(k')) \wedge \\
-\hskip 2cm				O(Rrsig(k')) \wedge \\
-\hskip 2cm				zsk \in Roles(k'))))
+\hskip 2cm				O(Rrsig(k')) )))
 \end{array}
 \end{equation}
 
@@ -441,17 +439,17 @@ involving the $Ds$ state of a non-KSK key is always false.
 		\begin{array}{l}
 \hskip 0cm			H(Goal(k)) \wedge \\
 \hskip 0cm			\exists k' \in \mathbb{K} \cdot (\\
-\hskip 1cm				k' \not = k \wedge \\
-\hskip 1cm				O(Ds(k')) \wedge \\
-\hskip 1cm				O(Dnskey(k')) \wedge \\
-\hskip 1cm				\exists k'' \in \mathbb{K} \cdot ( \\
-\hskip 2cm					Alg(k'') = Alg(k') \wedge \\
-\hskip 2cm					O(Dnskey(k'')) \wedge \\
-\hskip 2cm					O(Rrsig(k''))) \wedge \\
-\hskip 1cm 				(Alg(k)=Alg(k') \vee \\
-\hskip 1cm				\exists k'' \not \in \mathbb{K} \cdot (\\
-\hskip 2cm					k'' \not = k \wedge\\
-\hskip 2cm					\neg H(Ds(k'')) )))\\
+\hskip 1cm				k' \neq k \wedge \\
+\hskip 1cm				O(Ds(k'))) \wedge \\
+\hskip 0cm				\forall k' \in \mathbb{K} \cdot ( \\
+\hskip 1cm					Alg(k) \neq Alg(k') \vee \\
+\hskip 1cm					H(Ds(k')) \vee \\
+\hskip 1cm					O(Dnskey(k')) \vee \\
+\hskip 1cm					\exists k'' \in \mathbb{K} \cdot (\\
+\hskip 2cm 						Alg(k'')=Alg(k') \wedge \\
+\hskip 2cm 						O(Ds(k'')) \wedge \\
+\hskip 2cm 						O(Dnskey(k'')) \wedge \\
+\hskip 2cm 						k'' \neq k))
 		\end{array}
 		\right\} \vdash [withdraw], S(Ds(k)) \\
 	\end{equation}
@@ -494,13 +492,11 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
-			O(Rrsig(k)) \\
-			\\
-			O(Goal(k)) \wedge \\
-			\exists k' \in \mathbb{K} \cdot( \\
-\hskip 1cm		Alg(k)=Alg(k') \wedge \\
-\hskip 1cm		O(Dnskey(k)) \wedge \\
-\hskip 1cm		O(Rrsig(k)))\\
+\hskip 1cm	(O(Rrsig(k)) \vee \\
+\hskip 1cm	\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 2cm		Alg(k)=Alg(k') \wedge \\
+\hskip 2cm		O(Dnskey(k)) \wedge \\
+\hskip 2cm		O(Rrsig(k))))\\
 		\end{array}
 		\right\} \vdash [submit], R(Dnskey(k))
 	\end{equation}
@@ -534,40 +530,31 @@ be extra carefull about the type of key the record belongs to.
 	there is some other valid chain for this algorithm. If none for 
 	this algorithm are broken, some other algorithm will do as well.
 	
-	
-	
 	\begin{equation}
 		\left.
 		\begin{array}{l}
-			H(Goal(k)) \wedge \\
-\hskip 1cm	(ksk \not \in Roles(k) \vee\\
-\hskip 1cm		H(Ds(k)) \vee \\
-\hskip 1cm		\exists k' \in \mathbb{K} \cdot (\\
-\hskip 2cm			k' \not = k \wedge \\
-\hskip 2cm			Alg(k)=Alg(k') \wedge \\
-\hskip 2cm			O(Ds(k')) \wedge \\
-\hskip 2cm			O(Dnskey(k')))) \\
-\hskip 0cm	\wedge \\
-\hskip 1cm		(zsk \not \in Roles(k) \vee \\
-\hskip 1cm		H(Rrsig(k)) \vee \\
-\hskip 1cm		\exists k' \in \mathbb{K} \cdot (\\
-\hskip 2cm			k' \not = k \wedge \\
-\hskip 2cm			Alg(k)=Alg(k') \wedge \\
-\hskip 2cm			O(Dnskey(k')) \wedge \\
-\hskip 2cm			O(Rrsig(k'))) \vee \\
-\hskip 1cm		\exists k' \not \in \mathbb{K} \cdot (\\
-\hskip 2cm			k' \not = k \wedge\\
-\hskip 2cm			Alg(k)=Alg(k') \wedge \\
-\hskip 2cm			\neg H(Dnskey(k'))))\\
+			H(Goal(k)) \wedge\\
+\hskip 0cm	\forall k' \in \mathbb{K} \cdot (\\
+\hskip 1cm		(ksk \not \in Roles(k') \vee\\
+\hskip 1cm		H(Ds(k')) \vee \\
+\hskip 1cm		(O(Dnskey(k')) \wedge k \neq k') \vee \\
+\hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
+\hskip 2cm			k \neq k'' \wedge \\
+\hskip 2cm			Alg(k')=Alg(k'') \wedge \\
+\hskip 2cm			O(Ds(k'')) \wedge \\
+\hskip 2cm			O(Dnskey(k'')))) \\
+\hskip 1cm		\wedge \\
+\hskip 1cm		(H(Dnskey(k')) \vee \\
+\hskip 1cm		O(Rrsig(k'))  \vee \\
+\hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
+\hskip 2cm			k \neq k'' \wedge \\
+\hskip 2cm			Alg(k')=Alg(k'') \wedge \\
+\hskip 2cm			O(Dnskey(k'')) \wedge \\
+\hskip 2cm			O(Rrsig(k'')))))
 		\end{array}
 		\right\} \vdash [withdraw], S(Dnskey(k))
 	\end{equation}
 }
-
-                %~ not exists(kc, lambda m:
-                    %~ k != m and
-                    %~ alg(k) == alg(m) and
-                    %~ not H(dnskey(m)))):
 
 \subsubsection{$S(Dnskey(k))$}
 
@@ -627,14 +614,13 @@ be extra carefull about the type of key the record belongs to.
 	\begin{equation}
 		\left.
 		\begin{array}{l}
-\hskip 0cm			H(Goal(k)) \wedge H(Dnskey(k)) \\
-\\
-\hskip 0cm			H(Goal(k)) \wedge \\
-\hskip 0cm			\exists k' \in \mathbb{K} \cdot ( \\
-\hskip 1cm				k' \not = k  \wedge\\
-\hskip 1cm				Alg(k) = Alg(k')  \wedge\\
-\hskip 1cm				O(Dnskey(k'))  \wedge\\
-\hskip 1cm				O(Rrsig(k')))
+\hskip 0cm			H(Goal(k)) \wedge  \\
+\hskip 1cm			(H(Dnskey(k)) \vee \\
+\hskip 1cm			\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 2cm				k' \not = k  \wedge\\
+\hskip 2cm				Alg(k) = Alg(k')  \wedge\\
+\hskip 2cm				O(Dnskey(k'))  \wedge\\
+\hskip 2cm				O(Rrsig(k'))))
 		\end{array}
 		\right\} \vdash S(Rrsig(k))
 	\end{equation}
