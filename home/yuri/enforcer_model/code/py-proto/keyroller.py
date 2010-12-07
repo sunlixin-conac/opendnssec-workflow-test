@@ -8,8 +8,8 @@ RUMOURED    = "+"
 OMNIPRESENT = "O"
 SQUASHED    = "-"
 
-#~ AllowSmooth = True
-#~ AllowSmooth = False
+MinFlux = True
+MinSig = MinFlux or False
 
 class Record:
     def __init__(self, state):
@@ -32,6 +32,19 @@ class Key:
     def __repr__(self):
         return self.name
 
+def signconf(kc):
+    for k in kc:
+        pub = R(dnskey(k)) or O(dnskey(k))
+        act = R(rrsig(k)) or \
+            ("ksk" in roles(k) and pub) or \
+            (O(rrsig(k)) and
+            impl(MinFlux, goal(k) == OMNIPRESENT or not exists(kc, lambda l:
+                l != k and
+                O(dnskey(l)) and
+                (O(rrsig(l)) or R(rrsig(l)))
+            )))
+        print str(k), pub, act
+
 def printkc(kc):
     keys = list(kc)
     keys.sort(lambda k, l: (k.name > l.name)*2-1)
@@ -46,6 +59,7 @@ def printkc(kc):
             strds, strdnskey, 
             strrrsig, str(k.goal), str(k.alg), 
             str(",".join(list(roles(k)))))
+    signconf(kc)
     print ""
 
 def debug(k, s):
@@ -214,51 +228,28 @@ def proc_dnskey(kc, k, dnskey_record, now):
             if dnskey_record.time <= now:
                 return OMNIPRESENT
                 
-    #~ elif O(dnskey_record):
-        #~ if goal(k) == HIDDEN:
-            #~ if (not "ksk" in roles(k) or
-                #~ H(ds(k)) or
-                #~ exists(kc, lambda l:
-                    #~ k != l and
-                    #~ alg(k) == alg(l) and
-                    #~ O(ds(l)) and
-                    #~ O(dnskey(l)))) \
-                #~ and \
-                #~ (not "zsk" in roles(k) or
-                #~ O(rrsig(k)) or
-                #~ exists(kc, lambda m:
-                    #~ k != m and
-                    #~ alg(k) == alg(m) and
-                    #~ O(dnskey(m)) and
-                    #~ O(rrsig(m))) 
-                    #or
-                #not exists(kc, lambda m:
-                    #k != m and
-                    #alg(k) == alg(m) and
-                    #not H(dnskey(m)))
-                    #~ ):
-                #~ return SQUASHED
     elif O(dnskey_record):
         if goal(k) == HIDDEN:
-            if  forall(kc, lambda x: True, lambda l:
-                    ("ksk" not in roles(l) or 
-                    H(ds(l)) or 
-                    (O(dnskey(l)) and k != l) or 
-                    exists(kc, lambda m:
-                        alg(m)==alg(l) and 
-                        O(ds(m)) and 
-                        O(dnskey(m)) and 
-                        k != m))
-                and
-                    (H(dnskey(l)) or
-                    O(rrsig(l)) or 
-                    exists(kc, lambda m:
-                        alg(m)==alg(l) and 
-                        k != m and 
-                        O(dnskey(m)) and 
-                        O(rrsig(m))))):            
-                return SQUASHED
-                        #~ 
+            if ("zsk" not in roles(k) or not MinSig or H(rrsig(k))):
+                if  forall(kc, lambda x: True, lambda l:
+                        ("ksk" not in roles(l) or 
+                        H(ds(l)) or 
+                        (O(dnskey(l)) and k != l) or 
+                        exists(kc, lambda m:
+                            alg(m)==alg(l) and 
+                            O(ds(m)) and 
+                            O(dnskey(m)) and 
+                            k != m))
+                    and
+                        (H(dnskey(l)) or
+                        O(rrsig(l)) or 
+                        exists(kc, lambda m:
+                            alg(m)==alg(l) and 
+                            k != m and 
+                            O(dnskey(m)) and 
+                            O(rrsig(m))))):            
+                    return SQUASHED
+
     elif S(dnskey_record):
         if goal(k) == OMNIPRESENT:
             return RUMOURED
@@ -270,7 +261,8 @@ def proc_dnskey(kc, k, dnskey_record, now):
 def proc_rrsig(kc, k, rrsig_record, now):
     if H(rrsig_record):
         if goal(k) == OMNIPRESENT:
-            return RUMOURED
+            if (not MinSig or O(dnskey(k))):
+                return RUMOURED
         
     elif R(rrsig_record):
         if goal(k) == HIDDEN:
@@ -356,82 +348,82 @@ kc.add(Key("ZSK1", 2, set(["zsk"]), HIDDEN, OMNIPRESENT))
 kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
 enforce(kc)
 #~ 
-#### ksk rollover
-kc = set()
-kc.add(Key("KSK1", 2, set(["ksk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
-kc.add(Key("ZSK1", 2, set(["zsk"]), OMNIPRESENT, OMNIPRESENT))
-enforce(kc)
-#~ 
-#### zsk+ksk rollover
-kc = set()
-kc.add(Key("KSK1", 2, set(["ksk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
-kc.add(Key("ZSK1", 2, set(["zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
-#~ 
-#### zsk+ksk new alg rollover
-kc = set()
-kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
-kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
-#~ 
-#### zsk/ksk rollover
-kc = set()
-kc.add(Key("CSK1", 1, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("CSK2", 1, set(["ksk", "zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
-#~ 
-#### zsk/ksk alg rollover
-kc = set()
-kc.add(Key("CSK1", 1, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("CSK2", 2, set(["ksk", "zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
-#~ 
-#### ksk new alg rollover
-kc = set()
-kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
-kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
-enforce(kc)
-#~ 
-#### zsk new alg rollover
-kc = set()
-kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
-#~ 
-#### zsk,ksk  to csk roll
-kc = set()
-kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("CSK2", 1, set(["ksk", "zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
-#~ 
-#### zsk,ksk  to csk roll
-kc = set()
-kc.add(Key("CSK2", 1, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("KSK1", 1, set(["ksk"]), OMNIPRESENT, HIDDEN))
-kc.add(Key("ZSK1", 1, set(["zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
-#~ 
-#### zsk,ksk  to csk roll nieuw alg
-kc = set()
-kc.add(Key("CSK2", 2, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("KSK1", 1, set(["ksk"]), OMNIPRESENT, HIDDEN))
-kc.add(Key("ZSK1", 1, set(["zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
-#~ 
-#### zsk,ksk  to csk roll
-kc = set()
-kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("CSK2", 2, set(["ksk", "zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
+#~ #### ksk rollover
+#~ kc = set()
+#~ kc.add(Key("KSK1", 2, set(["ksk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
+#~ kc.add(Key("ZSK1", 2, set(["zsk"]), OMNIPRESENT, OMNIPRESENT))
+#~ enforce(kc)
+
+#~ #### zsk+ksk rollover
+#~ kc = set()
+#~ kc.add(Key("KSK1", 2, set(["ksk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
+#~ kc.add(Key("ZSK1", 2, set(["zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
+
+#~ #### zsk+ksk new alg rollover
+#~ kc = set()
+#~ kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
+#~ kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
+
+#~ #### zsk/ksk rollover
+#~ kc = set()
+#~ kc.add(Key("CSK1", 1, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("CSK2", 1, set(["ksk", "zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
+
+#~ #### zsk/ksk alg rollover
+#~ kc = set()
+#~ kc.add(Key("CSK1", 1, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("CSK2", 2, set(["ksk", "zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
+
+#~ #### ksk new alg rollover
+#~ kc = set()
+#~ kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
+#~ kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
+#~ enforce(kc)
+
+#~ #### zsk new alg rollover
+#~ kc = set()
+#~ kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
+
+#~ #### zsk,ksk  to csk roll
+#~ kc = set()
+#~ kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("CSK2", 1, set(["ksk", "zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
+
+#~ #### zsk,ksk  to csk roll
+#~ kc = set()
+#~ kc.add(Key("CSK2", 1, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("KSK1", 1, set(["ksk"]), OMNIPRESENT, HIDDEN))
+#~ kc.add(Key("ZSK1", 1, set(["zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
+
+#~ #### zsk,ksk  to csk roll nieuw alg
+#~ kc = set()
+#~ kc.add(Key("CSK2", 2, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("KSK1", 1, set(["ksk"]), OMNIPRESENT, HIDDEN))
+#~ kc.add(Key("ZSK1", 1, set(["zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
+
+#~ #### zsk,ksk  to csk roll
+#~ kc = set()
+#~ kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("CSK2", 2, set(["ksk", "zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
 
 #~ #### zsk,ksk  to csk roll
 #~ kc = set()
