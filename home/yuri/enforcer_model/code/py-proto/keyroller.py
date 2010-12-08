@@ -8,7 +8,7 @@ RUMOURED    = "+"
 OMNIPRESENT = "O"
 SQUASHED    = "-"
 
-MinFlux = True
+MinFlux = False
 MinSig = MinFlux or False
 
 class Record:
@@ -32,19 +32,6 @@ class Key:
     def __repr__(self):
         return self.name
 
-def signconf(kc):
-    print "signerconf"
-    for k in kc:
-        pub = R(dnskey(k)) or O(dnskey(k))
-        act = "zsk" in roles(k) and \
-                (R(rrsig(k)) or O(rrsig(k)) and \
-                impl(MinFlux, goal(k) == OMNIPRESENT or not exists(kc, lambda l:
-                l != k and
-                O(dnskey(l)) and
-                (O(rrsig(l)) or R(rrsig(l)))
-            )))
-        print "\t", str(k), ["", "PUB"][pub], ["", "ACT"][act]
-
 def printkc(kc):
     keys = list(kc)
     keys.sort(lambda k, l: (k.name > l.name)*2-1)
@@ -55,11 +42,24 @@ def printkc(kc):
         if ds(k): strds = ds(k)
         if dnskey(k): strdnskey = dnskey(k)
         if rrsig(k): strrrsig = rrsig(k)
-        print "key %s: [%s %s %s] goal(k)=%s alg(k)=%s %s"%(str(k.name), 
+        
+        pub = R(dnskey(k)) or O(dnskey(k))
+        act = "zsk" in roles(k) and \
+                (R(rrsig(k)) or O(rrsig(k)) and \
+                impl(MinFlux, goal(k) == OMNIPRESENT or not exists(kc, lambda l:
+                #~ l != k and
+                O(dnskey(l)) and
+                (O(rrsig(l)) or R(rrsig(l))) and
+                goal(l) == OMNIPRESENT and
+                alg(k) == alg(l)
+            )))
+        conf = []
+        if pub: conf.append("PUB")
+        if act: conf.append("ACT")
+        print "key %s: [%s %s %s] goal(k)=%s alg(k)=%s %s;%s"%(str(k.name), 
             strds, strdnskey, 
             strrrsig, str(k.goal), str(k.alg), 
-            str(",".join(list(roles(k)))))
-    signconf(kc)
+            str(",".join(list(roles(k)))), str(",".join(conf)))
     print ""
 
 def debug(k, s):
@@ -230,7 +230,7 @@ def proc_dnskey(kc, k, dnskey_record, now):
                 
     elif O(dnskey_record):
         if goal(k) == HIDDEN:
-            if ("zsk" not in roles(k) or not MinSig or H(rrsig(k))):
+            if ("zsk" not in roles(k) or not MinSig or H(rrsig(k)) or not exists(kc, lambda l: H(rrsig(l)) and alg(k) == alg(l))):
                 if  forall(kc, lambda x: True, lambda l:
                         ("ksk" not in roles(l) or 
                         H(ds(l)) or 
@@ -261,7 +261,7 @@ def proc_dnskey(kc, k, dnskey_record, now):
 def proc_rrsig(kc, k, rrsig_record, now):
     if H(rrsig_record):
         if goal(k) == OMNIPRESENT:
-            if (not MinSig or O(dnskey(k))):
+            if (not MinSig or O(dnskey(k)) or not exists(kc, lambda l: O(dnskey(l)) and alg(k) == alg(l))):
                 return RUMOURED
         
     elif R(rrsig_record):
@@ -310,6 +310,12 @@ def proc_key(kc, k, now):
     return changed
 
 def enforce_step(kc, now):
+    # remove old keys
+    kc = set(filter(lambda k: not(
+                            impl("ksk" in roles(k), H(ds(k)) and H(dnskey(k))) and
+                            impl("zsk" in roles(k), H(dnskey(k)) and H(rrsig(k))) and
+                            goal(k) == HIDDEN
+                            ), kc))
     upd = False
     changed = True
     while changed:
@@ -341,12 +347,21 @@ kc = set()
 
 ##          Key(name alg, roles, goal, state)
 
+##### test
+#kc = set()
+#kc.add(Key("KSK1", 2, set(["ksk"]), OMNIPRESENT, HIDDEN))
+#kc.add(Key("KSK2", 3, set(["ksk"]), HIDDEN, OMNIPRESENT))
+#kc.add(Key("ZSK1", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
+#kc.add(Key("ZSK2", 3, set(["zsk"]), HIDDEN, OMNIPRESENT))
+#enforce(kc)
+
+#~ 
 #### zsk rollover
-kc = set()
-kc.add(Key("KSK1", 2, set(["ksk"]), OMNIPRESENT, OMNIPRESENT))
-kc.add(Key("ZSK1", 2, set(["zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
-enforce(kc)
+#~ kc = set()
+#~ kc.add(Key("KSK1", 2, set(["ksk"]), OMNIPRESENT, OMNIPRESENT))
+#~ kc.add(Key("ZSK1", 2, set(["zsk"]), HIDDEN, OMNIPRESENT))
+#~ kc.add(Key("ZSK2", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
+#~ enforce(kc)
 #~ 
 #~ #### ksk rollover
 #~ kc = set()
@@ -431,30 +446,30 @@ enforce(kc)
 #~ kc.add(Key("CSK2", 2, set(["ksk", "zsk"]), HIDDEN, OMNIPRESENT))
 #~ kc.add(Key("ZSK3", 3, set(["zsk"]), OMNIPRESENT, HIDDEN))
 #~ enforce(kc)
+#~ 
+kc = set()
+kc.add(Key("init", 1, set(["ksk", "zsk"]), OMNIPRESENT, OMNIPRESENT))
 
-#~ kc = set()
-#~ kc.add(Key("init", 1, set(["ksk", "zsk"]), OMNIPRESENT, OMNIPRESENT))
-#~ 
-#~ print "\t\tBEGIN STATE"
-#~ printkc(kc)
-#~ print "\t\tSTART ENFORCER\n"
-#~ 
-#~ now = 0
-#~ 
-#~ while True:
+print "\t\tBEGIN STATE"
+printkc(kc)
+print "\t\tSTART ENFORCER\n"
+
+now = 0
+
+while True:
     #~ kc = set(filter(lambda k: not(
                             #~ impl("ksk" in roles(k), H(ds(k)) and H(dnskey(k))) and
                             #~ impl("zsk" in roles(k), H(dnskey(k)) and H(rrsig(k))) and
                             #~ goal(k) == HIDDEN
                             #~ ), kc))
-    #~ for k in kc: k.goal = choice([OMNIPRESENT, HIDDEN])
-    #~ for i in range(randint(0, 1)):
-        #~ kc.add(Key("r"+str(randint(100, 999)), randint(0, 1), 
-            #~ set(sample(["ksk", "zsk"], randint(1, 2))), OMNIPRESENT, HIDDEN))
-#~ 
-    #~ enforce_step(kc, now)
-    #~ if VERBOSE > 0: print "\t\tADVANCING TIME"
-    #~ now += 1
-#~ print "\t\tEND ENFORCER\n"
-#~ print "\t\tEND STATE"
-#~ printkc(kc)
+    for k in kc: k.goal = choice([OMNIPRESENT, HIDDEN])
+    for i in range(randint(0, 1)):
+        kc.add(Key("r"+str(randint(100, 999)), randint(0, 1), 
+            set(sample(["ksk", "zsk"], randint(1, 2))), OMNIPRESENT, HIDDEN))
+
+    enforce_step(kc, now)
+    if VERBOSE > 0: print "\t\tADVANCING TIME"
+    now += 1
+print "\t\tEND ENFORCER\n"
+print "\t\tEND STATE"
+printkc(kc)
