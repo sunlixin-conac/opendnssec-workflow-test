@@ -33,17 +33,17 @@ class Key:
         return self.name
 
 def signconf(kc):
+    print "signerconf"
     for k in kc:
         pub = R(dnskey(k)) or O(dnskey(k))
-        act = R(rrsig(k)) or \
-            ("ksk" in roles(k) and pub) or \
-            (O(rrsig(k)) and
-            impl(MinFlux, goal(k) == OMNIPRESENT or not exists(kc, lambda l:
+        act = "zsk" in roles(k) and \
+                (R(rrsig(k)) or O(rrsig(k)) and \
+                impl(MinFlux, goal(k) == OMNIPRESENT or not exists(kc, lambda l:
                 l != k and
                 O(dnskey(l)) and
                 (O(rrsig(l)) or R(rrsig(l)))
             )))
-        print str(k), pub, act
+        print "\t", str(k), ["", "PUB"][pub], ["", "ACT"][act]
 
 def printkc(kc):
     keys = list(kc)

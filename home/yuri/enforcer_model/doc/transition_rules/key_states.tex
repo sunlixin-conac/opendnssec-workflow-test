@@ -247,17 +247,32 @@ is set. The goal of the key must be omnipresent.
 Published(k) \equiv R(Dnskey(k)) \vee O(Dnskey(k))
 \end{equation}
 
+%~ \begin{equation}
+%~ \begin{array}{l}
+%~ Active(k) \equiv ksk \in Roles(k) \wedge Published(k) \vee \\
+%~ \hskip 2cm 		zsk \in Roles(k) \wedge \\
+%~ \hskip 3cm		(R(Rrsig(k)) \vee \\
+%~ \hskip 3cm 		O(Rrsig(k)) \wedge \\
+%~ \hskip 4cm 			(MinFlux \rightarrow \\
+%~ \hskip 5cm 		O(goal(k)) \vee \\
+%~ \hskip 5cm 		\exists k' \not \in \mathbb{K} \cdot (\\
+%~ \hskip 6cm			k\neq k' \wedge \\
+%~ \hskip 6cm			O(Dnskey(k')) \wedge \\
+%~ \hskip 6cm			O(Rrsig(k')))))\\
+%~ \end{array}
+%~ \end{equation}
 \begin{equation}
+Active(k) \equiv 
 \begin{array}{l}
-			Active(k) \equiv R(Rrsig(k)) \vee \\
-\hskip 2cm 		(O(Rrsig(k)) \wedge \\
-\hskip 3cm 			(MinFlux \rightarrow \\
-\hskip 4cm 		(O(goal(k)) \vee \\
-\hskip 4cm 		\exists k' \not \in \mathbb{K} \cdot (\\
-\hskip 5cm			k\neq k' \wedge \\
-\hskip 5cm			O(Dnskey(k')) \wedge \\
-\hskip 5cm			O(Rrsig(k'))))\\
-))
+\hskip 0.0cm		zsk \in Roles(k) \wedge \\
+\hskip 0.0cm		(R(Rrsig(k)) \vee \\
+\hskip 0.5cm 		O(Rrsig(k)) \wedge \\
+\hskip 0.5cm 		(MinFlux \rightarrow \\
+\hskip 1.0cm 		O(goal(k)) \vee \\
+\hskip 1.0cm 		\exists k' \not \in \mathbb{K} \cdot (\\
+\hskip 1.5cm			k\neq k' \wedge \\
+\hskip 1.5cm			O(Dnskey(k')) \wedge \\
+\hskip 1.5cm			(O(Rrsig(k'))\vee R(Rrsig(k'))) )))
 \end{array}
 \end{equation}
 
