@@ -457,11 +457,6 @@ print "\t\tSTART ENFORCER\n"
 now = 0
 
 while True:
-    #~ kc = set(filter(lambda k: not(
-                            #~ impl("ksk" in roles(k), H(ds(k)) and H(dnskey(k))) and
-                            #~ impl("zsk" in roles(k), H(dnskey(k)) and H(rrsig(k))) and
-                            #~ goal(k) == HIDDEN
-                            #~ ), kc))
     for k in kc: k.goal = choice([OMNIPRESENT, HIDDEN])
     for i in range(randint(0, 1)):
         kc.add(Key("r"+str(randint(100, 999)), randint(0, 1), 
