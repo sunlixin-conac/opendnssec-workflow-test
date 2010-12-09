@@ -4,11 +4,11 @@ digraph {
 
     H->R;
     R->O;
-    O->S;
-    S->H;
+    O->U;
+    U->H;
 
- //   O->F->S
+ //   O->F->U
 
-    R->S// [ style = "dotted" ];
-    S->R// [ style = "dotted" ];
+    R->U// [ style = "dotted" ];
+    U->R// [ style = "dotted" ];
 }

@@ -90,7 +90,7 @@ all caches have a copy of the record or can at least obtain it (i.e.
 they have no old unexpired resource record set).
 
 The two other states represent uncertainty: \emph{Rumoured} and \emph
-{Squashed}. The separation is a bit artificial as they more or less 
+{Unretentive}. The separation is a bit artificial as they more or less 
 mean the same. Both represent that some caches do and some don't 
 know about the resource record. However, in our model actions (which 
 are observable by the outside world) are only taken on state 
@@ -105,7 +105,7 @@ Since DNS involves caches and TTLs, it is entirely possible for a
 record being in the \emph{Rumoured} state while in fact every cache 
 in the world holds the record. The problem is the uncertainty, we have
 no way to know a record is fully propagated other than waiting the
-worst case propagation time. This is also true for the \emph{Squashed}
+worst case propagation time. This is also true for the \emph{Unretentive}
 state.
 
 \paragraph{Summary.} A record is always in one of these four states:
@@ -117,9 +117,7 @@ state.
 			The record is published but not every cache might be aware.
 \item[\emph{Omnipresent}:]
 			Every cache has this record.
-			Or (Section~\ref{redifined-propagated}) a
-			sibling record.
-\item[\emph{Squashed}:]
+\item[\emph{Unretentive}:]
 			The record is withdrawn but some caches might still have it.
 \end{itemize} 
 
@@ -132,7 +130,7 @@ the collection of all caches in the world. The states are defined by:
        r\in Hidden      & \equiv & H(r) &=& \forall c \in \mathbb{C} \cdot r \not \in c \\
        r\in Rumoured    & \equiv & R(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r\in c \wedge r\in Announced\\
        r\in Omnipresent & \equiv & O(r) &=& \forall c \in \mathbb{C} \cdot r \in c \\
-       r\in Squashed    & \equiv & S(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r \in c \wedge r \notin Announced \\
+       r\in Unretentive    & \equiv & U(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r \in c \wedge r \notin Announced \\
 \end{array}
 \end{displaymath}
 
@@ -213,96 +211,114 @@ formal proof.
 \section{Additional Considerations}
 
 \emph{Please ignore this section}
+\subsection{5011 Hack}
 
-\subsection{Urges}
+extra F state between O and S. Conditions $O\rightarrow S \equiv O\rightarrow F + F\rightarrow S$.
+O-F: set revoke bit. F-S: wait till bit propagated. 
 
-%~ minimize DS set
-%~ minimize RRSIG count
-%~ minimize RRSIG flux
+\section{Rollover Scenarios}
+
+The proposed state machine has no notion of rollover scenarios. It cares
+only about the validity of the zone in terms of DNSSEC. Stricly following
+the transition rules results in the fastest possible transition. It is
+however sometimes desired to do a slower rollover in favor of the size 
+of the data, traffic, computing power or external interaction. Current
+described rollover mechanisms can be described as a set of constraints
+on the previously mentioned quantities.
+
+Important to realize is that different rollover mechanisms do not need
+different rules. All operate within the boundries of DNSSEC validity
+which is descibed by our model. A rollover is nothing more than a
+requirement to do certain transitions in a pre defined order. To achieve
+that, selective brakes have to be applied on the system.
+
+\begin{description}
+\item [Minimize Parent Interactions]
+	Rolling to a new KSK requires the
+	submission of a new and withdrawing of an old DS record in the parent of
+	the deligation. Child-Parent interaction may be slow, performing
+	these two actions simultainiously could save time and efford.
+\item [Minimize Signatures]
+	Especially for large zones it may be 
+	desireable to prevent having more than one signature over each 
+	resource record set.
+\item [Minimize DNSKEY Set] TODO
+\end{description}
+
+On top of this one might want to prevent replacing all signatures at 
+once. A suddent transition may cause a peak load on the servers and can
+cause too much stress on the signer. This does not influence the 
+transition rules but rather the interpretation of the states in generating
+a signer configuration.
 
 \begin{itemize}
 \item[$MinSig$] The system tries to mimimize the number of concurrent
-signatures by pre and postpublishing the DNSKEY.
+signatures by waiting till the DNSKEY is $Omnipresent$. Effectively 
+pre and postpublishing the DNSKEY.
 \item[$MinFlux$] If set the mapping for 
 the signer configuration will allow a smooth transition between keys.
 $MinFlux \rightarrow MinSig$.
 \end{itemize}
 
-\subsubsection{Signer Configuration Mapping}
+\subsection{Signer Configuration Mapping}
 
-Doing smooth transitions (MinFlux) between two keys (i.e. not replace all 
-signatures at once) requires us to know how the signer interprets the
-configuration we feed it. 
-
+Doing smooth transitions (MinFlux) between two keys requires us to 
+know how the signer interprets the configuration we feed it. 
 In a normal situation the state of a record translates directly to 
-signer directives for that key. A DNSKEY being $Rumoured$ or $Omnipresent$
-is considered published; the signer will make the DNSKEY publuc. The
-same states for the RRSIG signal the signer to use the key for signing 
-(active).
-
-The smooth transition case an additional constraint on the signatures 
-is set. The goal of the key must be omnipresent.
+signer directives for that key. 
 
 \begin{equation}
-Published(k) \equiv R(Dnskey(k)) \vee O(Dnskey(k))
+Published(k) \equiv 
+\begin{array}{l}
+\hskip 0.0cm		(R(Dnskey(k)) \vee O(Dnskey(k))) \wedge \\
+\hskip 1.0cm		(zsk \not \in Roles(k) \vee \\
+\hskip 1.0cm		MinFlux \vee \\
+\hskip 1.0cm 		O(goal(k)) \vee \\
+\hskip 1.0cm 		\exists k' \not \in \mathbb{K} \cdot (\\
+\hskip 2 cm			O(Dnskey(k')) \wedge \\
+\hskip 2 cm			(O(Rrsig(k'))\vee R(Rrsig(k'))) \wedge\\
+\hskip 2 cm			O(Goal(k')) \wedge\\
+\hskip 2 cm			Alg(k)=Alg(k')   ))
+\end{array}
 \end{equation}
 
-%~ \begin{equation}
-%~ \begin{array}{l}
-%~ Active(k) \equiv ksk \in Roles(k) \wedge Published(k) \vee \\
-%~ \hskip 2cm 		zsk \in Roles(k) \wedge \\
-%~ \hskip 3cm		(R(Rrsig(k)) \vee \\
-%~ \hskip 3cm 		O(Rrsig(k)) \wedge \\
-%~ \hskip 4cm 			(MinFlux \rightarrow \\
-%~ \hskip 5cm 		O(goal(k)) \vee \\
-%~ \hskip 5cm 		\exists k' \not \in \mathbb{K} \cdot (\\
-%~ \hskip 6cm			k\neq k' \wedge \\
-%~ \hskip 6cm			O(Dnskey(k')) \wedge \\
-%~ \hskip 6cm			O(Rrsig(k')))))\\
-%~ \end{array}
-%~ \end{equation}
 \begin{equation}
 Active(k) \equiv 
 \begin{array}{l}
+\hskip 0.0cm		(R(Rrsig(k)) \vee O(Rrsig(k))) \wedge \\
 \hskip 0.0cm		zsk \in Roles(k) \wedge \\
-\hskip 0.0cm		(R(Rrsig(k)) \vee \\
-\hskip 0.5cm 		O(Rrsig(k)) \wedge \\
-\hskip 0.5cm 		(MinFlux \rightarrow \\
-\hskip 1.0cm 		O(goal(k)) \vee \\
+\hskip 1.0cm 		(O(goal(k)) \vee \\
 \hskip 1.0cm 		\exists k' \not \in \mathbb{K} \cdot (\\
-\hskip 1.5cm			k\neq k' \wedge \\
 \hskip 1.5cm			O(Dnskey(k')) \wedge \\
-\hskip 1.5cm			(O(Rrsig(k'))\vee R(Rrsig(k'))) )))
+\hskip 1.5cm			(O(Rrsig(k'))\vee R(Rrsig(k'))) \wedge\\
+\hskip 1.5cm			O(Goal(k')) \wedge\\
+\hskip 1.5cm			Alg(k)=Alg(k')   ))
 \end{array}
 \end{equation}
 
 
 
-\subsection{Omnipresent Sets of Keys}
-\label{redifined-propagated}
+%~ \subsection{Omnipresent Sets of Keys}
+%~ \label{redifined-propagated}
+%~ 
+%~ Our model defines the cache availablility for each key related resource
+%~ record. This intruduces a problem for the RRSG for a \emph{zsk} which
+%~ does not represent a single record but in fact a whole collection. 
+%~ In the simpelest situation signatures can be replaced by new signatures 
+%~ as an atomic operation. It is also valid however to sign a subset of
+%~ the data with one key and the rest with another key (possibly $n$ keys).
+%~ 
+%~ Partial signing with multiple keys is a valid situation and a 
+%~ feature of the current signer. This enables a smooth transition 
+%~ between keys, with as goal to spread out the workload for a signer. 
+%~ As enforcer we don't have information which record sets are signed 
+%~ with which key (because we don't want to have too much state). To 
+%~ support a smooth transition while ensuring we are maintaining a 
+%~ valid zone, we allow a set of keys to be 
+%~ responsible for signing. One of which should be in omnipresent state.
+%~ If a key is part of this set it can move to the Omnipresent state for 
+%~ free, but it adds a restriction for leaving that set.
 
-Our model defines the cache availablility for each key related resource
-record. This intruduces a problem for the RRSG for a \emph{zsk} which
-does not represent a single record but in fact a whole collection. 
-In the simpelest situation signatures can be replaced by new signatures 
-as an atomic operation. It is also valid however to sign a subset of
-the data with one key and the rest with another key (possibly $n$ keys).
-
-Partial signing with multiple keys is a valid situation and a 
-feature of the current signer. This enables a smooth transition 
-between keys, with as goal to spread out the workload for a signer. 
-As enforcer we don't have information which record sets are signed 
-with which key (because we don't want to have too much state). To 
-support a smooth transition while ensuring we are maintaining a 
-valid zone, we allow a set of keys to be 
-responsible for signing. One of which should be in omnipresent state.
-If a key is part of this set it can move to the Omnipresent state for 
-free, but it adds a restriction for leaving that set.
-
-\subsection{5011 Hack}
-
-extra F state between O and S. Conditions $O\rightarrow S \equiv O\rightarrow F + F\rightarrow S$.
-O-F: set revoke bit. F-S: wait till bit propagated. 
 
 \section{Transition Rules}
 
@@ -353,7 +369,7 @@ involving the $Ds$ state of a non-KSK key is always false.
 	
 	\begin{equation}
 		\begin{split}
-			H(Goal(k)) \vdash S(Ds(k))
+			H(Goal(k)) \vdash U(Ds(k))
 		\end{split}
 	\end{equation}
 
@@ -396,11 +412,11 @@ involving the $Ds$ state of a non-KSK key is always false.
 \hskip 2cm 						O(Dnskey(k'')) \wedge \\
 \hskip 2cm 						k'' \neq k))
 		\end{array}
-		\right\} \vdash [withdraw], S(Ds(k)) \\
+		\right\} \vdash [withdraw], U(Ds(k)) \\
 	\end{equation}
 }
 
-\subsubsection{$S(Ds(k))$}
+\subsubsection{$U(Ds(k))$}
 
 \mathbox{
 
@@ -454,7 +470,7 @@ be extra carefull about the type of key the record belongs to.
 	We can jump freely between uncertain states.
 	
 	\begin{equation}
-			H(Goal(k)) \vdash [withdraw], S(Dnskey(k))
+			H(Goal(k)) \vdash [withdraw], U(Dnskey(k))
 	\end{equation}
 
 	We did wait long enough to make sure the dnskey record is known in 
@@ -479,9 +495,12 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 			H(Goal(k)) \wedge \\
-\highlightMinSig{\hskip 0cm	(zsk \not \in Roles(k') \vee }\\
+\highlightMinSig{\hskip 0cm	(zsk \not \in Roles(k) \vee }\\
 \highlightMinSig{\hskip 1cm		\neg MinSig \vee }\\
-\highlightMinSig{\hskip 1cm		H(Rrsig(k)))} \wedge \\
+\highlightMinSig{\hskip 1cm		H(Rrsig(k)) \vee }\\
+\highlightMinSig{\hskip 1cm		\exists k' \not \in \mathbb{K} \cdot (}\\
+\highlightMinSig{\hskip 2cm		H(Rrsig(k')) \wedge }\\
+\highlightMinSig{\hskip 2cm		Alg(k) = Alg(k')))} \wedge \\
 
 \hskip 0cm	\forall k' \in \mathbb{K} \cdot (\\
 \hskip 1cm		(ksk \not \in Roles(k') \vee\\
@@ -502,11 +521,11 @@ be extra carefull about the type of key the record belongs to.
 \hskip 2cm			O(Dnskey(k'')) \wedge \\
 \hskip 2cm			O(Rrsig(k'')))))
 		\end{array}
-		\right\} \vdash [withdraw], S(Dnskey(k))
+		\right\} \vdash [withdraw], U(Dnskey(k))
 	\end{equation}
 }
 
-\subsubsection{$S(Dnskey(k))$}
+\subsubsection{$U(Dnskey(k))$}
 
 \mathbox{
 
@@ -531,16 +550,18 @@ be extra carefull about the type of key the record belongs to.
 	Signatures may be introduced at any possible time.
 
 	\begin{equation}
+		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
 \highlightMinSig{			(\neg MinSig \vee }\\
-\highlightMinSig{\hskip 1cm O(Dnskey(k))) }
+\highlightMinSig{\hskip 1cm 	O(Dnskey(k)) \vee } \\
+\highlightMinSig{\hskip 1cm 	\exists k' \not \in \mathbb{K} \cdot (}\\
+\highlightMinSig{\hskip 2cm 	O(Dnskey(k')) \wedge }\\ 
+\highlightMinSig{\hskip 2cm 	Alg(k) = Alg(k') ) ) }
 \vdash [submit], R(Rrsig(k))
 		\end{array}
+		\right\} \vdash U(Rrsig(k))
 	\end{equation}
-	%~ \begin{equation}
-			%~ O(Goal(k)) \vdash [submit], R(Rrsig(k))
-	%~ \end{equation}
 }
 
 \subsubsection{$R(Rrsig(k))$}
@@ -550,7 +571,7 @@ be extra carefull about the type of key the record belongs to.
 	We can jump freely between uncertain states.
 	
 	\begin{equation}
-		H(Goal(k)) \vdash [withdraw], S(Rrsig(k))
+		H(Goal(k)) \vdash [withdraw], U(Rrsig(k))
 	\end{equation}
 
 	Enough time passed to know for sure the signatures are propagated.
@@ -580,11 +601,11 @@ be extra carefull about the type of key the record belongs to.
 \hskip 2cm				O(Dnskey(k'))  \wedge\\
 \hskip 2cm				O(Rrsig(k'))))
 		\end{array}
-		\right\} \vdash S(Rrsig(k))
+		\right\} \vdash U(Rrsig(k))
 	\end{equation}
 }
 
-\subsubsection{$S(Rrsig(k))$}
+\subsubsection{$U(Rrsig(k))$}
 
 \mathbox{
 
