@@ -1,14 +1,22 @@
 digraph {
-    node [shape = doublecircle]; H;
+    node [shape = doublecircle];
+    H [pos = "+0.0, -1.5!"]; 
+
     node [shape = circle];
+    O [pos = "+0.0, +1.5!"]; 
+    R [pos = "+1.0, +0.0!"]; 
+    U [pos = "-1.0, +0.0!"]; 
+    
+    C [pos = "+2.0, +0.0!"]; 
+    P [pos = "-2.0, +0.0!"]; 
 
-    H->R;
-    R->O;
-    O->U;
-    U->H;
-
- //   O->F->U
-
-    R->U// [ style = "dotted" ];
-    U->R// [ style = "dotted" ];
+    H->{R C};
+    R->O [style = "dotted"];
+    R->U;
+    O->{U P};
+    U->H [style = "dotted"];
+    U->R;
+   
+    C->O [style = "dotted"];
+    P->H [style = "dotted"];
 }

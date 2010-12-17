@@ -78,8 +78,7 @@ goal \emph{X} we mean that it wants to move all its records to state
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{states.pdf}
-	\caption{State diagram for individual records. Dotted arrows 
-				represent transitions with timing constraints.}
+	\caption{State diagram for individual records.}
 	\label{fig:states}
 \end{figure}
 
@@ -90,21 +89,17 @@ in any cache (anymore). Similarly in the latter state we are sure
 all caches have a copy of the record or can at least obtain it (i.e. 
 they have no old unexpired resource record set).
 
-Two other states represent uncertainty: \emph{Rumoured} and \emph
+The two other states represent uncertainty: \emph{Rumoured} and \emph
 {Unretentive}. The separation is a bit artificial as they more or less 
 mean the same. Both represent that some caches do and some don't 
 know about the resource record. However, in our model actions (which 
 are observable by the outside world) are only taken on state 
 transitions. If the goal of a key changes while a record is in an 
 uncertain state the records reputation does not immediately change. We 
-however must explicitly tell the component responsible for 
+do however must explicitly tell the component responsible for 
 publishing the record to introduce or withdraw it. 
-
-The last two states \emph{Committed} and \emph
-{Postcommitted} are very simular to the other two uncertain states. A
-record in this state commits itself to stay there till the key is entirely
-propagated. In the figure this translates to the lack of transition to
-another uncertain state.
+%~ This transition 
+%~ is represented by the dashed arrow in Figure~\ref{fig:states}.
 
 Since DNS involves caches and TTLs, it is entirely possible for a 
 record being in the \emph{Rumoured} state while in fact every cache 
@@ -116,17 +111,13 @@ state.
 \paragraph{Summary.} A record is always in one of these four states:
 
 \begin{itemize}
-\item[\emph{Hidden}:] 		
+       \item[\emph{Hidden}:] 		
 			The record is in no cache at all.
-\item[\emph{Rumoured}:] 		
-			The record is published but not every cache might be aware.
-\item[\emph{Committed}:] 		
+       \item[\emph{Rumoured}:] 		
 			The record is published but not every cache might be aware.
 \item[\emph{Omnipresent}:]
 			Every cache has this record.
 \item[\emph{Unretentive}:]
-			The record is withdrawn but some caches might still have it.
-\item[\emph{Postcommitted}:]
 			The record is withdrawn but some caches might still have it.
 \end{itemize} 
 
@@ -138,10 +129,8 @@ the collection of all caches in the world. The states are defined by:
 \begin{array}{lllll}
        r\in Hidden      & \equiv & H(r) &=& \forall c \in \mathbb{C} \cdot r \not \in c \\
        r\in Rumoured    & \equiv & R(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r\in c \wedge r\in Announced\\
-       r\in Comitted    & \equiv & C(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r\in c \wedge r\in Announced\\
        r\in Omnipresent & \equiv & O(r) &=& \forall c \in \mathbb{C} \cdot r \in c \\
        r\in Unretentive    & \equiv & U(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r \in c \wedge r \notin Announced \\
-       r\in Postcommitted  & \equiv & P(r) &=& \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r \in c \wedge r \notin Announced \\
 \end{array}
 \end{displaymath}
 
@@ -160,8 +149,7 @@ records are in state \emph{Hidden}, the key may be removed from the
 keyring. Similar, if a key is in none of the keychains it could be
 purged from the keystore.
 
-\subsection{Key Properties}
-\label{sec:key_properties}
+\subsection{Key Operations}
 
 A key and its context can be described as a tuple of states $\langle 
 Ds,Dnskey,Rrsig\rangle$ for the resource records DS, DNSKEY and RRSIG.
@@ -182,12 +170,6 @@ We define the following operations on a key $k$:
 		$Dnskey(k) \wedge Rrsig(k) \equiv zsk \in Roles(k)$
 	\item[$Alg(k)$] Algorithm of key $k$ for which a transitive and 
 		commutative equivalence is defined.
-	\item[$MinDs(k)$] Boolean. If true, key will strive to keep the DS
-			set as small as possible.
-	\item[$MinDnskey(k)$] Boolean. If true, key will strive to keep the DNSKEY
-			set as small as possible.
-	\item[$MinRrsig(k)$] Boolean. If true, key will strive to keep the
-			signiture count low.
 \end{itemize}
 
 \section{DNSSEC Validity} \label{validity}
@@ -207,34 +189,22 @@ formal proof.
 
 \begin{equation}
 \begin{array}{l}
-Reliable(func, k) \equiv \\
-\hskip 1cm 		O(func(k)) \vee \\
-\hskip 2cm 			C(func(k)) \wedge \\
-\hskip 2cm 			\exists k' \in \mathbb{K} \cdot (\\
-\hskip 3cm 				P(func(k')) \wedge \\
-\hskip 3cm 				Alg(k)=Alg(k'))
-\end{array}
-\end{equation}
-
-\begin{equation}
-\begin{array}{l}
-Valid(\mathbb{K}) \equiv \\
-\hskip 1cm		\exists k \in \mathbb{K} \cdot ( O(Ds(k)) \vee C(Ds(k)) \wedge \exists k' \in \mathbb{K} \cdot P(Ds(k')))
-\hskip 0cm		\wedge \\
-\hskip 1cm		\forall k \in \mathbb{K} \cdot (\\
-\hskip 2cm			(H(Ds(k)) \vee \\
-\hskip 2cm			Reliable(Dnskey, k) \vee \\
-\hskip 2cm				\exists k' \in \mathbb{K} \cdot (\\
-\hskip 3cm				Alg(k) = Alg(k') \wedge \\
-\hskip 3cm				Reliable(Ds, k') \wedge \\
-\hskip 3cm				Reliable(Dnskey, k') )) \\
-\hskip 2cm			\wedge\\
-\hskip 2cm			(H(Dnskey(k)) \vee \\
-\hskip 2cm			Reliable(Rrsig, k) \vee \\
-\hskip 2cm			\exists k' \in \mathbb{K} \cdot (\\
-\hskip 3cm				Alg(k) = Alg(k') \wedge \\
-\hskip 3cm				Reliable(Dnskey, k') \wedge \\
-\hskip 3cm				Reliable(Rrsig, k') )))
+				\exists k \in \mathbb{K} \cdot O(Ds(k))
+				\wedge \\
+				\forall k \in \mathbb{K} \cdot (\\
+\hskip 1cm			(H(Ds(k)) \vee \\
+\hskip 1cm			O(Dnskey(k)) \vee \\
+\hskip 1cm				\exists k' \in \mathbb{K} \cdot (\\
+\hskip 2cm				Alg(k) = Alg(k') \wedge \\
+\hskip 2cm				O(Ds(k')) \wedge \\
+\hskip 2cm				O(Dnskey(k')) )) \\
+\hskip 1cm			\wedge\\
+\hskip 1cm			(H(Dnskey(k)) \vee \\
+\hskip 1cm			O(Rrsig(k)) \vee \\
+\hskip 1cm			\exists k' \in \mathbb{K} \cdot (\\
+\hskip 2cm				Alg(k) = Alg(k') \wedge \\
+\hskip 2cm				O(Dnskey(k')) \wedge \\
+\hskip 2cm				O(Rrsig(k')) )))
 \end{array}
 \end{equation}
 
@@ -271,29 +241,84 @@ that, selective brakes have to be applied on the system.
 \item [Minimize Signatures]
 	Especially for large zones it may be 
 	desireable to prevent having more than one signature over each 
-	resource record set. Also this allows the signer to do a smooth
-	signature transition.
-\item [Minimize DNSKEY Set] Since keys can get rather large one might
-	want to limit the size of this set.
+	resource record set.
+\item [Minimize DNSKEY Set] TODO
 \end{description}
 
 On top of this one might want to prevent replacing all signatures at 
 once. A suddent transition may cause a peak load on the servers and can
-cause too much stress on the signer. 
+cause too much stress on the signer. This does not influence the 
+transition rules but rather the interpretation of the states in generating
+a signer configuration.
 
-These `brakes' are defined for each individual key, as defined in 
-Section~\ref{sec:key_properties}. So one key can have the $MinRrsig$ 
-property while another keys does not. The big advantage is that a 
-policy rollover does not introduce additional complications. 
-
-
+\begin{itemize}
+\item[$MinSig$] The system tries to mimimize the number of concurrent
+signatures by waiting till the DNSKEY is $Omnipresent$. Effectively 
+pre and postpublishing the DNSKEY.
+\item[$MinFlux$] If set the mapping for 
+the signer configuration will allow a smooth transition between keys.
+$MinFlux \rightarrow MinSig$.
+\end{itemize}
 
 \subsection{Signer Configuration Mapping}
 
-\begin{eqnarray}
-Published(k) &\equiv & R(Dnskey(k)) \vee C(Dnskey(k)) \vee O(Dnskey(k)) \\
-Active(k) &\equiv & R(Rrsig(k)) \vee C(Rrsig(k)) \vee O(Rrsig(k))
-\end{eqnarray}
+Doing smooth transitions (MinFlux) between two keys requires us to 
+know how the signer interprets the configuration we feed it. 
+In a normal situation the state of a record translates directly to 
+signer directives for that key. 
+
+\begin{equation}
+Published(k) \equiv 
+\begin{array}{l}
+\hskip 0.0cm		(R(Dnskey(k)) \vee O(Dnskey(k))) \wedge \\
+\hskip 1.0cm		(zsk \not \in Roles(k) \vee \\
+\hskip 1.0cm		MinFlux \vee \\
+\hskip 1.0cm 		O(goal(k)) \vee \\
+\hskip 1.0cm 		\exists k' \not \in \mathbb{K} \cdot (\\
+\hskip 2 cm			O(Dnskey(k')) \wedge \\
+\hskip 2 cm			(O(Rrsig(k'))\vee R(Rrsig(k'))) \wedge\\
+\hskip 2 cm			O(Goal(k')) \wedge\\
+\hskip 2 cm			Alg(k)=Alg(k')   ))
+\end{array}
+\end{equation}
+
+\begin{equation}
+Active(k) \equiv 
+\begin{array}{l}
+\hskip 0.0cm		(R(Rrsig(k)) \vee O(Rrsig(k))) \wedge \\
+\hskip 0.0cm		zsk \in Roles(k) \wedge \\
+\hskip 1.0cm 		(O(goal(k)) \vee \\
+\hskip 1.0cm 		\exists k' \not \in \mathbb{K} \cdot (\\
+\hskip 1.5cm			O(Dnskey(k')) \wedge \\
+\hskip 1.5cm			(O(Rrsig(k'))\vee R(Rrsig(k'))) \wedge\\
+\hskip 1.5cm			O(Goal(k')) \wedge\\
+\hskip 1.5cm			Alg(k)=Alg(k')   ))
+\end{array}
+\end{equation}
+
+
+
+%~ \subsection{Omnipresent Sets of Keys}
+%~ \label{redifined-propagated}
+%~ 
+%~ Our model defines the cache availablility for each key related resource
+%~ record. This intruduces a problem for the RRSG for a \emph{zsk} which
+%~ does not represent a single record but in fact a whole collection. 
+%~ In the simpelest situation signatures can be replaced by new signatures 
+%~ as an atomic operation. It is also valid however to sign a subset of
+%~ the data with one key and the rest with another key (possibly $n$ keys).
+%~ 
+%~ Partial signing with multiple keys is a valid situation and a 
+%~ feature of the current signer. This enables a smooth transition 
+%~ between keys, with as goal to spread out the workload for a signer. 
+%~ As enforcer we don't have information which record sets are signed 
+%~ with which key (because we don't want to have too much state). To 
+%~ support a smooth transition while ensuring we are maintaining a 
+%~ valid zone, we allow a set of keys to be 
+%~ responsible for signing. One of which should be in omnipresent state.
+%~ If a key is part of this set it can move to the Omnipresent state for 
+%~ free, but it adds a restriction for leaving that set.
+
 
 \section{Transition Rules}
 
@@ -314,7 +339,7 @@ involving the $Ds$ state of a non-KSK key is always false.
 
 
 
-\mathbox{
+%~ \mathbox{
 	
 	The DS record is hidden, available in no cache whatsoever.
 	Before submitting either the DNSKEY must be propagated or an other 
@@ -324,27 +349,15 @@ involving the $Ds$ state of a non-KSK key is always false.
 		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
-\highlightMinSig{			\neg MinDs(k) \wedge }\\
 \hskip 1cm		(O(Dnskey(k)) \vee \\
 \hskip 1cm		\exists k' \in \mathbb{K} \cdot ( \\
 \hskip 2cm			Alg(k)=Alg(k') \wedge \\
-\hskip 2cm			Reliable(Ds, k') \wedge \\
-\hskip 2cm			Reliable(Dnskey, k')))
+\hskip 2cm			O(Ds(k')) \wedge \\
+\hskip 2cm			O(Dnskey(k'))))
 		\end{array}
 		\right\}\vdash [submit], R(Ds(k)) 
 	\end{equation}
-\highlightMinSig{
-	\begin{equation}
-		\left.
-		\begin{array}{l}
-			O(Goal(k)) \wedge \\
-			MinDs(k) \wedge \\
-			O(Dnskey(k))
-		\end{array}
-		\right\}\vdash C(Ds(k))
-	\end{equation}
-	}
-}
+%~ }
 
 \subsubsection{$R(Ds(k))$}
 
@@ -375,62 +388,32 @@ involving the $Ds$ state of a non-KSK key is always false.
 	\end{equation}
 }
 
-\subsubsection{$C(Ds(k))$}
-
-\highlightMinSig{	\begin{equation}
-		\left.
-		\begin{array}{l}
-			Confirmed(k_{ds}) \wedge \\
-			T_{now} \geq T_{whatever}
-		\end{array}
-		\right\}\vdash O(Ds(k))
-	\end{equation}}
-
-
 \subsubsection{$O(Ds(k))$}
 
 \mathbox{
 
 	We may withdraw a DS record if there is another valid chain and
 	we do not risk breaking another chain of the same algorithm.
-\highlightMinSig{
-	\begin{equation}
-		\left.
-		\begin{array}{l}
-\hskip 0cm				H(Goal(k)) \wedge \\
-\hskip 0cm				O(Dnskey(k)) \wedge \\
-\hskip 0cm				\exists k' \in \mathbb{K} \cdot C(Ds(k'))\\
-		\end{array}
-		\right\} \vdash [withdraw], P(Ds(k)) \\
-	\end{equation}
-	}
+
 	\begin{equation}
 		\left.
 		\begin{array}{l}
 \hskip 0cm			H(Goal(k)) \wedge \\
-\highlightMinSig{\hskip 0cm			\neg P(Dnskey(k)) \wedge }\\
 \hskip 0cm			\exists k' \in \mathbb{K} \cdot (\\
 \hskip 1cm				k' \neq k \wedge \\
 \hskip 1cm				O(Ds(k'))) \wedge \\
 \hskip 0cm				\forall k' \in \mathbb{K} \cdot ( \\
 \hskip 1cm					Alg(k) \neq Alg(k') \vee \\
 \hskip 1cm					H(Ds(k')) \vee \\
-\hskip 1cm					Reliable(Dnskey, k') \vee \\
+\hskip 1cm					O(Dnskey(k')) \vee \\
 \hskip 1cm					\exists k'' \in \mathbb{K} \cdot (\\
 \hskip 2cm 						Alg(k'')=Alg(k') \wedge \\
-\hskip 2cm 						Reliable(Ds, k'') \wedge \\
-\hskip 2cm 						Reliable(Dnskey, k'') \wedge \\
+\hskip 2cm 						O(Ds(k'')) \wedge \\
+\hskip 2cm 						O(Dnskey(k'')) \wedge \\
 \hskip 2cm 						k'' \neq k))
 		\end{array}
 		\right\} \vdash [withdraw], U(Ds(k)) \\
 	\end{equation}
-}
-
-\subsubsection{$P(Ds(k))$}
-\highlightMinSig{
-\begin{equation}
-		T_{now} \geq T_{whatever} \vdash H(Ds(k))
-\end{equation}
 }
 
 \subsubsection{$U(Ds(k))$}
@@ -465,28 +448,16 @@ be extra carefull about the type of key the record belongs to.
 	A KSK can only introduce a DNSKEY record if there is a ZSK of the
 	same algorithm ready. A ZSK may additionally introduce it if its 
 	RRSIG is $Omnipresent$.
-\highlightMinSig{
+
 	\begin{equation}
 		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
-			MinDnskey(k) \wedge \\
-			(ksk \not \in Roles(k) \vee O(Ds(k))) \wedge \\
-			(zsk \not \in Roles(k) \vee O(Rrsig(k)))
-		\end{array}
-		\right\} \vdash [submit], C(Dnskey(k))
-	\end{equation}
-}
-	\begin{equation}
-		\left.
-		\begin{array}{l}
-			O(Goal(k)) \wedge \\
-\highlightMinSig{			\neg MinDnskey(k) \wedge }\\
-\hskip 1cm	(Reliable(Rrsig, k) \vee \\
+\hskip 1cm	(O(Rrsig(k)) \vee \\
 \hskip 1cm	\exists k' \in \mathbb{K} \cdot ( \\
 \hskip 2cm		Alg(k)=Alg(k') \wedge \\
-\hskip 2cm		Reliable(Dnskey, k) \wedge \\
-\hskip 2cm		Reliable(Rrsig, k)))\\
+\hskip 2cm		O(Dnskey(k)) \wedge \\
+\hskip 2cm		O(Rrsig(k))))\\
 		\end{array}
 		\right\} \vdash [submit], R(Dnskey(k))
 	\end{equation}
@@ -512,34 +483,9 @@ be extra carefull about the type of key the record belongs to.
 	\end{equation}
 }
 
-\subsubsection{$C(Dnskey(k))$}
-\highlightMinSig{
-	\begin{equation}
-		\begin{split}
-			 T_{now} \geq T_{whatever} \vdash O(Dnskey(k))
-		\end{split}
-	\end{equation}
-}
-
 \subsubsection{$O(Dnskey(k))$}
 
 \mathbox{
-
-\highlightMinSig{
-	\begin{equation}
-		\left.
-		\begin{array}{l}
-\hskip 0cm				H(Goal(k)) \wedge \\
-\hskip 0cm				O(Ds(k)) \wedge \\
-\hskip 0cm				O(Rrsig(k)) \wedge \\
-\hskip 0cm				\exists k' \in \mathbb{K} \cdot (\\
-\hskip 1cm					C(Dnskey(k')) \wedge \\
-\hskip 1cm					Alg(k)=Alg(k') \wedge \\
-\hskip 1cm					Roles(k) = Roles(k'))\\
-		\end{array}
-		\right\} \vdash [withdraw], P(Ds(k)) \\
-	\end{equation}
-	}
 
 	If not part of a chain, withdraw. If there is still a DS make sure 
 	there is some other valid chain for this algorithm. If none for 
@@ -549,34 +495,31 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 			H(Goal(k)) \wedge \\
-%~ \highlightMinSig{\hskip 0cm	(zsk \not \in Roles(k) \vee }\\
-%~ \highlightMinSig{\hskip 1cm		\neg MinSig \vee }\\
-%~ \highlightMinSig{\hskip 1cm		H(Rrsig(k)) \vee }\\
-%~ \highlightMinSig{\hskip 1cm		\exists k' \not \in \mathbb{K} \cdot (}\\
-%~ \highlightMinSig{\hskip 2cm		H(Rrsig(k')) \wedge }\\
-%~ \highlightMinSig{\hskip 2cm		Alg(k) = Alg(k')))} \wedge \\
-
-\highlightMinSig{P(Ds(k)) \wedge }\\
-\highlightMinSig{P(Rrsig(k)) \wedge }\\
+\highlightMinSig{\hskip 0cm	(zsk \not \in Roles(k) \vee }\\
+\highlightMinSig{\hskip 1cm		\neg MinSig \vee }\\
+\highlightMinSig{\hskip 1cm		H(Rrsig(k)) \vee }\\
+\highlightMinSig{\hskip 1cm		\exists k' \not \in \mathbb{K} \cdot (}\\
+\highlightMinSig{\hskip 2cm		H(Rrsig(k')) \wedge }\\
+\highlightMinSig{\hskip 2cm		Alg(k) = Alg(k')))} \wedge \\
 
 \hskip 0cm	\forall k' \in \mathbb{K} \cdot (\\
 \hskip 1cm		(ksk \not \in Roles(k') \vee\\
 \hskip 1cm		H(Ds(k')) \vee \\
-\hskip 1cm		(Reliable(Dnskey, k') \wedge \\
+\hskip 1cm		(O(Dnskey(k')) \wedge \\
 \hskip 2cm			k \neq k') \vee \\
 \hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
 \hskip 2cm			k \neq k'' \wedge \\
 \hskip 2cm			Alg(k')=Alg(k'') \wedge \\
-\hskip 2cm			Reliable(Ds, k'') \wedge \\
-\hskip 2cm			Reliable(Dnskey, k''))) \\
+\hskip 2cm			O(Ds(k'')) \wedge \\
+\hskip 2cm			O(Dnskey(k'')))) \\
 \hskip 1cm		\wedge \\
 \hskip 1cm		(H(Dnskey(k')) \vee \\
-\hskip 1cm		Reliable(Rrsig, k'))  \vee \\
+\hskip 1cm		O(Rrsig(k'))  \vee \\
 \hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
 \hskip 2cm			k \neq k'' \wedge \\
 \hskip 2cm			Alg(k')=Alg(k'') \wedge \\
-\hskip 2cm			Reliable(Dnskey, k'') \wedge \\
-\hskip 2cm			Reliable(Rrsig, k''))))
+\hskip 2cm			O(Dnskey(k'')) \wedge \\
+\hskip 2cm			O(Rrsig(k'')))))
 		\end{array}
 		\right\} \vdash [withdraw], U(Dnskey(k))
 	\end{equation}
@@ -599,17 +542,6 @@ be extra carefull about the type of key the record belongs to.
 	\end{equation}
 }
 
-\subsubsection{$P(Dnskey(k))$}
-
-\mathbox{
-
-\highlightMinSig{
-	\begin{equation}
-			T_{now} \geq T_{whatever} \vdash H(Dnskey(k))
-	\end{equation}
-	}
-}
-
 \subsection{Transition rules for $Rrsig(k)$}
 
 \subsubsection{$H(Rrsig(k))$}
@@ -621,25 +553,15 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
-\highlightMinSig{	(\neg MinSig(k) \vee }\\
-\highlightMinSig{\hskip 1cm	\exists k' \not \in \mathbb{K}\cdot (}\\
-\highlightMinSig{\hskip 2cm		Alg(k)=Alg(k') \wedge }\\
-\highlightMinSig{\hskip 2cm		Reliable(Rrsig, k'))) }\\
+\highlightMinSig{			(\neg MinSig \vee }\\
+\highlightMinSig{\hskip 1cm 	O(Dnskey(k)) \vee } \\
+\highlightMinSig{\hskip 1cm 	\exists k' \not \in \mathbb{K} \cdot (}\\
+\highlightMinSig{\hskip 2cm 	O(Dnskey(k')) \wedge }\\ 
+\highlightMinSig{\hskip 2cm 	Alg(k) = Alg(k') ) ) }
+\vdash [submit], R(Rrsig(k))
 		\end{array}
-		\right\} \vdash [submit], R(Rrsig(k))
+		\right\} \vdash U(Rrsig(k))
 	\end{equation}
-
-\highlightMinSig{
-	\begin{equation}
-		\left.
-		\begin{array}{l}
-			O(Goal(k)) \wedge \\
-			MinSig(k) \wedge \\
-			O(Dnskey(k)) \\
-		\end{array}
-		\right\} \vdash C(Rrsig(k))
-	\end{equation}
-	}
 }
 
 \subsubsection{$R(Rrsig(k))$}
@@ -660,30 +582,9 @@ be extra carefull about the type of key the record belongs to.
 }
 
 
-\subsubsection{$C(Rrsig(k))$}
-\highlightMinSig{
-	\begin{equation}
-		T_{now} \geq T_{whatever} \vdash O(Rrsig(k))
-	\end{equation}
-}
-
 \subsubsection{$O(Rrsig(k))$}
 
 \mathbox{
-
-\highlightMinSig{
-	\begin{equation}
-		\left.
-		\begin{array}{l}
-\hskip 0cm				H(Goal(k)) \wedge \\
-\hskip 0cm				O(Dnskey(k)) \wedge \\
-\hskip 0cm				\exists k' \in \mathbb{K} \cdot (\\
-\hskip 1cm					C(Rrsig(k')) \wedge \\
-\hskip 1cm					Alg(k)=Alg(k'))\\
-		\end{array}
-		\right\} \vdash [withdraw], P(Ds(k)) \\
-	\end{equation}
-	}
 
 	If the dnskey is gone from all caches can we withdraw the 
 	signatures safely. In any other case a fully propagated ZSK will 
@@ -693,13 +594,12 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 \hskip 0cm			H(Goal(k)) \wedge  \\
-\highlightMinSig{\hskip 0cm			\neg P(Dnskey(k)) \wedge  }\\
 \hskip 1cm			(H(Dnskey(k)) \vee \\
 \hskip 1cm			\exists k' \in \mathbb{K} \cdot ( \\
 \hskip 2cm				k' \not = k  \wedge\\
 \hskip 2cm				Alg(k) = Alg(k')  \wedge\\
-\hskip 2cm				Reliable(Dnskey, k')  \wedge\\
-\hskip 2cm				Reliable(Rrsig, k')))
+\hskip 2cm				O(Dnskey(k'))  \wedge\\
+\hskip 2cm				O(Rrsig(k'))))
 		\end{array}
 		\right\} \vdash U(Rrsig(k))
 	\end{equation}
@@ -723,13 +623,4 @@ be extra carefull about the type of key the record belongs to.
 	\end{equation}
 }
 
-\subsubsection{$P(Rrsig(k))$}
-
-Please note that the timing depends on smooth transition.
-
-\highlightMinSig{
-	\begin{equation}
-		T_{now} \geq T_{whatever} \vdash H(Rrsig(k))
-	\end{equation}
-}
 \end{document}

@@ -1,0 +1,14 @@
+digraph {
+    node [shape = doublecircle]; H;
+    node [shape = circle];
+
+    H->R;
+    R->O;
+    O->U;
+    U->H;
+
+ //   O->F->U
+
+    R->U// [ style = "dotted" ];
+    U->R// [ style = "dotted" ];
+}
