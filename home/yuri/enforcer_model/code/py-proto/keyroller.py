@@ -162,7 +162,7 @@ def proc_ds(kc, k, ds_record, now):
             if not P(dnskey(k)) and \
                 exists(kc, lambda l: 
                     k!=l and
-                    O(ds(l))) and \
+                    (O(ds(l)) or C(ds(l)) and exists(kc, lambda m: P(ds(m))))) and \
                 forall(kc, lambda x: True, lambda l:
                     alg(k) != alg(l) or
                     H(ds(l)) or
@@ -194,6 +194,7 @@ def proc_dnskey(kc, k, dnskey_record, now):
                 if (not "ksk" in roles(k) or O(ds(k))) and \
                 (not "zsk" in roles(k) or O(rrsig(k))):
                     return COMMITTED
+            #~ if not mindnskey(k):
             if not mindnskey(k) or not exists(kc, lambda l: alg(l)==alg(k) and reliable(dnskey, l, kc) and "ksk" in roles(l)):
                 if O(rrsig(k)):
                     return RUMOURED
@@ -418,7 +419,7 @@ kc = set()
 kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
 kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN, False, True, False))
 kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
-kc.add(Key("ZSK1", 2, set(["zsk"]), OMNIPRESENT, OMNIPRESENT))
+kc.add(Key("ZSK1", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
 enforce(kc)
 
 #~ #### zsk,ksk  to csk roll

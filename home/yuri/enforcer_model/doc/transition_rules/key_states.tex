@@ -408,10 +408,12 @@ involving the $Ds$ state of a non-KSK key is always false.
 		\left.
 		\begin{array}{l}
 \hskip 0cm			H(Goal(k)) \wedge \\
-\highlightMinSig{\hskip 0cm			\neg P(Dnskey(k)) \wedge }\\
+\highlightMinSig{\hskip 0cm		\neg P(Dnskey(k)) \wedge }\\
 \hskip 0cm			\exists k' \in \mathbb{K} \cdot (\\
 \hskip 1cm				k' \neq k \wedge \\
-\hskip 1cm				O(Ds(k'))) \wedge \\
+\hskip 1cm				(O(Ds(k'))\vee \\
+\hskip 2cm					C(Ds(k')) \wedge \\
+\hskip 2cm					\exists k'' \in \mathbb{K}\cdot P(Ds(k'')))) \wedge \\
 \hskip 0cm				\forall k' \in \mathbb{K} \cdot ( \\
 \hskip 1cm					Alg(k) \neq Alg(k') \vee \\
 \hskip 1cm					H(Ds(k')) \vee \\
@@ -481,8 +483,12 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
-\highlightMinSig{			\neg MinDnskey(k) \wedge }\\
-\hskip 1cm	(Reliable(Rrsig, k) \vee \\
+\highlightMinSig{			(\neg MinDnskey(k) \vee}\\
+\highlightMinSig{\hskip 1cm \exists k' \not \in \mathbb{K} \cdot (}\\
+\highlightMinSig{\hskip 2cm	Alg(k)=Alg(k') \wedge}\\
+\highlightMinSig{\hskip 2cm	Reliable(dnskey, k') \wedge }\\
+\highlightMinSig{\hskip 2cm	ksk \in Roles(k'))) \wedge }\\
+\hskip 0cm	(Reliable(Rrsig, k) \vee \\
 \hskip 1cm	\exists k' \in \mathbb{K} \cdot ( \\
 \hskip 2cm		Alg(k)=Alg(k') \wedge \\
 \hskip 2cm		Reliable(Dnskey, k) \wedge \\
