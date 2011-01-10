@@ -1,0 +1,6 @@
+#!/bin/bash
+./docgen wbd-enforcer-0.lua > wbd-enforcer-0.tex
+pdflatex wbd-enforcer-0.tex
+pdflatex wbd-enforcer-0.tex
+pdflatex wbd-enforcer-0.tex
+

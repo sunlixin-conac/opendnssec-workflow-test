@@ -1,0 +1,73 @@
+digraph enforcer {
+	splines=ortho
+	graph [rankdir=TB ranksep=1.0 nodesep=0.25]
+	node [shape=box]
+	subgraph{
+		rank="same"
+		"daemon"
+	}
+	"cmdhandler"
+	"workflowhandler"
+	subgraph cluster_1 {
+		"confighandler"
+		"configreader"
+		"hsmpersistence"
+		"config"
+	}
+	subgraph cluster_2 {
+		"policyhandler"
+		"policyreader"
+		"policypersistence"
+		"policy"
+	}
+	subgraph cluster_3 {
+		"zonehandler"
+		"zonereader"
+		"zonepersistence"
+		"zone"
+	}
+	subgraph cluster_4 {
+		"keystateenforcer"
+		"keygenerator"
+		"keystatepersistence"
+		"keystate"
+		"signerconfigwriter"
+		"signerconfig"
+	}
+	subgraph cluster_5 {
+		"audittraillogger"
+ 		"audittrailpersistence"
+		"audittrail"
+	}
+	subgraph {
+		rank="same"
+		"datapersistence"
+	}
+	"datadefinition"
+	//edge [dir=back arrowtail=tee concentrate=true constraint=false]
+	
+	// Draw the edges we care about
+	"daemon"->"cmdhandler"
+	"cmdhandler"->{"confighandler" "policyhandler" "zonehandler" "workflowhandler"}
+	"workflowhandler"->{"hsmpersistence" "zonepersistence" "policypersistence" "keystatepersistence" "audittraillogger" "keystateenforcer"}
+	"confighandler"->{"configreader" "hsmpersistence"}
+	"policyhandler"->{"policyreader" "policypersistence"}
+	"zonehandler"->{"zonereader" "zonepersistence"}
+
+	"configreader"->"config"
+	"policyreader"->"policy"
+	"zonereader"->"zone"
+
+	"keygenerator"->"keystate"
+	"keystateenforcer"-> { "keystate" "keygenerator" "signerconfigwriter" "audittraillogger" }
+	"signerconfigwriter"->"signerconfig"
+	audittraillogger->"audittrailpersistence"
+	
+	"hsmpersistence"->{"config" "datapersistence"}
+	"policypersistence"->{"policy" "datapersistence"}
+	"zonepersistence"->{"zone" "datapersistence"}
+	"keystatepersistence"->{"keystate" "datapersistence"}
+	"audittrailpersistence"->{"audittrail" "datapersistence"}
+
+	"datapersistence"->"datadefinition"
+}

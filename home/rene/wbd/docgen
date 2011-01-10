@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "emit_doc_start();dofile(arg[1]);emit_work_overview();emit_doc_end()" | lua -lscheme.docgen - $1
+
