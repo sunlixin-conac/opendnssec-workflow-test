@@ -3,7 +3,6 @@
  *  lua
  *
  *  Created by René Post on 12/9/10.
- *  Copyright 2010 xpt Software & Consulting B.V. All rights reserved.
  *
 --]]
 
