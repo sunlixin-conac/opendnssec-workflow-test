@@ -14,6 +14,7 @@ CONFIGURE_ARGS = \
 	--with-pkcs11-softhsm=$(PREFIX)/lib/libsofthsm.so \
 	--with-pkcs11-etoken=/usr/local/lib/libeTPkcs11.dylib \
 	--with-pkcs11-opensc=/Library/OpenSC/lib/pkcs11/opensc-pkcs11.so \
+	--disable-auditor \
 	--enable-timeshift \
 	--enable-eppclient
 
