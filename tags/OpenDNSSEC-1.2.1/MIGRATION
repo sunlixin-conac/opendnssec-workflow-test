@@ -1,0 +1,43 @@
+$Id$
+
+This file gives you instructions on how to migrate from one version of
+OpenDNSSEC to another.
+
+
+*** Migrating from v1.1 to v1.2 ***
+
+  There is a kasp schema change from the 1.1 branch (or trunk if you built
+  prior to r3823). To make this transition you have 2 options:
+
+  1) Run ods-ksmutil setup again. This will remove _all_ the current
+  information from the kasp database and start you off again with a fresh
+  environment.
+
+  If that is not an option, or you want to try something else then:
+
+  2) run one of the migration scripts
+        enforcer/utils/migrate_keyshare_mysql.pl
+  or
+        enforcer/utils/migrate_keyshare_sqlite3.pl
+  depending on your database.
+
+  NOTE: Although these scripts have been tested it is recommended to make a
+        backup of your database prior to running them.
+
+
+*** Migrating to a larger keypairs(id) field (MySQL ONLY) ***
+
+  The version of the MySQL database that was created with v1.2 (and prior to
+  svn r4465) had a smallint datatype for the keypairs(id) field. This limits
+  the number of keys that the system can store to 32767.
+
+  If this number is not large enough then the script:
+
+  enforcer/utils/migrate_id_mysql.pl
+
+  will increase it to an int, which can store 2147483647 keys.
+
+  NOTES: Although this scripts have been tested it is recommended to make a
+         backup of your database prior to running them.
+
+		 This issue only applies to MySQL backends.
