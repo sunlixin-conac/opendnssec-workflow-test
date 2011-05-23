@@ -1,0 +1,1163 @@
+Apr  5 17:09:41 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:09:44 DEVELOPER15 hsmutil[3090]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:10:03 DEVELOPER15 hsmutil[3090]: last message repeated 7 times
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3119
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: could not find key b5e40e2c9c9bddeb084565d01f159f0a
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: error creating DNSKEY for key b5e40e2c9c9bddeb084565d01f159f0a
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: could not find key 7cdd3a85ee7373a4ff4eb8a902d4fbd8
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: error creating DNSKEY for key 7cdd3a85ee7373a4ff4eb8a902d4fbd8
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:10:03 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:10:03 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 5e24e37ccf379dc43b775a007ec5825c in repository: SoftHSM and database.
+Apr  5 17:10:04 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:10:04 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:10:04 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: b8b7439b93ef0b89550b048ec993fc40 in repository: SoftHSM and database.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: c7f30257ca9fd243b5f308e439b73bf4 in repository: SoftHSM and database.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 38caebdaac68067bc9d9ff90fc6cf3e2 in repository: SoftHSM and database.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: WARNING: Making non-backed up ZSK active, PLEASE make sure that you know the potential problems of using keys which are not recoverable
+Apr  5 17:10:05 DEVELOPER15 ods-signerd: cmdhandler: updating signer configuration (ods)
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:10:05 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:10:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:10:06 DEVELOPER15 ods-enforcerd: WARNING: Making non-backed up ZSK active, PLEASE make sure that you know the potential problems of using keys which are not recoverable
+Apr  5 17:10:06 DEVELOPER15 ods-signerd: cmdhandler: updating signer configuration (odszc10t10.nl)
+Apr  5 17:10:06 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:10:06 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:10:06 DEVELOPER15 ods-auditor[3159]: Auditor started
+Apr  5 17:10:06 DEVELOPER15 ods-auditor[3159]: Auditor starting on ods
+Apr  5 17:10:06 DEVELOPER15 ods-auditor[3159]: Auditing ods zone : NSEC3 SIGNED
+Apr  5 17:10:06 DEVELOPER15 ods-auditor[3168]: Auditor started
+Apr  5 17:10:06 DEVELOPER15 ods-auditor[3168]: Auditor starting on odszc10t10.nl
+Apr  5 17:10:06 DEVELOPER15 ods-auditor[3168]: Auditing odszc10t10.nl zone : NSEC3 SIGNED
+Apr  5 17:10:06 DEVELOPER15 ods-auditor[3168]: SOA differs : from 1000 to 1302016206
+Apr  5 17:10:06 DEVELOPER15 ods-auditor[3168]: Finished auditing odszc10t10.nl zone
+Apr  5 17:10:06 DEVELOPER15 ods-signerd: [STATS] odszc10t10.nl RR[count=3 time=0(sec)] NSEC3[count=1 time=0(sec)] RRSIG[new=6 reused=0 time=0(sec) avg=0(sig/sec)] AUDIT[time=0(sec)] TOTAL[time=0(sec)] 
+Apr  5 17:10:07 DEVELOPER15 ods-auditor[3159]: SOA differs : from 1000 to 1302016205
+Apr  5 17:10:07 DEVELOPER15 ods-auditor[3159]: Finished auditing ods zone
+Apr  5 17:10:07 DEVELOPER15 ods-signerd: [STATS] ods RR[count=263 time=0(sec)] NSEC3[count=24 time=0(sec)] RRSIG[new=52 reused=0 time=1(sec) avg=52(sig/sec)] AUDIT[time=1(sec)] TOTAL[time=2(sec)] 
+Apr  5 17:10:13 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:10:13 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:10:14 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:10:25 DEVELOPER15 hsmutil[3212]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:10:32 DEVELOPER15 hsmutil[3212]: last message repeated 7 times
+Apr  5 17:10:32 DEVELOPER15 ods-kaspcheck[3225]: Module /usr/lib/libCryptoki2_64.so in Repository HSM-HA cannot be found
+Apr  5 17:10:48 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:10:48 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:10:48 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:10:48 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3234
+Apr  5 17:10:48 DEVELOPER15 ods-enforcerd: hsm_session_init(): Incorrect PIN for repository SoftHSM2
+Apr  5 17:10:53 DEVELOPER15 ods-signerd: setup failed: error initializing libhsm (errno 268435458)
+Apr  5 17:10:53 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:10:53 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:11:41 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:11:41 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:11:41 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:11:41 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3307
+Apr  5 17:11:41 DEVELOPER15 ods-enforcerd: hsm_session_init(): PKCS#11 module load failed: 
+Apr  5 17:11:46 DEVELOPER15 ods-signerd: setup failed: error initializing libhsm (errno 268435462)
+Apr  5 17:11:46 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:11:46 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:12:18 DEVELOPER15 ods-kaspcheck[3369]: Module /usr/libsofthsm.so in Repository SoftHSM cannot be found
+Apr  5 17:12:34 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:12:34 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:12:34 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:12:34 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3377
+Apr  5 17:12:34 DEVELOPER15 ods-enforcerd: hsm_session_init(): PKCS#11 module load failed: /usr/libsofthsm.so
+Apr  5 17:12:39 DEVELOPER15 ods-signerd: setup failed: error initializing libhsm (errno 268435462)
+Apr  5 17:12:39 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:12:39 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:13:28 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:13:28 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:13:28 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:13:28 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3449
+Apr  5 17:13:28 DEVELOPER15 ods-enforcerd: hsm_get_slot_id(): could not find token with the name S
+Apr  5 17:13:33 DEVELOPER15 ods-signerd: setup failed: error initializing libhsm (errno 268435457)
+Apr  5 17:13:33 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:13:33 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:14:52 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:14:52 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:14:52 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:14:52 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3537
+Apr  5 17:14:52 DEVELOPER15 ods-enforcerd: hsm_get_slot_id(): could not find token with the name #012SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM
+Apr  5 17:14:57 DEVELOPER15 ods-signerd: setup failed: error initializing libhsm (errno 268435457)
+Apr  5 17:14:57 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:14:57 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:16:00 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:16:00 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:16:00 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:16:00 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3622
+Apr  5 17:16:00 DEVELOPER15 ods-enforcerd: hsm_session_init(): Incorrect PIN for repository SoftHSM
+Apr  5 17:16:06 DEVELOPER15 ods-signerd: setup failed: error initializing libhsm (errno 268435458)
+Apr  5 17:16:06 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:16:06 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:16:54 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:16:54 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:16:54 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:16:54 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3697
+Apr  5 17:16:54 DEVELOPER15 ods-enforcerd: hsm_session_init(): Incorrect PIN for repository SoftHSM
+Apr  5 17:16:59 DEVELOPER15 ods-signerd: setup failed: error initializing libhsm (errno 268435458)
+Apr  5 17:16:59 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:16:59 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:17:01 DEVELOPER15 CRON[3728]: (root) CMD (   cd / && run-parts --report /etc/cron.hourly)
+Apr  5 17:17:47 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:17:47 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:17:47 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:17:47 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3774
+Apr  5 17:17:47 DEVELOPER15 ods-enforcerd: hsm_session_init(): Incorrect PIN for repository SoftHSM
+Apr  5 17:17:52 DEVELOPER15 ods-signerd: setup failed: error initializing libhsm (errno 268435458)
+Apr  5 17:17:52 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:17:52 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:18:39 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:18:39 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:18:39 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:18:39 DEVELOPER15 ods-enforcerd: Type positiveInteger doesn't allow value '0'
+Apr  5 17:18:39 DEVELOPER15 ods-enforcerd: Error validating datatype positiveInteger
+Apr  5 17:18:39 DEVELOPER15 ods-enforcerd: Element Capacity failed to validate content
+Apr  5 17:18:39 DEVELOPER15 ods-enforcerd: Error validating file "/etc/opendnssec/conf.xml"
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3918
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:19:47 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:19:48 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:19:48 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:19:48 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:19:48 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:19:48 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:19:48 DEVELOPER15 ods-enforcerd: Repository SoftHSM is nearly full, will create 1 KSKs for policy default (reduced from 2)
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: error creating libhsm context
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: error creating libhsm context
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:19:48 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: e55aee7894b405e5473552feef49da5d in repository: SoftHSM and database.
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Repository SoftHSM is full, cannot create more ZSKs for policy default
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Not enough keys to satisfy zsk policy for zone: ods
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: ods-enforcerd will create some more keys on its next run
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Error allocating zsks to zone ods
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Not enough keys to satisfy zsk policy for zone: odszc10t10.nl
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: ods-enforcerd will create some more keys on its next run
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Error allocating zsks to zone odszc10t10.nl
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:19:49 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:20:03 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:20:03 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:20:04 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:20:16 DEVELOPER15 hsmutil[3981]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:20:16 DEVELOPER15 hsmutil[3981]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4001
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:20:38 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:20:39 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:20:39 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:20:39 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 7b4165a9bbe50e0b256a3878efca0eed in repository: SoftHSM and database.
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: could not find key 5e24e37ccf379dc43b775a007ec5825c
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: error creating DNSKEY for key 5e24e37ccf379dc43b775a007ec5825c
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: could not find key b8b7439b93ef0b89550b048ec993fc40
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: error creating DNSKEY for key b8b7439b93ef0b89550b048ec993fc40
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:20:39 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:20:39 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:20:39 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:20:39 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: bd93e2832903eb759cbc12b16730d4f9 in repository: SoftHSM and database.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 47ce1daddfc4c2177e1308e674153778 in repository: SoftHSM and database.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: d4c418e024865ee3b780644d5f6e8587 in repository: SoftHSM and database.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: WARNING: Making non-backed up ZSK active, PLEASE make sure that you know the potential problems of using keys which are not recoverable
+Apr  5 17:20:40 DEVELOPER15 ods-signerd: cmdhandler: updating signer configuration (ods)
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:20:40 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:20:41 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:20:41 DEVELOPER15 ods-enforcerd: WARNING: Making non-backed up ZSK active, PLEASE make sure that you know the potential problems of using keys which are not recoverable
+Apr  5 17:20:41 DEVELOPER15 ods-signerd: cmdhandler: updating signer configuration (odszc10t10.nl)
+Apr  5 17:20:41 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:20:41 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:20:41 DEVELOPER15 ods-auditor[4043]: Auditor started
+Apr  5 17:20:41 DEVELOPER15 ods-auditor[4043]: Auditor starting on ods
+Apr  5 17:20:41 DEVELOPER15 ods-auditor[4043]: Auditing ods zone : NSEC3 SIGNED
+Apr  5 17:20:41 DEVELOPER15 ods-auditor[4052]: Auditor started
+Apr  5 17:20:41 DEVELOPER15 ods-auditor[4052]: Auditor starting on odszc10t10.nl
+Apr  5 17:20:41 DEVELOPER15 ods-auditor[4052]: Auditing odszc10t10.nl zone : NSEC3 SIGNED
+Apr  5 17:20:41 DEVELOPER15 ods-auditor[4052]: SOA differs : from 1000 to 1302016841
+Apr  5 17:20:41 DEVELOPER15 ods-auditor[4052]: Finished auditing odszc10t10.nl zone
+Apr  5 17:20:41 DEVELOPER15 ods-signerd: [STATS] odszc10t10.nl RR[count=3 time=0(sec)] NSEC3[count=1 time=0(sec)] RRSIG[new=6 reused=0 time=0(sec) avg=0(sig/sec)] AUDIT[time=0(sec)] TOTAL[time=0(sec)] 
+Apr  5 17:20:42 DEVELOPER15 ods-auditor[4043]: SOA differs : from 1000 to 1302016840
+Apr  5 17:20:42 DEVELOPER15 ods-auditor[4043]: Finished auditing ods zone
+Apr  5 17:20:42 DEVELOPER15 ods-signerd: [STATS] ods RR[count=263 time=0(sec)] NSEC3[count=24 time=0(sec)] RRSIG[new=52 reused=0 time=0(sec) avg=0(sig/sec)] AUDIT[time=1(sec)] TOTAL[time=2(sec)] 
+Apr  5 17:21:04 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:21:04 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:21:05 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:21:17 DEVELOPER15 hsmutil[4096]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:21:50 DEVELOPER15 hsmutil[4096]: last message repeated 7 times
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4116
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:21:50 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: ad4daa7d9111d752de9c3d8416e475d9 in repository: SoftHSM and database.
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: could not find key 7b4165a9bbe50e0b256a3878efca0eed
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: could not find key bd93e2832903eb759cbc12b16730d4f9
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: error creating DNSKEY for key bd93e2832903eb759cbc12b16730d4f9
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: error creating DNSKEY for key 7b4165a9bbe50e0b256a3878efca0eed
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:21:51 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:21:51 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:21:51 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:21:51 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 86442d628f606869643b481679b348d3 in repository: SoftHSM and database.
+Apr  5 17:21:51 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:21:51 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:21:51 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: d89629f38d4f31653e1cc72069e7821e in repository: SoftHSM and database.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: c830b731e1c365a425782d296a6284dc in repository: SoftHSM and database.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: WARNING: Making non-backed up ZSK active, PLEASE make sure that you know the potential problems of using keys which are not recoverable
+Apr  5 17:21:52 DEVELOPER15 ods-signerd: cmdhandler: updating signer configuration (ods)
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: WARNING: Making non-backed up ZSK active, PLEASE make sure that you know the potential problems of using keys which are not recoverable
+Apr  5 17:21:52 DEVELOPER15 ods-signerd: cmdhandler: updating signer configuration (odszc10t10.nl)
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:21:52 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:21:52 DEVELOPER15 ods-auditor[4158]: Auditor started
+Apr  5 17:21:52 DEVELOPER15 ods-auditor[4158]: Auditor starting on ods
+Apr  5 17:21:52 DEVELOPER15 ods-auditor[4158]: Auditing ods zone : NSEC3 SIGNED
+Apr  5 17:21:52 DEVELOPER15 ods-auditor[4167]: Auditor started
+Apr  5 17:21:52 DEVELOPER15 ods-auditor[4167]: Auditor starting on odszc10t10.nl
+Apr  5 17:21:52 DEVELOPER15 ods-auditor[4167]: Auditing odszc10t10.nl zone : NSEC3 SIGNED
+Apr  5 17:21:53 DEVELOPER15 ods-auditor[4167]: SOA differs : from 1000 to 1302016912
+Apr  5 17:21:53 DEVELOPER15 ods-auditor[4167]: Finished auditing odszc10t10.nl zone
+Apr  5 17:21:53 DEVELOPER15 ods-signerd: [STATS] odszc10t10.nl RR[count=3 time=0(sec)] NSEC3[count=1 time=0(sec)] RRSIG[new=6 reused=0 time=0(sec) avg=0(sig/sec)] AUDIT[time=1(sec)] TOTAL[time=1(sec)] 
+Apr  5 17:21:53 DEVELOPER15 ods-auditor[4158]: SOA differs : from 1000 to 1302016912
+Apr  5 17:21:53 DEVELOPER15 ods-auditor[4158]: Finished auditing ods zone
+Apr  5 17:21:53 DEVELOPER15 ods-signerd: [STATS] ods RR[count=263 time=0(sec)] NSEC3[count=24 time=0(sec)] RRSIG[new=52 reused=0 time=0(sec) avg=0(sig/sec)] AUDIT[time=1(sec)] TOTAL[time=1(sec)] 
+Apr  5 17:22:06 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:22:06 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:22:07 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:22:18 DEVELOPER15 hsmutil[4211]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:22:51 DEVELOPER15 hsmutil[4211]: last message repeated 7 times
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4231
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:22:51 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:22:52 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:22:52 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:22:52 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:22:53 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 5dc41cdc62bdcf1f9f14550fd634495c in repository: SoftHSM and database.
+Apr  5 17:22:53 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:22:53 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:22:53 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: ca54ff0feb48be44def98cfeaf4310b7 in repository: SoftHSM and database.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: c4d10a4dcdcc3c172d4a6f03ed9b5ec1 in repository: SoftHSM and database.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 3a0ed85747cdfe68d4dc170f151df3b9 in repository: SoftHSM and database.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:22:54 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:23:07 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:23:07 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:23:08 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:23:20 DEVELOPER15 hsmutil[4292]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:24:02 DEVELOPER15 hsmutil[4292]: last message repeated 7 times
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4319
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:24:02 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:24:02 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:24:03 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:24:03 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:24:03 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: a162d751e9bb7a20c1b09351cbc3435f in repository: SoftHSM and database.
+Apr  5 17:24:04 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:24:04 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:24:04 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 1db0c8ce1791865dbd047690049aa1c4 in repository: SoftHSM and database.
+Apr  5 17:24:04 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:24:04 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:24:04 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 8c69d9741ce1ee4a3fc6f3cb4569ea93 in repository: SoftHSM and database.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: bdf4eb2c66d8209e13e74a3ab3f8b079 in repository: SoftHSM and database.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:24:05 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:24:27 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:24:27 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:24:28 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:24:30 DEVELOPER15 hsmutil[4378]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:25:12 DEVELOPER15 hsmutil[4378]: last message repeated 7 times
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4398
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Log User set to: local1
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Switched log facility to: local1
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:25:12 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:25:13 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:25:13 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:25:14 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:25:14 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:25:14 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 6e094257edaf9b358594b36f2dc43a1a in repository: SoftHSM and database.
+Apr  5 17:25:15 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:25:15 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:25:15 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 9c1a91538263ed67a086742b46f9b4b4 in repository: SoftHSM and database.
+Apr  5 17:25:15 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:25:15 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:25:15 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: afba8f093862f5ebf5e73581f3eb680c in repository: SoftHSM and database.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 4f8f0dfb52468ff170c89eaa00434017 in repository: SoftHSM and database.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:25:16 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:25:28 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:25:28 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:25:29 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:25:31 DEVELOPER15 hsmutil[4460]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:26:14 DEVELOPER15 hsmutil[4460]: last message repeated 7 times
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4480
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Log User set to: local1
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Switched log facility to: local1
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:26:14 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:26:15 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:26:15 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:26:15 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:26:15 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: bcfbf845223dfe159a612ac6760337df in repository: SoftHSM and database.
+Apr  5 17:26:15 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:26:15 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:26:15 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: d8c76711ee1de144ac112e29bce2aaba in repository: SoftHSM and database.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 8851cd9dbaa9de857ee0ee3c9654579e in repository: SoftHSM and database.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 4996f23199fc03ab5cba9aa8bc6e2730 in repository: SoftHSM and database.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:26:16 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:26:30 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:26:30 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:26:31 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:26:42 DEVELOPER15 hsmutil[4541]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:27:15 DEVELOPER15 hsmutil[4541]: last message repeated 7 times
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4562
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:27:15 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:27:16 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:27:16 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:27:16 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: b004a3d42a9ca99d77d2a9b0a19a067f in repository: SoftHSM and database.
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:27:16 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:27:16 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:27:16 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:27:16 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: e0da8a1e57f13afccf8fcc9d7023406b in repository: SoftHSM and database.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 6bc6bfb7555746a51572d29ea62a8fca in repository: SoftHSM and database.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 6b72362b1f0dacd9593520d4d45efe92 in repository: SoftHSM and database.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:27:17 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:27:18 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:27:18 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:27:18 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:27:18 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:27:18 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:27:18 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:27:31 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:27:31 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:27:32 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:27:44 DEVELOPER15 hsmutil[4625]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:28:16 DEVELOPER15 hsmutil[4625]: last message repeated 7 times
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4647
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:28:16 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:28:17 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:28:17 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:28:17 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: ed05ced09f7e1c48b8261905df081e95 in repository: SoftHSM and database.
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:28:17 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:28:18 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:28:18 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:28:18 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 27e578ddb8d596bacf820e18a7eb307f in repository: SoftHSM and database.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 348b88dc609171d5e383244e992fbcf7 in repository: SoftHSM and database.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 6f9a515343dd28479c2bfb170ae17900 in repository: SoftHSM and database.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/odscc20t40/zonelist.xml.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:28:19 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:28:42 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:28:42 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:28:43 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:28:55 DEVELOPER15 hsmutil[4708]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:29:27 DEVELOPER15 hsmutil[4708]: last message repeated 7 times
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4730
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:29:27 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:29:28 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=4738)
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: unable to open file /var/opendnssec/unsigned/odszc10t10.nl.axfr for reading: No such file or directory
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: unable to copy axfr file /var/opendnssec/unsigned/odszc10t10.nl.axfr to /var/opendnssec/unsigned/odszc10t10.nl
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: task [read zone odszc10t10.nl] failed
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: unable to open file /var/opendnssec/unsigned/ods.axfr for reading: No such file or directory
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: unable to copy axfr file /var/opendnssec/unsigned/ods.axfr to /var/opendnssec/unsigned/ods
+Apr  5 17:29:28 DEVELOPER15 ods-signerd: task [read zone ods] failed
+Apr  5 17:29:29 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:29:29 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:29:29 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: b9508574360acc02cc0a7b4b5787004f in repository: SoftHSM and database.
+Apr  5 17:29:29 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:29:29 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:29:29 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 12e71d82a5aa57f4378a8af6563223e0 in repository: SoftHSM and database.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 842dfacf70e93d5c3e5f1e50249fd4a5 in repository: SoftHSM and database.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: f052f5b54e69b6d0c01e77ab23d343d6 in repository: SoftHSM and database.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/odscc20t40/zonelist.xml.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:29:30 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:29:53 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:29:53 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:29:54 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:29:54 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Apr  5 17:30:06 DEVELOPER15 hsmutil[4790]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:30:38 DEVELOPER15 hsmutil[4790]: last message repeated 7 times
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4810
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:30:38 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:30:39 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:30:39 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:30:39 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:30:39 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:30:39 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: error creating libhsm context
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:30:39 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:30:40 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:30:40 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:30:40 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: c2c2dfba07f986cc2cf22d881d3aeea9 in repository: SoftHSM and database.
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: c5ef6b09874d0d82d613b4926e30744e in repository: SoftHSM and database.
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 3d3464584e2da942d8b38b16d4382da8 in repository: SoftHSM and database.
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 91c09d4e7f1f1bf62e3d04e3c7b5c1c4 in repository: SoftHSM and database.
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:30:41 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:30:42 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:31:04 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:31:04 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:31:05 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:31:19 DEVELOPER15 hsmutil[4871]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:31:51 DEVELOPER15 hsmutil[4871]: last message repeated 7 times
+Apr  5 17:31:51 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:31:51 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:31:51 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:31:51 DEVELOPER15 ods-enforcerd: group set to: opendnssec (123)
+Apr  5 17:31:51 DEVELOPER15 ods-enforcerd: user set to: opendnssec (115)
+Apr  5 17:31:51 DEVELOPER15 ods-enforcerd: cannot write the pidfile /var/run/opendnssec/enforcerd.pid: Permission denied
+Apr  5 17:31:56 DEVELOPER15 ods-signerd: unable to open file /var/run/opendnssec/signerd.pid for writing: Permission denied
+Apr  5 17:31:56 DEVELOPER15 ods-signerd: setup failed: unable to write pid file
+Apr  5 17:31:56 DEVELOPER15 ods-signerd: signer engine setup failed
+Apr  5 17:31:56 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4956
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/odscc30t30/kasp.db
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:32:50 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:32:51 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:32:51 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:32:51 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:32:51 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: aee9d38c5e9700c977c0ddf0377c2587 in repository: SoftHSM and database.
+Apr  5 17:32:52 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:32:52 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:32:52 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 5961405b6b99dcb4294e089d7d81d4f0 in repository: SoftHSM and database.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 2115aecb5482025aeda050628b2bf30e in repository: SoftHSM and database.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 22d5ca166a8f35ac322f4afbc78dcf96 in repository: SoftHSM and database.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:32:53 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Apr  5 17:33:18 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:33:18 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:33:19 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:33:31 DEVELOPER15 hsmutil[5018]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:34:03 DEVELOPER15 hsmutil[5018]: last message repeated 7 times
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 5040
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Communication Interval: 60
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:34:03 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:34:04 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:34:04 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:34:04 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:34:04 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: 17bc52dac832433d07f675dfeb95c369 in repository: SoftHSM and database.
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Created KSK size: 2048, alg: 7 with id: ffa7a96697910c588d30be586e433df6 in repository: SoftHSM and database.
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: c9419bdacfe6dbc4f76916539b259128 in repository: SoftHSM and database.
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: f7b2914400964c053dc7a3bc1b23a90c in repository: SoftHSM and database.
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: NOTE: keys generated in repository SoftHSM will not become active until they have been backed up
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:34:05 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:34:06 DEVELOPER15 ods-enforcerd: Sleeping for 60 seconds.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Communication Interval: 60
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:35:06 DEVELOPER15 ods-enforcerd: Sleeping for 60 seconds.
+Apr  5 17:35:12 DEVELOPER15 dhclient: DHCPREQUEST of 193.176.144.184 on eth0 to 193.176.144.163 port 67
+Apr  5 17:35:12 DEVELOPER15 dhclient: DHCPACK of 193.176.144.184 from 193.176.144.163
+Apr  5 17:35:12 DEVELOPER15 dhclient: bound to 193.176.144.184 -- renewal in 1523 seconds.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Communication Interval: 60
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:36:06 DEVELOPER15 ods-enforcerd: Sleeping for 60 seconds.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Communication Interval: 60
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Policy default2 found.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: No zones on policy default2, skipping...
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Policy default found.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Purging keys...
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Zone ods found.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Signconf not written for ods
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Zone odszc10t10.nl found.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Policy for odszc10t10.nl set to default.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/odszc10t10.nl.xml.
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: INFO: Promoting ZSK from publish to active as this is the first pass for the zone
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: ERROR: Trying to make non-backed up ZSK active when RequireBackup flag is set
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: KsmRequestKeys returned: 65562
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Signconf not written for odszc10t10.nl
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Apr  5 17:37:06 DEVELOPER15 ods-enforcerd: Sleeping for 60 seconds.
+Apr  5 17:37:20 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Apr  5 17:37:20 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Apr  5 17:37:21 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:37:32 DEVELOPER15 hsmutil[5096]: SoftHSM: C_DestroyObject: An object has been destroyed
+Apr  5 17:37:52 DEVELOPER15 hsmutil[5096]: last message repeated 7 times
+Apr  5 17:37:52 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:37:52 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:37:52 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:37:52 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 5106
+Apr  5 17:37:52 DEVELOPER15 ods-enforcerd: Error: database in config file /etc/opendnssec/conf.xml does not match libksm
+Apr  5 17:37:52 DEVELOPER15 ods-enforcerd: Error reading config
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:37:57 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:38:07 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:38:42 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Apr  5 17:38:42 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Apr  5 17:38:42 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Apr  5 17:38:42 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 5191
+Apr  5 17:38:42 DEVELOPER15 ods-enforcerd: Error: database in config file /etc/opendnssec/conf.xml does not match libksm
+Apr  5 17:38:42 DEVELOPER15 ods-enforcerd: Error reading config
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: signer engine started
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: unable to open file odszc10t10.nl.state for reading: No such file or directory
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: unable to open file ods.state for reading: No such file or directory
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: could not find key 86442d628f606869643b481679b348d3
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: error creating DNSKEY for key 86442d628f606869643b481679b348d3
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone odszc10t10.nl
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: task [add dnskeys to zone odszc10t10.nl] failed
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: could not find key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: error creating DNSKEY for key ad4daa7d9111d752de9c3d8416e475d9
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: error adding DNSKEYs to zone ods
+Apr  5 17:38:47 DEVELOPER15 ods-signerd: task [add dnskeys to zone ods] failed
+Apr  5 17:39:02 DEVELOPER15 ods-signerd: shutdown signer engine
+Apr  5 17:42:24 DEVELOPER15 kernel: [118056.690385] type=1505 audit(1302018144.827:26):  operation="profile_replace" pid=5261 name="/usr/sbin/mysqld"
+Apr  5 17:42:24 DEVELOPER15 kernel: [118056.695133] type=1503 audit(1302018144.831:27):  operation="open" pid=5266 parent=1 profile="/usr/sbin/mysqld" requested_mask="r::" denied_mask="r::" fsuid=0 ouid=0 name="/etc/my.cnf"
+

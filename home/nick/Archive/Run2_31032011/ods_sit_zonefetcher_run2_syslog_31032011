@@ -1,0 +1,362 @@
+Mar 31 14:42:45 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Mar 31 14:42:45 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Mar 31 14:42:46 DEVELOPER15 ods-signerd: shutdown signer engine
+Mar 31 14:42:46 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3622
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Policy default found.
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Purging keys...
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Zone ods found.
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Mar 31 14:43:06 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ods and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:43:07 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ods.xml
+Mar 31 14:43:07 DEVELOPER15 ods-enforcerd: Zone ODSZC10T10.nl found.
+Mar 31 14:43:07 DEVELOPER15 ods-enforcerd: Policy for ODSZC10T10.nl set to default.
+Mar 31 14:43:07 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ODSZC10T10.nl.xml.
+Mar 31 14:43:07 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ODSZC10T10.nl and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:43:07 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ODSZC10T10.nl.xml
+Mar 31 14:43:07 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Mar 31 14:43:07 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Mar 31 14:43:07 DEVELOPER15 ods-signerd: zone fetcher started
+Mar 31 14:43:07 DEVELOPER15 ods-signerd: signer engine started
+Mar 31 14:43:07 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=3630)
+Mar 31 14:43:11 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:43:11 DEVELOPER15 ods-signerd: AXFR for zone ods failed
+Mar 31 14:43:17 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:43:17 DEVELOPER15 ods-signerd: AXFR for zone ODSZC10T10.nl failed
+Mar 31 14:43:17 DEVELOPER15 ods-signerd: zone fetcher can't bind udp/ipv4 socket: Address already in use
+Mar 31 14:43:17 DEVELOPER15 ods-signerd: zone fetcher failed to initialize sockets
+Mar 31 14:43:17 DEVELOPER15 ods-signerd: zone fetcher exiting...
+Mar 31 14:45:03 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Mar 31 14:45:03 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Mar 31 14:45:04 DEVELOPER15 ods-signerd: shutdown signer engine
+Mar 31 14:45:04 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Mar 31 14:45:24 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Mar 31 14:45:24 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Mar 31 14:45:24 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Mar 31 14:45:24 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3681
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Policy default found.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Purging keys...
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Zone ods found.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ods and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ods.xml
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Zone ODSZC10T10.nl found.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Policy for ODSZC10T10.nl set to default.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ODSZC10T10.nl.xml.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ODSZC10T10.nl and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ODSZC10T10.nl.xml
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Mar 31 14:45:25 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Mar 31 14:45:26 DEVELOPER15 ods-signerd: zone fetcher started
+Mar 31 14:45:26 DEVELOPER15 ods-signerd: signer engine started
+Mar 31 14:45:26 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=3689)
+Mar 31 14:45:30 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:45:30 DEVELOPER15 ods-signerd: AXFR for zone ods failed
+Mar 31 14:45:36 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:45:36 DEVELOPER15 ods-signerd: AXFR for zone ODSZC10T10.nl failed
+Mar 31 14:45:36 DEVELOPER15 ods-signerd: zone fetcher can't bind udp/ipv4 socket: Address already in use
+Mar 31 14:45:36 DEVELOPER15 ods-signerd: zone fetcher failed to initialize sockets
+Mar 31 14:45:36 DEVELOPER15 ods-signerd: zone fetcher exiting...
+Mar 31 14:47:22 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Mar 31 14:47:22 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Mar 31 14:47:23 DEVELOPER15 ods-signerd: shutdown signer engine
+Mar 31 14:47:23 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3739
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Policy default found.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Purging keys...
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Zone ods found.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ods and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ods.xml
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Zone ODSZC10T10.nl found.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Policy for ODSZC10T10.nl set to default.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ODSZC10T10.nl.xml.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ODSZC10T10.nl and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ODSZC10T10.nl.xml
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Mar 31 14:47:43 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Mar 31 14:47:44 DEVELOPER15 ods-signerd: zone fetcher started
+Mar 31 14:47:44 DEVELOPER15 ods-signerd: signer engine started
+Mar 31 14:47:44 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=3747)
+Mar 31 14:47:48 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:47:48 DEVELOPER15 ods-signerd: AXFR for zone ods failed
+Mar 31 14:47:54 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:47:54 DEVELOPER15 ods-signerd: AXFR for zone ODSZC10T10.nl failed
+Mar 31 14:47:54 DEVELOPER15 ods-signerd: zone fetcher can't bind udp/ipv4 socket: Address already in use
+Mar 31 14:47:54 DEVELOPER15 ods-signerd: zone fetcher failed to initialize sockets
+Mar 31 14:47:54 DEVELOPER15 ods-signerd: zone fetcher exiting...
+Mar 31 14:49:40 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Mar 31 14:49:40 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Mar 31 14:49:41 DEVELOPER15 ods-signerd: shutdown signer engine
+Mar 31 14:49:41 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3797
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Policy default found.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Purging keys...
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Zone ods found.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ods and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ods.xml
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Zone ODSZC10T10.nl found.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Policy for ODSZC10T10.nl set to default.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ODSZC10T10.nl.xml.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ODSZC10T10.nl and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ODSZC10T10.nl.xml
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Mar 31 14:50:01 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Mar 31 14:50:02 DEVELOPER15 ods-signerd: zone fetcher started
+Mar 31 14:50:02 DEVELOPER15 ods-signerd: signer engine started
+Mar 31 14:50:02 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=3805)
+Mar 31 14:50:06 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:50:06 DEVELOPER15 ods-signerd: AXFR for zone ods failed
+Mar 31 14:50:12 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:50:12 DEVELOPER15 ods-signerd: AXFR for zone ODSZC10T10.nl failed
+Mar 31 14:50:12 DEVELOPER15 ods-signerd: zone fetcher can't bind udp/ipv4 socket: Address already in use
+Mar 31 14:50:12 DEVELOPER15 ods-signerd: zone fetcher failed to initialize sockets
+Mar 31 14:50:12 DEVELOPER15 ods-signerd: zone fetcher exiting...
+Mar 31 14:51:58 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Mar 31 14:51:58 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Mar 31 14:51:59 DEVELOPER15 ods-signerd: shutdown signer engine
+Mar 31 14:51:59 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3855
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Policy default found.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Purging keys...
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Zone ods found.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ods and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ods.xml
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Zone ODSZC10T10.nl found.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Policy for ODSZC10T10.nl set to default.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ODSZC10T10.nl.xml.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ODSZC10T10.nl and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ODSZC10T10.nl.xml
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Mar 31 14:52:19 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Mar 31 14:52:20 DEVELOPER15 ods-signerd: zone fetcher started
+Mar 31 14:52:20 DEVELOPER15 ods-signerd: signer engine started
+Mar 31 14:52:20 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=3863)
+Mar 31 14:52:24 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:52:24 DEVELOPER15 ods-signerd: AXFR for zone ods failed
+Mar 31 14:52:30 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:52:30 DEVELOPER15 ods-signerd: AXFR for zone ODSZC10T10.nl failed
+Mar 31 14:52:30 DEVELOPER15 ods-signerd: zone fetcher can't bind udp/ipv4 socket: Address already in use
+Mar 31 14:52:30 DEVELOPER15 ods-signerd: zone fetcher failed to initialize sockets
+Mar 31 14:52:30 DEVELOPER15 ods-signerd: zone fetcher exiting...
+Mar 31 14:54:16 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Mar 31 14:54:16 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Mar 31 14:54:17 DEVELOPER15 ods-signerd: shutdown signer engine
+Mar 31 14:54:17 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3913
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Policy default found.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Purging keys...
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Zone ods found.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ods and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ods.xml
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Zone ODSZC10T10.nl found.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Policy for ODSZC10T10.nl set to default.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ODSZC10T10.nl.xml.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ODSZC10T10.nl and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ODSZC10T10.nl.xml
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Mar 31 14:54:37 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Mar 31 14:54:38 DEVELOPER15 ods-signerd: zone fetcher started
+Mar 31 14:54:38 DEVELOPER15 ods-signerd: signer engine started
+Mar 31 14:54:38 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=3921)
+Mar 31 14:54:42 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:54:42 DEVELOPER15 ods-signerd: AXFR for zone ods failed
+Mar 31 14:54:48 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:54:48 DEVELOPER15 ods-signerd: AXFR for zone ODSZC10T10.nl failed
+Mar 31 14:54:48 DEVELOPER15 ods-signerd: zone fetcher can't bind udp/ipv4 socket: Address already in use
+Mar 31 14:54:48 DEVELOPER15 ods-signerd: zone fetcher failed to initialize sockets
+Mar 31 14:54:48 DEVELOPER15 ods-signerd: zone fetcher exiting...
+Mar 31 14:56:01 DEVELOPER15 dhclient: DHCPREQUEST of 193.176.144.184 on eth0 to 193.176.144.163 port 67
+Mar 31 14:56:01 DEVELOPER15 dhclient: DHCPACK of 193.176.144.184 from 193.176.144.163
+Mar 31 14:56:01 DEVELOPER15 dhclient: bound to 193.176.144.184 -- renewal in 1688 seconds.
+Mar 31 14:56:34 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Mar 31 14:56:34 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Mar 31 14:56:35 DEVELOPER15 ods-signerd: shutdown signer engine
+Mar 31 14:56:35 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 3973
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Policy default found.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Purging keys...
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Zone ods found.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ods and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ods.xml
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Zone ODSZC10T10.nl found.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Policy for ODSZC10T10.nl set to default.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ODSZC10T10.nl.xml.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ODSZC10T10.nl and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: No change to: /var/opendnssec/signconf/ODSZC10T10.nl.xml
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Mar 31 14:56:55 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Mar 31 14:56:56 DEVELOPER15 ods-signerd: zone fetcher started
+Mar 31 14:56:56 DEVELOPER15 ods-signerd: signer engine started
+Mar 31 14:56:56 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=3981)
+Mar 31 14:57:00 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:57:00 DEVELOPER15 ods-signerd: AXFR for zone ods failed
+Mar 31 14:57:06 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:57:06 DEVELOPER15 ods-signerd: AXFR for zone ODSZC10T10.nl failed
+Mar 31 14:57:06 DEVELOPER15 ods-signerd: zone fetcher can't bind udp/ipv4 socket: Address already in use
+Mar 31 14:57:06 DEVELOPER15 ods-signerd: zone fetcher failed to initialize sockets
+Mar 31 14:57:06 DEVELOPER15 ods-signerd: zone fetcher exiting...
+Mar 31 14:58:52 DEVELOPER15 ods-enforcerd: Received SIGTERM, exiting...
+Mar 31 14:58:52 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+Mar 31 14:58:53 DEVELOPER15 ods-signerd: shutdown signer engine
+Mar 31 14:58:53 DEVELOPER15 ods-signerd: cannot stop zone fetcher: No such process
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: opendnssec starting...
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: opendnssec Parent exiting...
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: opendnssec forked OK...
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: opendnssec started (version 1.2.1), pid 4031
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: HSM opened successfully.
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: Reading config "/etc/opendnssec/conf.xml"
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: Reading config schema "/usr/local/share/opendnssec/conf.rng"
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: Communication Interval: 3600
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: No DS Submit command supplied
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: SQLite database set to: /var/opendnssec/kasp.db
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: Log User set to: local0
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: Switched log facility to: local0
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: Connecting to Database...
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: Policy default found.
+Mar 31 14:59:13 DEVELOPER15 ods-enforcerd: Key sharing is Off.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 6dcf39c1eb1e3713d2f3cabd9ba4b775 in repository: SoftHSM and database.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: SoftHSM: C_GenerateKeyPair: Key pair generated
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Created key in repository SoftHSM
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Created ZSK size: 1024, alg: 7 with id: 4b69632798d0aa357b1a1ca6c1f5f357 in repository: SoftHSM and database.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Purging keys...
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: zonelist filename set to /etc/opendnssec/zonelist.xml.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Zone ods found.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Policy for ods set to default.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ods.xml.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ods and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:59:14 DEVELOPER15 ods-signerd: zone fetcher started
+Mar 31 14:59:14 DEVELOPER15 ods-signerd: signer engine started
+Mar 31 14:59:14 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=4039)
+Mar 31 14:59:14 DEVELOPER15 ods-signerd: cmdhandler: updating signer configuration (ods)
+Mar 31 14:59:14 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=4039)
+Mar 31 14:59:14 DEVELOPER15 ods-signerd: unable to open file /var/opendnssec/unsigned/ods.axfr for reading: No such file or directory
+Mar 31 14:59:14 DEVELOPER15 ods-signerd: unable to copy axfr file /var/opendnssec/unsigned/ods.axfr to /var/opendnssec/unsigned/ods
+Mar 31 14:59:14 DEVELOPER15 ods-signerd: task [read zone ods] failed
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Zone ODSZC10T10.nl found.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Policy for ODSZC10T10.nl set to default.
+Mar 31 14:59:14 DEVELOPER15 ods-enforcerd: Config will be output to /var/opendnssec/signconf/ODSZC10T10.nl.xml.
+Mar 31 14:59:15 DEVELOPER15 ods-enforcerd: WARNING: KSK Retirement reached; please submit the new DS for ODSZC10T10.nl and use ods-ksmutil key ds-seen when the DS appears in the DNS.
+Mar 31 14:59:15 DEVELOPER15 ods-signerd: cmdhandler: updating signer configuration (ODSZC10T10.nl)
+Mar 31 14:59:15 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:59:15 DEVELOPER15 ods-signerd: AXFR for zone ods failed
+Mar 31 14:59:15 DEVELOPER15 ods-signerd: zone fetcher reloaded (pid=4039)
+Mar 31 14:59:15 DEVELOPER15 ods-signerd: unable to open file /var/opendnssec/unsigned/ODSZC10T10.nl.axfr for reading: No such file or directory
+Mar 31 14:59:15 DEVELOPER15 ods-signerd: unable to copy axfr file /var/opendnssec/unsigned/ODSZC10T10.nl.axfr to /var/opendnssec/unsigned/ODSZC10T10.nl
+Mar 31 14:59:15 DEVELOPER15 ods-signerd: task [read zone ODSZC10T10.nl] failed
+Mar 31 14:59:15 DEVELOPER15 ods-enforcerd: Disconnecting from Database...
+Mar 31 14:59:15 DEVELOPER15 ods-enforcerd: Sleeping for 3600 seconds.
+Mar 31 14:59:21 DEVELOPER15 ods-signerd: zone fetcher failed to send SOA query: Could not send or receive, because of network error
+Mar 31 14:59:21 DEVELOPER15 ods-signerd: AXFR for zone ODSZC10T10.nl failed
+Mar 31 14:59:21 DEVELOPER15 ods-signerd: zone fetcher can't bind udp/ipv4 socket: Address already in use
+Mar 31 14:59:21 DEVELOPER15 ods-signerd: zone fetcher failed to initialize sockets
+Mar 31 14:59:21 DEVELOPER15 ods-signerd: zone fetcher exiting...
+

@@ -1,0 +1,3182 @@
+root@DEVELOPER15:/home/elmo/opendnssec_test_engine# sh autotestODS.sh
+FILE  : /home/elmo/Downloads/ODS_Test_folder/Run1_23032011/ODS1.2_SIT_CONF.xls
+COUNT : 11
+AUTHOR: Calc
+- Argument: /home/elmo/Downloads/ODS_Test_folder/Run1_23032011/ODS1.2_SIT_CONF.xls
+- Argument: ODSC
+SHEET: ODSC
+---------
+
+2011-03-23 17:18:30.441 00014 Comment: Fill in date of test execution in the field below (format ddmmyy)
+
+
+2011-03-23 17:18:30.442 00015 Comment: 230311
+
+
+2011-03-23 17:18:30.442 00017 Comment: Users & ODS versions
+
+
+2011-03-23 17:18:30.443 00018 Comment: Check if user opendnssec exists on unix. (part of group opendnssec)
+
+
+2011-03-23 17:18:30.443 00019 Comment: Check if user kaspuser (with password abc123) exists on unix. 
+
+
+2011-03-23 17:18:30.444 00020 Comment: Check if user gooduser (with password 123abc) exists on unix. 
+
+
+2011-03-23 17:18:30.444 00021 Comment: Check if the correct ODS version is installed.
+
+
+2011-03-23 17:18:30.444 00022 Comment: If user is not avaliable you can add them via the command (as root):
+- useradd <user>
+and then add the correct password via the command.
+- passwd <user>
+
+
+2011-03-23 17:18:30.445 00024 Comment: Copy all the files needed for this script to the directories below
+
+
+2011-03-23 17:18:30.445 00025 Comment: BEWARE: For all files created in WinOS, use the fromdos application (apt-get install tofromdos) to remove symbols from the xml files (like conf and kasp) to prevent errors.
+
+
+2011-03-23 17:18:30.446 00026 Comment: Standard folder for all the conf.xml files is /home/ods/ods_testautomation/ods_sit_conf/conf
+
+
+2011-03-23 17:18:30.446 00027 Comment: Standard folder for all the kasp.xml files is /home/ods/ods_testautomation/ods_sit_conf/kasp
+
+
+2011-03-23 17:18:30.447 00028 Comment: Standard folder for all the zonelist.xml files is /home/ods/ods_testautomation/ods_sit_conf/zonelist
+
+
+2011-03-23 17:18:30.447 00029 Comment: Standard folder for all the MySQL files is /home/ods/ods_testautomation/ods_sit_conf/mysql
+
+
+2011-03-23 17:18:30.447 00030 Comment: Standard folder for all the script files is /home/ods/ods_testautomation/ods_sit_conf/script
+
+
+2011-03-23 17:18:30.448 00032 Comment: Logfiles
+
+
+2011-03-23 17:18:30.448 00033 Comment: Make sure that the following folder exists: /home/ods/ods_testautomation/ods_sit_conf/logging
+
+
+2011-03-23 17:18:30.449 00035 Comment: Specify Download folder for ODS
+
+
+2011-03-23 17:18:30.449 00036 Comment: /home/ods/Downloads/opendnssec-1.2.1
+
+
+2011-03-23 17:18:30.450 00038 Comment: Specific folders
+
+
+2011-03-23 17:18:30.450 00039 Comment: Make sure that the next folder exists: "var/opendnssec/temporary"
+
+
+2011-03-23 17:18:30.451 00041 Comment: MySQL settings
+
+
+2011-03-23 17:18:30.451 00042 Comment: Standard MySQL database name = KASP
+
+
+2011-03-23 17:18:30.451 00043 Comment: Standard MySQL username = kaspuser
+
+
+2011-03-23 17:18:30.452 00044 Comment: Standard MySQL password = abc123
+
+
+2011-03-23 17:18:30.452 00045 Comment: Second MySQL database = KASPTEST
+
+
+2011-03-23 17:18:30.453 00046 Comment: Second MySQL username = kaspuser
+
+
+2011-03-23 17:18:30.453 00047 Comment: Second MySQL password = abc123
+
+
+2011-03-23 17:18:30.453 00048 Comment: Thirth MySQL database = KASPTEST2
+
+
+2011-03-23 17:18:30.454 00049 Comment: Thirth MySQL username = gooduser
+
+
+2011-03-23 17:18:30.454 00050 Comment: Thirth MySQL password = 123abc
+
+
+2011-03-23 17:18:30.455 00051 Comment: If the databases above are not available they can be created via the command:
+- mysql -p
+- create database <databasename>
+
+
+2011-03-23 17:18:30.455 00052 Comment: After this the users should be granted for using the database using the following 2 commands:
+- grant usage on <databasename>.* to <user>@localhost identified by '<password of user>'
+- grant all privileges on <databasename>.* to <user>@localhost identified by '<password of user>'
+
+
+2011-03-23 17:18:30.455 00054 Comment: Zone file
+
+
+2011-03-23 17:18:30.456 00055 Comment: Make sure that the zone with name "ods" is available in the test environment in folder /var/opendnssec/unsigned
+
+
+2011-03-23 17:18:30.456 00057 Comment: Host file
+
+
+2011-03-23 17:18:30.457 00058 Comment: Make sure that the following line is in the host file in the "/etc" folder:
+127.0.0.1 mysqltest
+
+
+2011-03-23 17:18:30.457 00061 Comment: Make sure that the "ods-notify"-script is in the /home/ods/ods-testautomation/ods_sit_conf/scripts folder
+
+
+2011-03-23 17:18:30.458 00064 Comment: Check if the application "logger" is available on the test environment (location: /usr/bin/). The logger will put the result of a command, for example "ods-kaspcheck", in the messages logfile (location: /var/log/messages). Example of usage: "command | /usr/bin/logger"
+
+Testcondition - ODSCC10: The configuration of repositories located in conf.xml should operate according to requirements and intentions
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T10: Configure and sign with one repository (SoftHSM)
+
+2011-03-23 17:18:30.460 00069 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:18:30.460 Requirement: ODSCC10
+
+2011-03-23 17:18:30.461 00071 Stop()
+2011-03-23 17:18:30.461 Requirement: ODSCC10
+2011-03-23 17:18:30.462 RunCommand(ods-control stop)
+2011-03-23 17:18:30.503 - runCommand: Process started, PID: 16632
+2011-03-23 17:18:30.504 OUTPUT:	Stopping enforcer...
+2011-03-23 17:18:30.504 OUTPUT:	Cannot find PID file
+2011-03-23 17:18:30.504 OUTPUT:	Stopping signer engine..
+2011-03-23 17:18:30.504 ERROR:	Unable to connect to engine: connect() failed: Connection refused
+2011-03-23 17:18:30.504 ERROR:	return code = 1
+2011-03-23 17:18:30.505 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:18:30.599 - runCommand: Process started, PID: 16635
+2011-03-23 17:18:30.600 ERROR:	return code = 1
+2011-03-23 17:18:30.600 RunCommand(ps -e | grep signer)
+2011-03-23 17:18:30.698 - runCommand: Process started, PID: 16638
+2011-03-23 17:18:30.699 ERROR:	return code = 1
+
+2011-03-23 17:18:30.700 00073 Wait(10)
+
+2011-03-23 17:18:30.700 Requirement: ODSCC10
+
+2011-03-23 17:18:40.703 00075 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:18:40.703 Requirement: ODSCC10
+
+2011-03-23 17:18:40.705 00081 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:18:40.705 Requirement: ODSCC10
+
+2011-03-23 17:18:40.707 00085 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:18:40.707 Requirement: ODSCC10
+
+2011-03-23 17:18:40.709 00088 LoadConfig()
+2011-03-23 17:18:40.709 Requirement: ODSCC10
+2011-03-23 17:18:40.709 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T10_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:18:40.778 - runCommand: Process started, PID: 16642
+
+2011-03-23 17:18:40.780 00091 LoadConfig()
+2011-03-23 17:18:40.780 Requirement: ODSCC10
+2011-03-23 17:18:40.781 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:18:40.804 - runCommand: Process started, PID: 16643
+
+2011-03-23 17:18:40.806 00093 Comment: Update all the configs.
+
+2011-03-23 17:18:40.806 Requirement: ODSCC10
+
+2011-03-23 17:18:40.807 00095 UpdateAll()
+2011-03-23 17:18:40.807 Requirement: ODSCC10
+2011-03-23 17:18:40.807 RunCommand(ods-ksmutil update all)
+2011-03-23 17:18:42.301 - runCommand: Process started, PID: 16644
+2011-03-23 17:18:42.301 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:18:42.301 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:18:42.301 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:18:42.301 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:18:42.301 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:18:42.301 OUTPUT:	Policy default2 found
+2011-03-23 17:18:42.301 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:18:42.301 OUTPUT:	Policy default found
+2011-03-23 17:18:42.301 OUTPUT:	Zone ods found
+2011-03-23 17:18:42.301 OUTPUT:	Policy set to default.
+2011-03-23 17:18:42.301 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:18:42.302 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:18:42.302 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:18:42.302 00097 Wait(10)
+
+2011-03-23 17:18:42.302 Requirement: ODSCC10
+
+2011-03-23 17:18:52.302 00099 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:18:52.302 Requirement: ODSCC10
+
+2011-03-23 17:18:52.302 00101 Start()
+2011-03-23 17:18:52.302 Requirement: ODSCC10
+2011-03-23 17:18:52.302 RunCommand(ods-control start)
+2011-03-23 17:18:52.304 - runCommand: Background process started, PID: 16652
+2011-03-23 17:18:53.322 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:18:53.339 - runCommand: Process started, PID: 16668
+2011-03-23 17:18:53.339 OUTPUT:	ods-enforcerd
+2011-03-23 17:18:53.339 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:18:53.371 - runCommand: Process started, PID: 16673
+2011-03-23 17:18:53.371 OUTPUT:	/usr/local/sbin/ods-signerd -vvv
+
+2011-03-23 17:18:53.372 00103 Wait(10)
+
+2011-03-23 17:18:53.372 Requirement: ODSCC10
+
+2011-03-23 17:19:03.372 00105 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:19:03.372 Requirement: ODSCC10
+
+2011-03-23 17:19:03.372 00109 Wait(15)
+
+2011-03-23 17:19:03.372 Requirement: ODSCC10
+
+2011-03-23 17:19:18.372 00111 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:19:18.372 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T20: Configure 4 repositories (2x SoftHSM, 2x hardware HSM) and sign using 2 of these different repositories
+
+2011-03-23 17:19:20.982 00120 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:19:20.982 Requirement: ODSCC10
+
+2011-03-23 17:19:20.982 00122 Stop()
+2011-03-23 17:19:20.982 Requirement: ODSCC10
+2011-03-23 17:19:20.982 RunCommand(ods-control stop)
+2011-03-23 17:19:21.990 - runCommand: Process started, PID: 16709
+2011-03-23 17:19:21.990 OUTPUT:	Stopping enforcer...
+2011-03-23 17:19:21.990 OUTPUT:	Stopping signer engine..
+2011-03-23 17:19:21.990 OUTPUT:	Engine shut down.
+2011-03-23 17:19:21.990 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:19:22.967 - runCommand: Process started, PID: 16715
+2011-03-23 17:19:22.975 ERROR:	return code = 1
+2011-03-23 17:19:22.977 RunCommand(ps -e | grep signer)
+2011-03-23 17:19:22.212 - runCommand: Process started, PID: 16718
+2011-03-23 17:19:22.213 ERROR:	return code = 1
+
+2011-03-23 17:19:22.214 00124 Wait(10)
+
+2011-03-23 17:19:22.214 Requirement: ODSCC10
+
+2011-03-23 17:19:32.217 00126 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:19:32.217 Requirement: ODSCC10
+
+2011-03-23 17:19:32.219 00132 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:19:32.219 Requirement: ODSCC10
+
+2011-03-23 17:19:32.221 00136 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:19:32.221 Requirement: ODSCC10
+
+2011-03-23 17:19:32.223 00139 LoadConfig()
+2011-03-23 17:19:32.223 Requirement: ODSCC10
+2011-03-23 17:19:32.223 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T20_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:19:32.272 - runCommand: Process started, PID: 16721
+
+2011-03-23 17:19:32.275 00142 LoadConfig()
+2011-03-23 17:19:32.275 Requirement: ODSCC10
+2011-03-23 17:19:32.276 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:19:32.315 - runCommand: Process started, PID: 16722
+
+2011-03-23 17:19:32.318 00144 Comment: Update all the configs.
+
+2011-03-23 17:19:32.318 Requirement: ODSCC10
+
+2011-03-23 17:19:32.319 00146 UpdateAll()
+2011-03-23 17:19:32.320 Requirement: ODSCC10
+2011-03-23 17:19:32.320 RunCommand(ods-ksmutil update all)
+2011-03-23 17:19:34.258 - runCommand: Process started, PID: 16723
+2011-03-23 17:19:34.258 OUTPUT:	ERROR: Module /usr/lib/libCryptoki2_64.so in Repository HSM-HA cannot be found
+2011-03-23 17:19:34.258 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:19:34.258 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:19:34.258 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:19:34.258 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:19:34.258 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:19:34.258 OUTPUT:	Repository SoftHSM2 found
+2011-03-23 17:19:34.258 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:19:34.258 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:19:34.258 OUTPUT:	Repository HSM-HA found
+2011-03-23 17:19:34.258 OUTPUT:	Capacity set to 35.
+2011-03-23 17:19:34.258 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:19:34.258 OUTPUT:	Policy default2 found
+2011-03-23 17:19:34.258 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:19:34.258 OUTPUT:	Policy default found
+2011-03-23 17:19:34.258 OUTPUT:	Zone ods found
+2011-03-23 17:19:34.258 OUTPUT:	Policy set to default.
+2011-03-23 17:19:34.258 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:19:34.258 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:19:34.258 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:19:34.259 00148 Wait(10)
+
+2011-03-23 17:19:34.259 Requirement: ODSCC10
+
+2011-03-23 17:19:44.259 00150 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:19:44.259 Requirement: ODSCC10
+
+2011-03-23 17:19:44.259 00152 Start()
+2011-03-23 17:19:44.259 Requirement: ODSCC10
+2011-03-23 17:19:44.259 RunCommand(ods-control start)
+2011-03-23 17:19:44.261 - runCommand: Background process started, PID: 16731
+2011-03-23 17:19:49.293 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:19:49.305 - runCommand: Process started, PID: 16754
+2011-03-23 17:19:49.305 ERROR:	return code = 1
+2011-03-23 17:19:49.305 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:19:49.320 - runCommand: Process started, PID: 16759
+
+2011-03-23 17:19:49.320 00154 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:19:49.320 Requirement: ODSCC10
+
+2011-03-23 17:19:49.320 00158 Wait(15)
+
+2011-03-23 17:19:49.320 Requirement: ODSCC10
+
+2011-03-23 17:20:04.321 00160 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:20:04.321 Requirement: ODSCC10
+2011-03-23 17:20:06.934 PASSED:	(Check for Like) - Expected: all done! Found: Mar 23 17:19:20 DEVELOPER15 ods-enforcerd: all done! hsm_close result: 0
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T30: Configure no module location and expect failure
+
+2011-03-23 17:20:06.934 00170 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:20:06.934 Requirement: ODSCC10
+
+2011-03-23 17:20:06.934 00172 Stop()
+2011-03-23 17:20:06.934 Requirement: ODSCC10
+2011-03-23 17:20:06.934 RunCommand(ods-control stop)
+2011-03-23 17:20:06.938 - runCommand: Process started, PID: 16764
+2011-03-23 17:20:06.938 OUTPUT:	Stopping enforcer...
+2011-03-23 17:20:06.938 OUTPUT:	Cannot find PID file
+2011-03-23 17:20:06.938 OUTPUT:	Stopping signer engine..
+2011-03-23 17:20:06.938 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:20:06.938 ERROR:	return code = 1
+2011-03-23 17:20:06.938 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:20:06.948 - runCommand: Process started, PID: 16767
+2011-03-23 17:20:06.948 ERROR:	return code = 1
+2011-03-23 17:20:06.948 RunCommand(ps -e | grep signer)
+2011-03-23 17:20:06.957 - runCommand: Process started, PID: 16770
+2011-03-23 17:20:06.958 ERROR:	return code = 1
+
+2011-03-23 17:20:06.958 00174 Wait(10)
+
+2011-03-23 17:20:06.958 Requirement: ODSCC10
+
+2011-03-23 17:20:16.958 00176 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:20:16.958 Requirement: ODSCC10
+
+2011-03-23 17:20:16.958 00182 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:20:16.958 Requirement: ODSCC10
+
+2011-03-23 17:20:16.958 00187 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:20:16.958 Requirement: ODSCC10
+
+2011-03-23 17:20:16.959 00190 LoadConfig()
+2011-03-23 17:20:16.959 Requirement: ODSCC10
+2011-03-23 17:20:16.959 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T30_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:20:16.964 - runCommand: Process started, PID: 16778
+
+2011-03-23 17:20:16.965 00193 LoadConfig()
+2011-03-23 17:20:16.965 Requirement: ODSCC10
+2011-03-23 17:20:16.965 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:20:16.968 - runCommand: Process started, PID: 16779
+
+2011-03-23 17:20:16.969 00195 Comment: Update all the configs.
+
+2011-03-23 17:20:16.969 Requirement: ODSCC10
+
+2011-03-23 17:20:16.969 00197 UpdateAll()
+2011-03-23 17:20:16.969 Requirement: ODSCC10
+2011-03-23 17:20:16.969 RunCommand(ods-ksmutil update all)
+2011-03-23 17:20:18.918 - runCommand: Process started, PID: 16780
+2011-03-23 17:20:18.919 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:20:18.919 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:20:18.919 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:20:18.919 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:20:18.919 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:20:18.919 OUTPUT:	Policy default2 found
+2011-03-23 17:20:18.919 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:20:18.919 OUTPUT:	Policy default found
+2011-03-23 17:20:18.919 OUTPUT:	Zone ods found
+2011-03-23 17:20:18.919 OUTPUT:	Policy set to default.
+2011-03-23 17:20:18.919 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:20:18.919 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:20:18.919 ERROR:	/usr/local/lib/opendnssec/kasp_checker.rb:222:in `check_config_file': undefined method `+' for nil:NilClass (NoMethodError)
+2011-03-23 17:20:18.919 ERROR:		from /usr/lib/ruby/1.8/rexml/element.rb:892:in `each'
+2011-03-23 17:20:18.919 ERROR:		from /usr/lib/ruby/1.8/rexml/xpath.rb:53:in `each'
+2011-03-23 17:20:18.919 ERROR:		from /usr/lib/ruby/1.8/rexml/element.rb:892:in `each'
+2011-03-23 17:20:18.919 ERROR:		from /usr/local/lib/opendnssec/kasp_checker.rb:214:in `check_config_file'
+2011-03-23 17:20:18.919 ERROR:		from /usr/local/lib/opendnssec/kasp_checker.rb:146:in `open'
+2011-03-23 17:20:18.919 ERROR:		from /usr/local/lib/opendnssec/kasp_checker.rb:146:in `check_config_file'
+2011-03-23 17:20:18.919 ERROR:		from /usr/local/lib/opendnssec/kasp_checker.rb:55:in `check'
+2011-03-23 17:20:18.919 ERROR:		from /usr/local/bin/ods-kaspcheck:110
+2011-03-23 17:20:18.919 ERROR:	Couldn't run kaspcheck, will carry on
+
+2011-03-23 17:20:18.919 00199 Wait(10)
+
+2011-03-23 17:20:18.919 Requirement: ODSCC10
+
+2011-03-23 17:20:28.919 00201 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:20:28.919 Requirement: ODSCC10
+
+2011-03-23 17:20:28.920 00203 Start()
+2011-03-23 17:20:28.920 Requirement: ODSCC10
+2011-03-23 17:20:28.920 RunCommand(ods-control start)
+2011-03-23 17:20:28.922 - runCommand: Background process started, PID: 16786
+2011-03-23 17:20:33.955 ERROR:	return code = 1
+2011-03-23 17:20:33.955 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:20:33.971 - runCommand: Process started, PID: 16807
+2011-03-23 17:20:33.971 ERROR:	return code = 1
+2011-03-23 17:20:33.971 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:20:33.989 - runCommand: Process started, PID: 16811
+
+2011-03-23 17:20:33.989 00205 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:20:33.989 Requirement: ODSCC10
+
+2011-03-23 17:20:33.989 00209 Wait(15)
+
+2011-03-23 17:20:33.989 Requirement: ODSCC10
+
+2011-03-23 17:20:48.990 00211 Comment: Check if the signing was unsuccesfull. If a "aborting operation" is in the logging, the signing was unsuccesful.
+
+2011-03-23 17:20:48.990 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T40: Configure Incorrect module location and expect failure
+
+2011-03-23 17:20:51.591 00220 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:20:51.592 Requirement: ODSCC10
+
+2011-03-23 17:20:51.592 00222 Stop()
+2011-03-23 17:20:51.592 Requirement: ODSCC10
+2011-03-23 17:20:51.592 RunCommand(ods-control stop)
+2011-03-23 17:20:51.596 - runCommand: Process started, PID: 16816
+2011-03-23 17:20:51.596 OUTPUT:	Stopping enforcer...
+2011-03-23 17:20:51.596 OUTPUT:	Cannot find PID file
+2011-03-23 17:20:51.596 OUTPUT:	Stopping signer engine..
+2011-03-23 17:20:51.596 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:20:51.596 ERROR:	return code = 1
+2011-03-23 17:20:51.596 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:20:51.605 - runCommand: Process started, PID: 16819
+2011-03-23 17:20:51.605 ERROR:	return code = 1
+2011-03-23 17:20:51.605 RunCommand(ps -e | grep signer)
+2011-03-23 17:20:51.615 - runCommand: Process started, PID: 16822
+2011-03-23 17:20:51.615 ERROR:	return code = 1
+
+2011-03-23 17:20:51.615 00224 Wait(10)
+
+2011-03-23 17:20:51.615 Requirement: ODSCC10
+
+2011-03-23 17:21:01.616 00226 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:21:01.616 Requirement: ODSCC10
+
+2011-03-23 17:21:01.616 00232 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:21:01.616 Requirement: ODSCC10
+
+2011-03-23 17:21:01.616 00237 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:21:01.616 Requirement: ODSCC10
+
+2011-03-23 17:21:01.616 00240 LoadConfig()
+2011-03-23 17:21:01.616 Requirement: ODSCC10
+2011-03-23 17:21:01.616 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T40_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:21:01.622 - runCommand: Process started, PID: 16825
+
+2011-03-23 17:21:01.622 00243 LoadConfig()
+2011-03-23 17:21:01.622 Requirement: ODSCC10
+2011-03-23 17:21:01.622 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:21:01.626 - runCommand: Process started, PID: 16826
+
+2011-03-23 17:21:01.626 00245 Comment: Update all the configs.
+
+2011-03-23 17:21:01.627 Requirement: ODSCC10
+
+2011-03-23 17:21:01.627 00247 UpdateAll()
+2011-03-23 17:21:01.627 Requirement: ODSCC10
+2011-03-23 17:21:01.627 RunCommand(ods-ksmutil update all)
+2011-03-23 17:21:03.837 - runCommand: Process started, PID: 16827
+2011-03-23 17:21:03.837 OUTPUT:	ERROR: Module /usr/libsofthsm.so in Repository SoftHSM cannot be found
+2011-03-23 17:21:03.837 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:21:03.837 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:21:03.837 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:21:03.837 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:21:03.837 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:21:03.837 OUTPUT:	Policy default2 found
+2011-03-23 17:21:03.837 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:21:03.837 OUTPUT:	Policy default found
+2011-03-23 17:21:03.837 OUTPUT:	Zone ods found
+2011-03-23 17:21:03.837 OUTPUT:	Policy set to default.
+2011-03-23 17:21:03.837 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:21:03.837 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:21:03.837 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:21:03.838 00249 Wait(10)
+
+2011-03-23 17:21:03.838 Requirement: ODSCC10
+
+2011-03-23 17:21:13.838 00251 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:21:13.838 Requirement: ODSCC10
+
+2011-03-23 17:21:13.838 00253 Start()
+2011-03-23 17:21:13.838 Requirement: ODSCC10
+2011-03-23 17:21:13.838 RunCommand(ods-control start)
+2011-03-23 17:21:13.840 - runCommand: Background process started, PID: 16835
+2011-03-23 17:21:18.881 ERROR:	return code = 1
+2011-03-23 17:21:18.881 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:21:18.897 - runCommand: Process started, PID: 16856
+2011-03-23 17:21:18.897 ERROR:	return code = 1
+2011-03-23 17:21:18.897 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:21:18.912 - runCommand: Process started, PID: 16860
+
+2011-03-23 17:21:18.912 00255 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:21:18.912 Requirement: ODSCC10
+
+2011-03-23 17:21:18.912 00259 Wait(15)
+
+2011-03-23 17:21:18.912 Requirement: ODSCC10
+
+2011-03-23 17:21:33.912 00261 Comment: Check if the signing was unsuccesfull. If a "aborting operation" is in the logging, the signing was unsuccesful. No SoftHSM has been found.
+
+2011-03-23 17:21:33.912 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T50: Use a Tokenlabel with 1 character
+
+2011-03-23 17:21:36.523 00270 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:21:36.523 Requirement: ODSCC10
+
+2011-03-23 17:21:36.523 00272 Stop()
+2011-03-23 17:21:36.523 Requirement: ODSCC10
+2011-03-23 17:21:36.523 RunCommand(ods-control stop)
+2011-03-23 17:21:36.528 - runCommand: Process started, PID: 16865
+2011-03-23 17:21:36.528 OUTPUT:	Stopping enforcer...
+2011-03-23 17:21:36.528 OUTPUT:	Cannot find PID file
+2011-03-23 17:21:36.528 OUTPUT:	Stopping signer engine..
+2011-03-23 17:21:36.528 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:21:36.528 ERROR:	return code = 1
+2011-03-23 17:21:36.528 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:21:36.538 - runCommand: Process started, PID: 16868
+2011-03-23 17:21:36.538 ERROR:	return code = 1
+2011-03-23 17:21:36.538 RunCommand(ps -e | grep signer)
+2011-03-23 17:21:36.548 - runCommand: Process started, PID: 16871
+2011-03-23 17:21:36.548 ERROR:	return code = 1
+
+2011-03-23 17:21:36.548 00274 Wait(10)
+
+2011-03-23 17:21:36.548 Requirement: ODSCC10
+
+2011-03-23 17:21:46.548 00276 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:21:46.548 Requirement: ODSCC10
+
+2011-03-23 17:21:46.548 00282 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:21:46.548 Requirement: ODSCC10
+
+2011-03-23 17:21:46.549 00287 Comment: Change the tokenlabel of slot1  to "S"
+
+2011-03-23 17:21:46.549 Requirement: ODSCC10
+
+2011-03-23 17:21:46.549 00289 InitRepo()
+2011-03-23 17:21:46.549 Requirement: ODSCC10
+2011-03-23 17:21:46.549 RunCommand(softhsm --init-token --slot  --label softhsm --init-token --slot 1 --label S --so-pin 4321 --pin 4321 --so-pin  --pin )
+2011-03-23 17:21:46.582 - runCommand: Process started, PID: 16874
+2011-03-23 17:21:46.582 ERROR:	Error: The given SO PIN does not match the one in the token.
+
+2011-03-23 17:21:46.582 00291 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:21:46.582 Requirement: ODSCC10
+
+2011-03-23 17:21:46.582 00294 LoadConfig()
+2011-03-23 17:21:46.582 Requirement: ODSCC10
+2011-03-23 17:21:46.582 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T50_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:21:46.586 - runCommand: Process started, PID: 16876
+
+2011-03-23 17:21:46.587 00297 LoadConfig()
+2011-03-23 17:21:46.587 Requirement: ODSCC10
+2011-03-23 17:21:46.587 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:21:46.590 - runCommand: Process started, PID: 16877
+
+2011-03-23 17:21:46.591 00299 Comment: Update all the configs.
+
+2011-03-23 17:21:46.591 Requirement: ODSCC10
+
+2011-03-23 17:21:46.591 00301 UpdateAll()
+2011-03-23 17:21:46.591 Requirement: ODSCC10
+2011-03-23 17:21:46.591 RunCommand(ods-ksmutil update all)
+2011-03-23 17:21:48.872 - runCommand: Process started, PID: 16878
+2011-03-23 17:21:48.872 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:21:48.872 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:21:48.872 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:21:48.872 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:21:48.872 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:21:48.873 OUTPUT:	Repository SoftHSM2 found
+2011-03-23 17:21:48.873 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:21:48.873 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:21:48.873 OUTPUT:	Policy default2 found
+2011-03-23 17:21:48.873 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:21:48.873 OUTPUT:	Policy default found
+2011-03-23 17:21:48.873 OUTPUT:	Zone ods found
+2011-03-23 17:21:48.873 OUTPUT:	Policy set to default.
+2011-03-23 17:21:48.873 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:21:48.873 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:21:48.873 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:21:48.873 00303 Wait(10)
+
+2011-03-23 17:21:48.873 Requirement: ODSCC10
+
+2011-03-23 17:21:58.873 00305 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:21:58.873 Requirement: ODSCC10
+
+2011-03-23 17:21:58.873 00307 Start()
+2011-03-23 17:21:58.873 Requirement: ODSCC10
+2011-03-23 17:21:58.873 RunCommand(ods-control start)
+2011-03-23 17:21:58.875 - runCommand: Background process started, PID: 16886
+2011-03-23 17:22:03.911 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:22:03.923 - runCommand: Process started, PID: 16909
+2011-03-23 17:22:03.923 ERROR:	return code = 1
+2011-03-23 17:22:03.923 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:22:03.938 - runCommand: Process started, PID: 16914
+
+2011-03-23 17:22:03.938 00309 Wait(10)
+
+2011-03-23 17:22:03.938 Requirement: ODSCC10
+
+2011-03-23 17:22:13.938 00311 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:22:13.938 Requirement: ODSCC10
+
+2011-03-23 17:22:13.938 00315 Wait(15)
+
+2011-03-23 17:22:13.938 Requirement: ODSCC10
+
+2011-03-23 17:22:28.939 00317 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:22:28.939 Requirement: ODSCC10
+
+2011-03-23 17:22:31.554 00322 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:22:31.554 Requirement: ODSCC10
+
+2011-03-23 17:22:31.554 00324 Stop()
+2011-03-23 17:22:31.554 Requirement: ODSCC10
+2011-03-23 17:22:31.554 RunCommand(ods-control stop)
+2011-03-23 17:22:31.558 - runCommand: Process started, PID: 16919
+2011-03-23 17:22:31.558 OUTPUT:	Stopping enforcer...
+2011-03-23 17:22:31.558 OUTPUT:	Cannot find PID file
+2011-03-23 17:22:31.558 OUTPUT:	Stopping signer engine..
+2011-03-23 17:22:31.558 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:22:31.558 ERROR:	return code = 1
+2011-03-23 17:22:31.558 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:22:31.568 - runCommand: Process started, PID: 16922
+2011-03-23 17:22:31.568 ERROR:	return code = 1
+2011-03-23 17:22:31.568 RunCommand(ps -e | grep signer)
+2011-03-23 17:22:31.578 - runCommand: Process started, PID: 16925
+2011-03-23 17:22:31.578 ERROR:	return code = 1
+
+2011-03-23 17:22:31.578 00326 Wait(10)
+
+2011-03-23 17:22:31.578 Requirement: ODSCC10
+
+2011-03-23 17:22:41.578 00328 Comment: Change the token to the previous label.
+
+2011-03-23 17:22:41.578 Requirement: ODSCC10
+
+2011-03-23 17:22:41.578 00330 InitRepo()
+2011-03-23 17:22:41.578 Requirement: ODSCC10
+2011-03-23 17:22:41.578 RunCommand(softhsm --init-token --slot  --label softhsm --init-token --slot 1 --label OpenDNSSEC2 --so-pin 4321 --pin 4321 --so-pin  --pin )
+2011-03-23 17:22:41.589 - runCommand: Process started, PID: 16928
+2011-03-23 17:22:41.589 ERROR:	Error: The given SO PIN does not match the one in the token.
+
+2011-03-23 17:22:41.589 00332 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:22:41.589 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T60: Use a Tokenlabel with 257 characters
+
+2011-03-23 17:22:41.589 00342 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:22:41.589 Requirement: ODSCC10
+
+2011-03-23 17:22:41.589 00344 Stop()
+2011-03-23 17:22:41.589 Requirement: ODSCC10
+2011-03-23 17:22:41.589 RunCommand(ods-control stop)
+2011-03-23 17:22:41.593 - runCommand: Process started, PID: 16930
+2011-03-23 17:22:41.593 OUTPUT:	Stopping enforcer...
+2011-03-23 17:22:41.593 OUTPUT:	Cannot find PID file
+2011-03-23 17:22:41.593 OUTPUT:	Stopping signer engine..
+2011-03-23 17:22:41.593 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:22:41.593 ERROR:	return code = 1
+2011-03-23 17:22:41.593 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:22:41.602 - runCommand: Process started, PID: 16933
+2011-03-23 17:22:41.602 ERROR:	return code = 1
+2011-03-23 17:22:41.602 RunCommand(ps -e | grep signer)
+2011-03-23 17:22:41.612 - runCommand: Process started, PID: 16936
+2011-03-23 17:22:41.612 ERROR:	return code = 1
+
+2011-03-23 17:22:41.612 00346 Wait(10)
+
+2011-03-23 17:22:41.612 Requirement: ODSCC10
+
+2011-03-23 17:22:51.613 00348 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:22:51.613 Requirement: ODSCC10
+
+2011-03-23 17:22:51.613 00354 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:22:51.613 Requirement: ODSCC10
+
+2011-03-23 17:22:51.613 00360 Comment: Change the tokenlabel of slot1  to "SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM"
+(257 characters)
+
+2011-03-23 17:22:51.613 Requirement: ODSCC10
+
+2011-03-23 17:22:51.613 00362 InitRepo()
+2011-03-23 17:22:51.613 Requirement: ODSCC10
+2011-03-23 17:22:51.613 RunCommand(softhsm --init-token --slot  --label softhsm --init-token --slot 1 --label SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM123SoftHSM --so-pin 4321 --pin 4321 --so-pin  --pin )
+2011-03-23 17:22:51.623 - runCommand: Process started, PID: 16939
+2011-03-23 17:22:51.623 ERROR:	Error: The token label must not have a length greater than 32 chars.
+
+2011-03-23 17:22:51.623 00364 Wait(1/5/1900)
+
+2011-03-23 17:22:51.623 Requirement: ODSCC10
+
+2011-03-23 17:22:52.623 00366 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:22:52.623 Requirement: ODSCC10
+
+2011-03-23 17:22:52.623 00369 LoadConfig()
+2011-03-23 17:22:52.623 Requirement: ODSCC10
+2011-03-23 17:22:52.623 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T60_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:22:52.628 - runCommand: Process started, PID: 16941
+
+2011-03-23 17:22:52.628 00372 LoadConfig()
+2011-03-23 17:22:52.628 Requirement: ODSCC10
+2011-03-23 17:22:52.628 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:22:52.632 - runCommand: Process started, PID: 16942
+
+2011-03-23 17:22:52.633 00374 Comment: Update all the configs.
+
+2011-03-23 17:22:52.633 Requirement: ODSCC10
+
+2011-03-23 17:22:52.633 00376 UpdateAll()
+2011-03-23 17:22:52.633 Requirement: ODSCC10
+2011-03-23 17:22:52.633 RunCommand(ods-ksmutil update all)
+2011-03-23 17:22:54.772 - runCommand: Process started, PID: 16943
+2011-03-23 17:22:54.772 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:22:54.772 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:22:54.772 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:22:54.772 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:22:54.772 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:22:54.772 OUTPUT:	Repository SoftHSM2 found
+2011-03-23 17:22:54.772 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:22:54.772 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:22:54.772 OUTPUT:	Policy default2 found
+2011-03-23 17:22:54.772 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:22:54.772 OUTPUT:	Policy default found
+2011-03-23 17:22:54.772 OUTPUT:	Zone ods found
+2011-03-23 17:22:54.772 OUTPUT:	Policy set to default.
+2011-03-23 17:22:54.772 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:22:54.772 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:22:54.772 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:22:54.773 00378 Wait(10)
+
+2011-03-23 17:22:54.773 Requirement: ODSCC10
+
+2011-03-23 17:23:04.773 00380 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:23:04.773 Requirement: ODSCC10
+
+2011-03-23 17:23:04.773 00382 Start()
+2011-03-23 17:23:04.773 Requirement: ODSCC10
+2011-03-23 17:23:04.773 RunCommand(ods-control start)
+2011-03-23 17:23:04.775 - runCommand: Background process started, PID: 16951
+2011-03-23 17:23:09.808 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:23:09.826 - runCommand: Process started, PID: 16975
+2011-03-23 17:23:09.826 ERROR:	return code = 1
+2011-03-23 17:23:09.826 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:23:09.840 - runCommand: Process started, PID: 16980
+
+2011-03-23 17:23:09.840 00384 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:23:09.840 Requirement: ODSCC10
+
+2011-03-23 17:23:09.840 00388 Wait(15)
+
+2011-03-23 17:23:09.840 Requirement: ODSCC10
+
+2011-03-23 17:23:24.840 00390 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:23:24.840 Requirement: ODSCC10
+
+2011-03-23 17:23:27.453 00395 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:23:27.453 Requirement: ODSCC10
+
+2011-03-23 17:23:27.453 00397 Wait(10)
+
+2011-03-23 17:23:27.453 Requirement: ODSCC10
+
+2011-03-23 17:23:37.453 00399 Stop()
+2011-03-23 17:23:37.453 Requirement: ODSCC10
+2011-03-23 17:23:37.453 RunCommand(ods-control stop)
+2011-03-23 17:23:37.459 - runCommand: Process started, PID: 16985
+2011-03-23 17:23:37.459 OUTPUT:	Stopping enforcer...
+2011-03-23 17:23:37.460 OUTPUT:	Cannot find PID file
+2011-03-23 17:23:37.460 OUTPUT:	Stopping signer engine..
+2011-03-23 17:23:37.460 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:23:37.460 ERROR:	return code = 1
+2011-03-23 17:23:37.460 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:23:37.477 - runCommand: Process started, PID: 16988
+2011-03-23 17:23:37.477 ERROR:	return code = 1
+2011-03-23 17:23:37.477 RunCommand(ps -e | grep signer)
+2011-03-23 17:23:37.487 - runCommand: Process started, PID: 16991
+2011-03-23 17:23:37.487 ERROR:	return code = 1
+
+2011-03-23 17:23:37.487 00401 Comment: Change the token to the previous label.
+
+2011-03-23 17:23:37.487 Requirement: ODSCC10
+
+2011-03-23 17:23:37.487 00403 InitRepo()
+2011-03-23 17:23:37.487 Requirement: ODSCC10
+2011-03-23 17:23:37.487 RunCommand(softhsm --init-token --slot  --label softhsm --init-token --slot 1 --label OpenDNSSEC2 --so-pin 4321 --pin 4321 --so-pin  --pin )
+2011-03-23 17:23:37.493 - runCommand: Process started, PID: 16994
+2011-03-23 17:23:37.493 ERROR:	Error: The given SO PIN does not match the one in the token.
+
+2011-03-23 17:23:37.493 00405 Wait(5)
+
+2011-03-23 17:23:37.493 Requirement: ODSCC10
+
+2011-03-23 17:23:42.494 00407 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:23:42.494 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T70: Configure no PIN while PIN is needed
+
+2011-03-23 17:23:42.494 00413 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:23:42.494 Requirement: ODSCC10
+
+2011-03-23 17:23:42.494 00415 Stop()
+2011-03-23 17:23:42.494 Requirement: ODSCC10
+2011-03-23 17:23:42.494 RunCommand(ods-control stop)
+2011-03-23 17:23:42.501 - runCommand: Process started, PID: 16996
+2011-03-23 17:23:42.501 OUTPUT:	Stopping enforcer...
+2011-03-23 17:23:42.501 OUTPUT:	Cannot find PID file
+2011-03-23 17:23:42.501 OUTPUT:	Stopping signer engine..
+2011-03-23 17:23:42.501 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:23:42.501 ERROR:	return code = 1
+2011-03-23 17:23:42.501 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:23:42.520 - runCommand: Process started, PID: 16999
+2011-03-23 17:23:42.520 ERROR:	return code = 1
+2011-03-23 17:23:42.520 RunCommand(ps -e | grep signer)
+2011-03-23 17:23:42.537 - runCommand: Process started, PID: 17002
+2011-03-23 17:23:42.538 ERROR:	return code = 1
+
+2011-03-23 17:23:42.538 00417 Wait(10)
+
+2011-03-23 17:23:42.538 Requirement: ODSCC10
+
+2011-03-23 17:23:52.538 00419 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:23:52.538 Requirement: ODSCC10
+
+2011-03-23 17:23:52.538 00425 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:23:52.538 Requirement: ODSCC10
+
+2011-03-23 17:23:52.538 00429 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:23:52.538 Requirement: ODSCC10
+
+2011-03-23 17:23:52.539 00432 LoadConfig()
+2011-03-23 17:23:52.539 Requirement: ODSCC10
+2011-03-23 17:23:52.539 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T70_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:23:52.543 - runCommand: Process started, PID: 17005
+
+2011-03-23 17:23:52.544 00435 LoadConfig()
+2011-03-23 17:23:52.544 Requirement: ODSCC10
+2011-03-23 17:23:52.544 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:23:52.548 - runCommand: Process started, PID: 17006
+
+2011-03-23 17:23:52.548 00437 Comment: Update all the configs.
+
+2011-03-23 17:23:52.548 Requirement: ODSCC10
+
+2011-03-23 17:23:52.548 00439 UpdateAll()
+2011-03-23 17:23:52.548 Requirement: ODSCC10
+2011-03-23 17:23:52.548 RunCommand(ods-ksmutil update all)
+2011-03-23 17:23:54.658 - runCommand: Process started, PID: 17007
+2011-03-23 17:23:54.658 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:23:54.658 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:23:54.658 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:23:54.658 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:23:54.658 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:23:54.658 OUTPUT:	Policy default2 found
+2011-03-23 17:23:54.658 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:23:54.658 OUTPUT:	Policy default found
+2011-03-23 17:23:54.658 OUTPUT:	Zone ods found
+2011-03-23 17:23:54.658 OUTPUT:	Policy set to default.
+2011-03-23 17:23:54.658 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:23:54.658 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:23:54.658 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:23:54.658 00441 Wait(10)
+
+2011-03-23 17:23:54.658 Requirement: ODSCC10
+
+2011-03-23 17:24:04.659 00443 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:24:04.659 Requirement: ODSCC10
+
+2011-03-23 17:24:04.659 00445 Start()
+2011-03-23 17:24:04.659 Requirement: ODSCC10
+2011-03-23 17:24:04.659 RunCommand(ods-control start)
+2011-03-23 17:24:04.661 - runCommand: Background process started, PID: 17015
+2011-03-23 17:24:09.692 ERROR:	return code = 1
+2011-03-23 17:24:09.692 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:24:09.708 - runCommand: Process started, PID: 17037
+2011-03-23 17:24:09.708 ERROR:	return code = 1
+2011-03-23 17:24:09.708 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:24:09.730 - runCommand: Process started, PID: 17041
+
+2011-03-23 17:24:09.730 00447 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:24:09.730 Requirement: ODSCC10
+
+2011-03-23 17:24:09.730 00451 Wait(15)
+
+2011-03-23 17:24:09.730 Requirement: ODSCC10
+
+2011-03-23 17:24:24.730 00453 Comment: Check if the signing was unsuccesfull. If a "aborting operation" is in the logging, the signing was unsuccesful. 
+
+2011-03-23 17:24:24.730 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T80: Configure an Incorrect PIN and run signing
+
+2011-03-23 17:24:27.346 00461 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:24:27.346 Requirement: ODSCC10
+
+2011-03-23 17:24:27.346 00463 Stop()
+2011-03-23 17:24:27.346 Requirement: ODSCC10
+2011-03-23 17:24:27.346 RunCommand(ods-control stop)
+2011-03-23 17:24:27.350 - runCommand: Process started, PID: 17046
+2011-03-23 17:24:27.350 OUTPUT:	Stopping enforcer...
+2011-03-23 17:24:27.350 OUTPUT:	Cannot find PID file
+2011-03-23 17:24:27.350 OUTPUT:	Stopping signer engine..
+2011-03-23 17:24:27.350 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:24:27.350 ERROR:	return code = 1
+2011-03-23 17:24:27.350 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:24:27.360 - runCommand: Process started, PID: 17049
+2011-03-23 17:24:27.360 ERROR:	return code = 1
+2011-03-23 17:24:27.360 RunCommand(ps -e | grep signer)
+2011-03-23 17:24:27.370 - runCommand: Process started, PID: 17052
+2011-03-23 17:24:27.370 ERROR:	return code = 1
+
+2011-03-23 17:24:27.370 00465 Wait(10)
+
+2011-03-23 17:24:27.370 Requirement: ODSCC10
+
+2011-03-23 17:24:37.370 00467 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:24:37.370 Requirement: ODSCC10
+
+2011-03-23 17:24:37.370 00473 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:24:37.370 Requirement: ODSCC10
+
+2011-03-23 17:24:37.370 00478 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:24:37.370 Requirement: ODSCC10
+
+2011-03-23 17:24:37.371 00481 LoadConfig()
+2011-03-23 17:24:37.371 Requirement: ODSCC10
+2011-03-23 17:24:37.371 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T80_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:24:37.376 - runCommand: Process started, PID: 17055
+
+2011-03-23 17:24:37.376 00484 LoadConfig()
+2011-03-23 17:24:37.376 Requirement: ODSCC10
+2011-03-23 17:24:37.376 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:24:37.380 - runCommand: Process started, PID: 17056
+
+2011-03-23 17:24:37.380 00486 Comment: Update all the configs.
+
+2011-03-23 17:24:37.380 Requirement: ODSCC10
+
+2011-03-23 17:24:37.380 00488 UpdateAll()
+2011-03-23 17:24:37.380 Requirement: ODSCC10
+2011-03-23 17:24:37.380 RunCommand(ods-ksmutil update all)
+2011-03-23 17:24:39.468 - runCommand: Process started, PID: 17057
+2011-03-23 17:24:39.468 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:24:39.468 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:24:39.468 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:24:39.469 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:24:39.469 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:24:39.469 OUTPUT:	Policy default2 found
+2011-03-23 17:24:39.469 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:24:39.469 OUTPUT:	Policy default found
+2011-03-23 17:24:39.469 OUTPUT:	Zone ods found
+2011-03-23 17:24:39.469 OUTPUT:	Policy set to default.
+2011-03-23 17:24:39.469 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:24:39.469 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:24:39.469 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:24:39.469 00490 Wait(10)
+
+2011-03-23 17:24:39.469 Requirement: ODSCC10
+
+2011-03-23 17:24:49.469 00492 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:24:49.469 Requirement: ODSCC10
+
+2011-03-23 17:24:49.469 00494 Start()
+2011-03-23 17:24:49.469 Requirement: ODSCC10
+2011-03-23 17:24:49.469 RunCommand(ods-control start)
+2011-03-23 17:24:49.471 - runCommand: Background process started, PID: 17065
+2011-03-23 17:24:54.506 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:24:54.525 - runCommand: Process started, PID: 17089
+2011-03-23 17:24:54.526 ERROR:	return code = 1
+2011-03-23 17:24:54.526 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:24:54.539 - runCommand: Process started, PID: 17093
+
+2011-03-23 17:24:54.539 00496 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:24:54.540 Requirement: ODSCC10
+
+2011-03-23 17:24:54.540 00500 Wait(15)
+
+2011-03-23 17:24:54.540 Requirement: ODSCC10
+
+2011-03-23 17:25:09.540 00502 Comment: Check if the signing was unsuccesfull. If a "aborting operation" is in the logging, the signing was unsuccesful. 
+
+2011-03-23 17:25:09.540 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T90: Use correct PIN plus one additional character
+
+2011-03-23 17:25:12.163 00510 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:25:12.163 Requirement: ODSCC10
+
+2011-03-23 17:25:12.163 00512 Stop()
+2011-03-23 17:25:12.163 Requirement: ODSCC10
+2011-03-23 17:25:12.163 RunCommand(ods-control stop)
+2011-03-23 17:25:12.167 - runCommand: Process started, PID: 17098
+2011-03-23 17:25:12.167 OUTPUT:	Stopping enforcer...
+2011-03-23 17:25:12.167 OUTPUT:	Cannot find PID file
+2011-03-23 17:25:12.167 OUTPUT:	Stopping signer engine..
+2011-03-23 17:25:12.167 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:25:12.167 ERROR:	return code = 1
+2011-03-23 17:25:12.167 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:25:12.177 - runCommand: Process started, PID: 17101
+2011-03-23 17:25:12.177 ERROR:	return code = 1
+2011-03-23 17:25:12.177 RunCommand(ps -e | grep signer)
+2011-03-23 17:25:12.187 - runCommand: Process started, PID: 17104
+2011-03-23 17:25:12.187 ERROR:	return code = 1
+
+2011-03-23 17:25:12.187 00514 Wait(10)
+
+2011-03-23 17:25:12.187 Requirement: ODSCC10
+
+2011-03-23 17:25:22.187 00516 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:25:22.187 Requirement: ODSCC10
+
+2011-03-23 17:25:22.187 00522 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:25:22.187 Requirement: ODSCC10
+
+2011-03-23 17:25:22.187 00527 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:25:22.187 Requirement: ODSCC10
+
+2011-03-23 17:25:22.188 00530 LoadConfig()
+2011-03-23 17:25:22.188 Requirement: ODSCC10
+2011-03-23 17:25:22.188 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T90_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:25:22.192 - runCommand: Process started, PID: 17107
+
+2011-03-23 17:25:22.193 00533 LoadConfig()
+2011-03-23 17:25:22.193 Requirement: ODSCC10
+2011-03-23 17:25:22.193 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:25:22.197 - runCommand: Process started, PID: 17108
+
+2011-03-23 17:25:22.197 00535 Comment: Update all the configs.
+
+2011-03-23 17:25:22.197 Requirement: ODSCC10
+
+2011-03-23 17:25:22.197 00537 UpdateAll()
+2011-03-23 17:25:22.197 Requirement: ODSCC10
+2011-03-23 17:25:22.197 RunCommand(ods-ksmutil update all)
+2011-03-23 17:25:24.354 - runCommand: Process started, PID: 17109
+2011-03-23 17:25:24.354 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:25:24.354 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:25:24.354 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:25:24.354 OUTPUT:	No Maximum Capacity set.
+2011-03-23 17:25:24.354 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:25:24.354 OUTPUT:	Policy default2 found
+2011-03-23 17:25:24.354 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:25:24.354 OUTPUT:	Policy default found
+2011-03-23 17:25:24.354 OUTPUT:	Zone ods found
+2011-03-23 17:25:24.354 OUTPUT:	Policy set to default.
+2011-03-23 17:25:24.354 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:25:24.354 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:25:24.354 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:25:24.354 00539 Wait(10)
+
+2011-03-23 17:25:24.354 Requirement: ODSCC10
+
+2011-03-23 17:25:34.354 00541 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:25:34.355 Requirement: ODSCC10
+
+2011-03-23 17:25:34.355 00543 Start()
+2011-03-23 17:25:34.355 Requirement: ODSCC10
+2011-03-23 17:25:34.355 RunCommand(ods-control start)
+2011-03-23 17:25:34.357 - runCommand: Background process started, PID: 17117
+2011-03-23 17:25:39.390 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:25:39.408 - runCommand: Process started, PID: 17140
+2011-03-23 17:25:39.408 ERROR:	return code = 1
+2011-03-23 17:25:39.408 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:25:39.421 - runCommand: Process started, PID: 17145
+
+2011-03-23 17:25:39.421 00545 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:25:39.421 Requirement: ODSCC10
+
+2011-03-23 17:25:39.421 00549 Wait(15)
+
+2011-03-23 17:25:39.421 Requirement: ODSCC10
+
+2011-03-23 17:25:54.421 00551 Comment: Check if the signing was unsuccesfull. If a "aborting operation" is in the logging, the signing was unsuccesful. 
+
+2011-03-23 17:25:54.421 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T100: Use a Repository Capacity of 0 and expect failure
+
+2011-03-23 17:25:57.345 00561 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:25:57.346 Requirement: ODSCC10
+
+2011-03-23 17:25:57.347 00563 Stop()
+2011-03-23 17:25:57.347 Requirement: ODSCC10
+2011-03-23 17:25:57.347 RunCommand(ods-control stop)
+2011-03-23 17:25:57.388 - runCommand: Process started, PID: 17150
+2011-03-23 17:25:57.389 OUTPUT:	Stopping enforcer...
+2011-03-23 17:25:57.389 OUTPUT:	Cannot find PID file
+2011-03-23 17:25:57.389 OUTPUT:	Stopping signer engine..
+2011-03-23 17:25:57.389 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:25:57.389 ERROR:	return code = 1
+2011-03-23 17:25:57.389 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:25:57.482 - runCommand: Process started, PID: 17153
+2011-03-23 17:25:57.483 ERROR:	return code = 1
+2011-03-23 17:25:57.483 RunCommand(ps -e | grep signer)
+2011-03-23 17:25:57.581 - runCommand: Process started, PID: 17156
+2011-03-23 17:25:57.582 ERROR:	return code = 1
+
+2011-03-23 17:25:57.583 00565 Wait(10)
+
+2011-03-23 17:25:57.583 Requirement: ODSCC10
+
+2011-03-23 17:26:07.586 00567 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:26:07.586 Requirement: ODSCC10
+
+2011-03-23 17:26:07.588 00573 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:26:07.588 Requirement: ODSCC10
+
+2011-03-23 17:26:07.590 00577 Wait(10)
+
+2011-03-23 17:26:07.590 Requirement: ODSCC10
+
+2011-03-23 17:26:17.593 00579 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:26:17.593 Requirement: ODSCC10
+
+2011-03-23 17:26:17.595 00582 LoadConfig()
+2011-03-23 17:26:17.595 Requirement: ODSCC10
+2011-03-23 17:26:17.595 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T100_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:26:17.644 - runCommand: Process started, PID: 17159
+
+2011-03-23 17:26:17.647 00585 LoadConfig()
+2011-03-23 17:26:17.647 Requirement: ODSCC10
+2011-03-23 17:26:17.647 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:26:17.685 - runCommand: Process started, PID: 17160
+
+2011-03-23 17:26:17.687 00587 Comment: Update all the configs.
+
+2011-03-23 17:26:17.687 Requirement: ODSCC10
+
+2011-03-23 17:26:17.689 00589 UpdateAll()
+2011-03-23 17:26:17.689 Requirement: ODSCC10
+2011-03-23 17:26:17.690 RunCommand(ods-ksmutil update all)
+2011-03-23 17:26:17.739 - runCommand: Process started, PID: 17161
+2011-03-23 17:26:17.740 OUTPUT:	Error validating file "/etc/opendnssec/conf.xml"
+2011-03-23 17:26:17.740 OUTPUT:	Failed to connect to database
+2011-03-23 17:26:17.741 ERROR:	/etc/opendnssec/conf.xml:10: element Capacity: Relax-NG validity error : Type positiveInteger doesn't allow value '0'
+2011-03-23 17:26:17.741 ERROR:	/etc/opendnssec/conf.xml:10: element Capacity: Relax-NG validity error : Error validating datatype positiveInteger
+2011-03-23 17:26:17.741 ERROR:	/etc/opendnssec/conf.xml:10: element Capacity: Relax-NG validity error : Element Capacity failed to validate content
+2011-03-23 17:26:17.741 ERROR:	return code = 1
+
+2011-03-23 17:26:17.743 00591 Wait(10)
+
+2011-03-23 17:26:17.743 Requirement: ODSCC10
+
+2011-03-23 17:26:27.746 00593 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:26:27.746 Requirement: ODSCC10
+
+2011-03-23 17:26:27.748 00595 Start()
+2011-03-23 17:26:27.748 Requirement: ODSCC10
+2011-03-23 17:26:27.748 RunCommand(ods-control start)
+2011-03-23 17:26:27.768 - runCommand: Background process started, PID: 17162
+2011-03-23 17:26:37.123 ERROR:	return code = 1
+2011-03-23 17:26:37.123 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:26:37.141 - runCommand: Process started, PID: 17190
+2011-03-23 17:26:37.141 ERROR:	return code = 1
+2011-03-23 17:26:37.141 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:26:37.165 - runCommand: Process started, PID: 17194
+
+2011-03-23 17:26:37.165 00597 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:26:37.165 Requirement: ODSCC10
+
+2011-03-23 17:26:37.166 00601 Wait(15)
+
+2011-03-23 17:26:37.166 Requirement: ODSCC10
+
+2011-03-23 17:26:52.166 00603 Comment: Check if the signing was unsuccesfull. If a "aborting operation" is in the logging, the signing was unsuccesful. 
+
+2011-03-23 17:26:52.166 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T110: Use a Repository Capacity of 1 and expect failure
+
+2011-03-23 17:26:54.781 00613 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:26:54.781 Requirement: ODSCC10
+
+2011-03-23 17:26:54.781 00615 Stop()
+2011-03-23 17:26:54.781 Requirement: ODSCC10
+2011-03-23 17:26:54.781 RunCommand(ods-control stop)
+2011-03-23 17:26:54.785 - runCommand: Process started, PID: 17199
+2011-03-23 17:26:54.785 OUTPUT:	Stopping enforcer...
+2011-03-23 17:26:54.785 OUTPUT:	Cannot find PID file
+2011-03-23 17:26:54.785 OUTPUT:	Stopping signer engine..
+2011-03-23 17:26:54.785 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:26:54.785 ERROR:	return code = 1
+2011-03-23 17:26:54.785 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:26:54.794 - runCommand: Process started, PID: 17202
+2011-03-23 17:26:54.794 ERROR:	return code = 1
+2011-03-23 17:26:54.794 RunCommand(ps -e | grep signer)
+2011-03-23 17:26:54.804 - runCommand: Process started, PID: 17205
+2011-03-23 17:26:54.804 ERROR:	return code = 1
+
+2011-03-23 17:26:54.804 00617 Wait(10)
+
+2011-03-23 17:26:54.804 Requirement: ODSCC10
+
+2011-03-23 17:27:04.804 00619 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:27:04.804 Requirement: ODSCC10
+
+2011-03-23 17:27:04.804 00625 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:27:04.805 Requirement: ODSCC10
+
+2011-03-23 17:27:04.805 00629 Wait(10)
+
+2011-03-23 17:27:04.805 Requirement: ODSCC10
+
+2011-03-23 17:27:14.805 00632 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:27:14.805 Requirement: ODSCC10
+
+2011-03-23 17:27:14.805 00635 LoadConfig()
+2011-03-23 17:27:14.805 Requirement: ODSCC10
+2011-03-23 17:27:14.805 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T110_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:27:14.810 - runCommand: Process started, PID: 17208
+
+2011-03-23 17:27:14.810 00638 LoadConfig()
+2011-03-23 17:27:14.810 Requirement: ODSCC10
+2011-03-23 17:27:14.810 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:27:14.814 - runCommand: Process started, PID: 17209
+
+2011-03-23 17:27:14.814 00640 Comment: Update all the configs.
+
+2011-03-23 17:27:14.814 Requirement: ODSCC10
+
+2011-03-23 17:27:14.815 00642 UpdateAll()
+2011-03-23 17:27:14.815 Requirement: ODSCC10
+2011-03-23 17:27:14.815 RunCommand(ods-ksmutil update all)
+2011-03-23 17:27:16.913 - runCommand: Process started, PID: 17210
+2011-03-23 17:27:16.913 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:27:16.913 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:27:16.913 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:27:16.913 OUTPUT:	Capacity set to 1.
+2011-03-23 17:27:16.913 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:27:16.913 OUTPUT:	Policy default2 found
+2011-03-23 17:27:16.913 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:27:16.913 OUTPUT:	Policy default found
+2011-03-23 17:27:16.913 OUTPUT:	Zone ods found
+2011-03-23 17:27:16.913 OUTPUT:	Policy set to default.
+2011-03-23 17:27:16.913 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:27:16.913 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:27:16.913 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:27:16.913 00644 Wait(10)
+
+2011-03-23 17:27:16.913 Requirement: ODSCC10
+
+2011-03-23 17:27:26.914 00646 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:27:26.914 Requirement: ODSCC10
+
+2011-03-23 17:27:26.914 00648 Start()
+2011-03-23 17:27:26.914 Requirement: ODSCC10
+2011-03-23 17:27:26.914 RunCommand(ods-control start)
+2011-03-23 17:27:26.916 - runCommand: Background process started, PID: 17218
+2011-03-23 17:27:31.950 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:27:31.969 - runCommand: Process started, PID: 17241
+2011-03-23 17:27:31.969 ERROR:	return code = 1
+2011-03-23 17:27:31.969 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:27:31.985 - runCommand: Process started, PID: 17246
+
+2011-03-23 17:27:31.985 00650 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:27:31.985 Requirement: ODSCC10
+
+2011-03-23 17:27:31.985 00654 Wait(15)
+
+2011-03-23 17:27:31.985 Requirement: ODSCC10
+
+2011-03-23 17:27:46.985 00656 Comment: Check if the signing was unsuccesfull. If a "aborting operation" is in the logging, the signing was unsuccesful. 
+
+2011-03-23 17:27:46.985 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T120: Use a Repository Capacity of 4 and expect success
+
+2011-03-23 17:27:49.604 00665 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:27:49.604 Requirement: ODSCC10
+
+2011-03-23 17:27:49.604 00667 Stop()
+2011-03-23 17:27:49.604 Requirement: ODSCC10
+2011-03-23 17:27:49.604 RunCommand(ods-control stop)
+2011-03-23 17:27:49.608 - runCommand: Process started, PID: 17251
+2011-03-23 17:27:49.608 OUTPUT:	Stopping enforcer...
+2011-03-23 17:27:49.608 OUTPUT:	Cannot find PID file
+2011-03-23 17:27:49.608 OUTPUT:	Stopping signer engine..
+2011-03-23 17:27:49.608 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:27:49.608 ERROR:	return code = 1
+2011-03-23 17:27:49.608 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:27:49.618 - runCommand: Process started, PID: 17254
+2011-03-23 17:27:49.618 ERROR:	return code = 1
+2011-03-23 17:27:49.618 RunCommand(ps -e | grep signer)
+2011-03-23 17:27:49.629 - runCommand: Process started, PID: 17257
+2011-03-23 17:27:49.629 ERROR:	return code = 1
+
+2011-03-23 17:27:49.629 00669 Wait(10)
+
+2011-03-23 17:27:49.629 Requirement: ODSCC10
+
+2011-03-23 17:27:59.629 00671 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:27:59.629 Requirement: ODSCC10
+
+2011-03-23 17:27:59.629 00677 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:27:59.630 Requirement: ODSCC10
+
+2011-03-23 17:27:59.630 00681 Wait(10)
+
+2011-03-23 17:27:59.630 Requirement: ODSCC10
+
+2011-03-23 17:28:09.630 00683 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:28:09.630 Requirement: ODSCC10
+
+2011-03-23 17:28:09.630 00686 LoadConfig()
+2011-03-23 17:28:09.630 Requirement: ODSCC10
+2011-03-23 17:28:09.630 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T120_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:28:09.635 - runCommand: Process started, PID: 17260
+
+2011-03-23 17:28:09.635 00689 LoadConfig()
+2011-03-23 17:28:09.635 Requirement: ODSCC10
+2011-03-23 17:28:09.635 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:28:09.639 - runCommand: Process started, PID: 17261
+
+2011-03-23 17:28:09.639 00691 Comment: Update all the configs.
+
+2011-03-23 17:28:09.639 Requirement: ODSCC10
+
+2011-03-23 17:28:09.640 00693 UpdateAll()
+2011-03-23 17:28:09.640 Requirement: ODSCC10
+2011-03-23 17:28:09.640 RunCommand(ods-ksmutil update all)
+2011-03-23 17:28:11.735 - runCommand: Process started, PID: 17262
+2011-03-23 17:28:11.735 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:28:11.735 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:28:11.735 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:28:11.735 OUTPUT:	Capacity set to 4.
+2011-03-23 17:28:11.735 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:28:11.735 OUTPUT:	Policy default2 found
+2011-03-23 17:28:11.735 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:28:11.735 OUTPUT:	Policy default found
+2011-03-23 17:28:11.735 OUTPUT:	Zone ods found
+2011-03-23 17:28:11.735 OUTPUT:	Policy set to default.
+2011-03-23 17:28:11.735 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:28:11.735 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:28:11.735 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:28:11.735 00695 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:28:11.735 Requirement: ODSCC10
+
+2011-03-23 17:28:11.735 00697 Start()
+2011-03-23 17:28:11.735 Requirement: ODSCC10
+2011-03-23 17:28:11.735 RunCommand(ods-control start)
+2011-03-23 17:28:11.737 - runCommand: Background process started, PID: 17270
+2011-03-23 17:28:16.768 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:28:16.781 - runCommand: Process started, PID: 17293
+2011-03-23 17:28:16.781 ERROR:	return code = 1
+2011-03-23 17:28:16.781 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:28:16.794 - runCommand: Process started, PID: 17298
+
+2011-03-23 17:28:16.794 00699 Wait(10)
+
+2011-03-23 17:28:16.794 Requirement: ODSCC10
+
+2011-03-23 17:28:26.794 00701 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:28:26.795 Requirement: ODSCC10
+
+2011-03-23 17:28:26.795 00705 Wait(15)
+
+2011-03-23 17:28:26.795 Requirement: ODSCC10
+
+2011-03-23 17:28:41.795 00707 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:28:41.795 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T130: Use a Repository Capacity of 100000 and expect success
+
+2011-03-23 17:28:44.405 00717 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:28:44.405 Requirement: ODSCC10
+
+2011-03-23 17:28:44.405 00719 Stop()
+2011-03-23 17:28:44.405 Requirement: ODSCC10
+2011-03-23 17:28:44.405 RunCommand(ods-control stop)
+2011-03-23 17:28:44.409 - runCommand: Process started, PID: 17303
+2011-03-23 17:28:44.409 OUTPUT:	Stopping enforcer...
+2011-03-23 17:28:44.409 OUTPUT:	Cannot find PID file
+2011-03-23 17:28:44.409 OUTPUT:	Stopping signer engine..
+2011-03-23 17:28:44.409 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:28:44.409 ERROR:	return code = 1
+2011-03-23 17:28:44.409 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:28:44.419 - runCommand: Process started, PID: 17306
+2011-03-23 17:28:44.419 ERROR:	return code = 1
+2011-03-23 17:28:44.419 RunCommand(ps -e | grep signer)
+2011-03-23 17:28:44.429 - runCommand: Process started, PID: 17309
+2011-03-23 17:28:44.429 ERROR:	return code = 1
+
+2011-03-23 17:28:44.429 00721 Wait(10)
+
+2011-03-23 17:28:44.429 Requirement: ODSCC10
+
+2011-03-23 17:28:54.430 00723 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:28:54.430 Requirement: ODSCC10
+
+2011-03-23 17:28:54.430 00729 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:28:54.430 Requirement: ODSCC10
+
+2011-03-23 17:28:54.430 00733 Wait(10)
+
+2011-03-23 17:28:54.430 Requirement: ODSCC10
+
+2011-03-23 17:29:04.430 00736 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:29:04.430 Requirement: ODSCC10
+
+2011-03-23 17:29:04.431 00739 LoadConfig()
+2011-03-23 17:29:04.431 Requirement: ODSCC10
+2011-03-23 17:29:04.431 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T130_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:29:04.435 - runCommand: Process started, PID: 17312
+
+2011-03-23 17:29:04.436 00742 LoadConfig()
+2011-03-23 17:29:04.436 Requirement: ODSCC10
+2011-03-23 17:29:04.436 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:29:04.440 - runCommand: Process started, PID: 17313
+
+2011-03-23 17:29:04.440 00744 Comment: Update all the configs.
+
+2011-03-23 17:29:04.440 Requirement: ODSCC10
+
+2011-03-23 17:29:04.440 00746 UpdateAll()
+2011-03-23 17:29:04.440 Requirement: ODSCC10
+2011-03-23 17:29:04.440 RunCommand(ods-ksmutil update all)
+2011-03-23 17:29:06.523 - runCommand: Process started, PID: 17314
+2011-03-23 17:29:06.523 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:29:06.523 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:29:06.523 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:29:06.523 OUTPUT:	Capacity set to 100000.
+2011-03-23 17:29:06.523 OUTPUT:	RequireBackup NOT set; please make sure that you know the potential problems of using keys which are not recoverable
+2011-03-23 17:29:06.523 OUTPUT:	Policy default2 found
+2011-03-23 17:29:06.523 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:29:06.523 OUTPUT:	Policy default found
+2011-03-23 17:29:06.523 OUTPUT:	Zone ods found
+2011-03-23 17:29:06.523 OUTPUT:	Policy set to default.
+2011-03-23 17:29:06.524 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:29:06.524 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:29:06.524 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:29:06.524 00748 Wait(10)
+
+2011-03-23 17:29:06.524 Requirement: ODSCC10
+
+2011-03-23 17:29:16.524 00750 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:29:16.524 Requirement: ODSCC10
+
+2011-03-23 17:29:16.524 00752 Start()
+2011-03-23 17:29:16.524 Requirement: ODSCC10
+2011-03-23 17:29:16.524 RunCommand(ods-control start)
+2011-03-23 17:29:16.526 - runCommand: Background process started, PID: 17322
+2011-03-23 17:29:21.559 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:29:21.581 - runCommand: Process started, PID: 17345
+2011-03-23 17:29:21.581 ERROR:	return code = 1
+2011-03-23 17:29:21.581 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:29:21.595 - runCommand: Process started, PID: 17350
+
+2011-03-23 17:29:21.595 00754 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:29:21.595 Requirement: ODSCC10
+
+2011-03-23 17:29:21.595 00758 Wait(15)
+
+2011-03-23 17:29:21.595 Requirement: ODSCC10
+
+2011-03-23 17:29:36.595 00760 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:29:36.595 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T140: RequireBackup turned off and check if backup is not required to use a key
+
+2011-03-23 17:29:39.204 00770 Comment: RequireBackup is an optional element that specifies that keys from this repository may not be used until they are backed up. If backup has been done, then use ods-ksmutil to notify OpenDNSSEC about this. The backup notification is needed for OpenDNSSEC to be able to complete a key rollover.
+
+2011-03-23 17:29:39.204 Requirement: ODSCC10
+
+2011-03-23 17:29:39.205 00771 Comment: This has been already tested in DSCC10T10
+
+2011-03-23 17:29:39.205 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T150: RequireBackup turned on and check if backup is required to use a key
+
+2011-03-23 17:29:39.205 00781 Comment: RequireBackup is an optional element that specifies that keys from this repository may not be used until they are backed up. If backup has been done, then use ods-ksmutil to notify OpenDNSSEC about this. The backup notification is needed for OpenDNSSEC to be able to complete a key rollover.
+
+2011-03-23 17:29:39.205 Requirement: ODSCC10
+
+2011-03-23 17:29:39.205 00782 Comment: 
+
+2011-03-23 17:29:39.205 Requirement: ODSCC10
+
+2011-03-23 17:29:39.205 00784 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:29:39.205 Requirement: ODSCC10
+
+2011-03-23 17:29:39.205 00786 Stop()
+2011-03-23 17:29:39.205 Requirement: ODSCC10
+2011-03-23 17:29:39.205 RunCommand(ods-control stop)
+2011-03-23 17:29:39.209 - runCommand: Process started, PID: 17355
+2011-03-23 17:29:39.209 OUTPUT:	Stopping enforcer...
+2011-03-23 17:29:39.209 OUTPUT:	Cannot find PID file
+2011-03-23 17:29:39.209 OUTPUT:	Stopping signer engine..
+2011-03-23 17:29:39.209 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:29:39.209 ERROR:	return code = 1
+2011-03-23 17:29:39.209 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:29:39.219 - runCommand: Process started, PID: 17358
+2011-03-23 17:29:39.219 ERROR:	return code = 1
+2011-03-23 17:29:39.219 RunCommand(ps -e | grep signer)
+2011-03-23 17:29:39.229 - runCommand: Process started, PID: 17361
+2011-03-23 17:29:39.229 ERROR:	return code = 1
+
+2011-03-23 17:29:39.229 00788 Wait(10)
+
+2011-03-23 17:29:39.229 Requirement: ODSCC10
+
+2011-03-23 17:29:49.230 00790 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:29:49.230 Requirement: ODSCC10
+
+2011-03-23 17:29:49.230 00796 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:29:49.230 Requirement: ODSCC10
+
+2011-03-23 17:29:49.230 00800 Wait(10)
+
+2011-03-23 17:29:49.230 Requirement: ODSCC10
+
+2011-03-23 17:29:59.230 00802 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:29:59.230 Requirement: ODSCC10
+
+2011-03-23 17:29:59.230 00805 LoadConfig()
+2011-03-23 17:29:59.230 Requirement: ODSCC10
+2011-03-23 17:29:59.230 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T150_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:29:59.235 - runCommand: Process started, PID: 17364
+
+2011-03-23 17:29:59.236 00808 LoadConfig()
+2011-03-23 17:29:59.236 Requirement: ODSCC10
+2011-03-23 17:29:59.236 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:29:59.239 - runCommand: Process started, PID: 17365
+
+2011-03-23 17:29:59.240 00810 Comment: Update all the configs.
+
+2011-03-23 17:29:59.240 Requirement: ODSCC10
+
+2011-03-23 17:29:59.240 00812 UpdateAll()
+2011-03-23 17:29:59.240 Requirement: ODSCC10
+2011-03-23 17:29:59.240 RunCommand(ods-ksmutil update all)
+2011-03-23 17:30:01.445 - runCommand: Process started, PID: 17366
+2011-03-23 17:30:01.445 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:30:01.445 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:30:01.445 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:30:01.445 OUTPUT:	Capacity set to 10.
+2011-03-23 17:30:01.445 OUTPUT:	RequireBackup set.
+2011-03-23 17:30:01.445 OUTPUT:	Policy default2 found
+2011-03-23 17:30:01.445 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:30:01.446 OUTPUT:	Policy default found
+2011-03-23 17:30:01.446 OUTPUT:	Zone ods found
+2011-03-23 17:30:01.446 OUTPUT:	Policy set to default.
+2011-03-23 17:30:01.446 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:30:01.446 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:30:01.446 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:30:01.446 00814 Wait(10)
+
+2011-03-23 17:30:01.446 Requirement: ODSCC10
+
+2011-03-23 17:30:11.446 00816 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:30:11.446 Requirement: ODSCC10
+
+2011-03-23 17:30:11.446 00818 Start()
+2011-03-23 17:30:11.446 Requirement: ODSCC10
+2011-03-23 17:30:11.446 RunCommand(ods-control start)
+2011-03-23 17:30:11.448 - runCommand: Background process started, PID: 17376
+2011-03-23 17:30:16.479 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:30:16.498 - runCommand: Process started, PID: 17399
+2011-03-23 17:30:16.498 ERROR:	return code = 1
+2011-03-23 17:30:16.498 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:30:16.513 - runCommand: Process started, PID: 17404
+
+2011-03-23 17:30:16.513 00820 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:30:16.513 Requirement: ODSCC10
+
+2011-03-23 17:30:16.513 00824 Wait(15)
+
+2011-03-23 17:30:16.513 Requirement: ODSCC10
+
+2011-03-23 17:30:31.513 00826 Comment: Check if the signing was unsuccesfull. If a "aborting operation" is in the logging, the signing was unsuccesful. 
+
+2011-03-23 17:30:31.513 Requirement: ODSCC10
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC10T160: RequireBackup turned on, backup keys, and sign zone
+
+2011-03-23 17:30:34.112 00836 Comment: RequireBackup is an optional element that specifies that keys from this repository may not be used until they are backed up. If backup has been done, then use ods-ksmutil to notify OpenDNSSEC about this. The backup notification is needed for OpenDNSSEC to be able to complete a key rollover.
+
+2011-03-23 17:30:34.112 Requirement: ODSCC10
+
+2011-03-23 17:30:34.112 00837 Comment: 
+
+2011-03-23 17:30:34.112 Requirement: ODSCC10
+
+2011-03-23 17:30:34.112 00839 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:30:34.112 Requirement: ODSCC10
+
+2011-03-23 17:30:34.112 00841 Stop()
+2011-03-23 17:30:34.112 Requirement: ODSCC10
+2011-03-23 17:30:34.112 RunCommand(ods-control stop)
+2011-03-23 17:30:34.116 - runCommand: Process started, PID: 17409
+2011-03-23 17:30:34.116 OUTPUT:	Stopping enforcer...
+2011-03-23 17:30:34.116 OUTPUT:	Cannot find PID file
+2011-03-23 17:30:34.116 OUTPUT:	Stopping signer engine..
+2011-03-23 17:30:34.116 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:30:34.116 ERROR:	return code = 1
+2011-03-23 17:30:34.116 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:30:34.125 - runCommand: Process started, PID: 17412
+2011-03-23 17:30:34.126 ERROR:	return code = 1
+2011-03-23 17:30:34.126 RunCommand(ps -e | grep signer)
+2011-03-23 17:30:34.136 - runCommand: Process started, PID: 17415
+2011-03-23 17:30:34.136 ERROR:	return code = 1
+
+2011-03-23 17:30:34.136 00843 Wait(10)
+
+2011-03-23 17:30:34.136 Requirement: ODSCC10
+
+2011-03-23 17:30:44.137 00845 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:30:44.137 Requirement: ODSCC10
+
+2011-03-23 17:30:44.137 00851 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:30:44.137 Requirement: ODSCC10
+
+2011-03-23 17:30:44.137 00855 Wait(10)
+
+2011-03-23 17:30:44.137 Requirement: ODSCC10
+
+2011-03-23 17:30:54.137 00858 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:30:54.137 Requirement: ODSCC10
+
+2011-03-23 17:30:54.137 00861 LoadConfig()
+2011-03-23 17:30:54.137 Requirement: ODSCC10
+2011-03-23 17:30:54.138 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC10T160_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:30:54.142 - runCommand: Process started, PID: 17418
+
+2011-03-23 17:30:54.143 00864 LoadConfig()
+2011-03-23 17:30:54.143 Requirement: ODSCC10
+2011-03-23 17:30:54.143 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:30:54.146 - runCommand: Process started, PID: 17419
+
+2011-03-23 17:30:54.147 00866 Comment: Update all the configs.
+
+2011-03-23 17:30:54.147 Requirement: ODSCC10
+
+2011-03-23 17:30:54.147 00868 UpdateAll()
+2011-03-23 17:30:54.147 Requirement: ODSCC10
+2011-03-23 17:30:54.147 RunCommand(ods-ksmutil update all)
+2011-03-23 17:30:56.300 - runCommand: Process started, PID: 17420
+2011-03-23 17:30:56.301 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:30:56.301 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:30:56.301 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:30:56.301 OUTPUT:	Capacity set to 10.
+2011-03-23 17:30:56.301 OUTPUT:	RequireBackup set.
+2011-03-23 17:30:56.301 OUTPUT:	Policy default2 found
+2011-03-23 17:30:56.301 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:30:56.301 OUTPUT:	Policy default found
+2011-03-23 17:30:56.301 OUTPUT:	Zone ods found
+2011-03-23 17:30:56.301 OUTPUT:	Policy set to default.
+2011-03-23 17:30:56.301 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:30:56.301 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:30:56.301 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:30:56.301 00870 Wait(10)
+
+2011-03-23 17:30:56.301 Requirement: ODSCC10
+
+2011-03-23 17:31:06.301 00872 Comment: Prepare the backup by telling the Enforcer that you want to do backup of the keys.
+
+2011-03-23 17:31:06.301 Requirement: ODSCC10
+
+2011-03-23 17:31:06.301 00876 Wait(5)
+
+2011-03-23 17:31:06.301 Requirement: ODSCC10
+
+2011-03-23 17:31:11.302 00878 Comment: Backup keys is not a part of ODS (part of the HSM), and can therefor be skipped. Let the enforcer know that the backup step has been done.
+
+2011-03-23 17:31:11.302 Requirement: ODSCC10
+
+2011-03-23 17:31:11.302 00882 Wait(5)
+
+2011-03-23 17:31:11.302 Requirement: ODSCC10
+
+2011-03-23 17:31:16.302 00884 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:31:16.302 Requirement: ODSCC10
+
+2011-03-23 17:31:16.302 00886 Start()
+2011-03-23 17:31:16.302 Requirement: ODSCC10
+2011-03-23 17:31:16.302 RunCommand(ods-control start)
+2011-03-23 17:31:16.305 - runCommand: Background process started, PID: 17428
+2011-03-23 17:31:21.336 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:31:21.355 - runCommand: Process started, PID: 17451
+2011-03-23 17:31:21.355 ERROR:	return code = 1
+2011-03-23 17:31:21.355 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:31:21.368 - runCommand: Process started, PID: 17456
+
+2011-03-23 17:31:21.368 00888 Wait(10)
+
+2011-03-23 17:31:21.368 Requirement: ODSCC10
+
+2011-03-23 17:31:31.368 00890 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:31:31.368 Requirement: ODSCC10
+
+2011-03-23 17:31:31.368 00894 Wait(15)
+
+2011-03-23 17:31:31.368 Requirement: ODSCC10
+
+2011-03-23 17:31:46.368 00896 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:31:46.369 Requirement: ODSCC10
+Testcondition - ODSCC20: The configuration of common settings located in conf.xml should operate according to requirements and intentions
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC20T10: Set logging to a different channel and check if only the new channel receives ODS logging
+
+2011-03-23 17:31:48.985 00907 Comment: Channel "local5" is used in the xml template instead of "local0".
+
+2011-03-23 17:31:48.985 Requirement: ODSCC20
+
+2011-03-23 17:31:48.985 00909 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:31:48.985 Requirement: ODSCC20
+
+2011-03-23 17:31:48.985 00911 Stop()
+2011-03-23 17:31:48.985 Requirement: ODSCC20
+2011-03-23 17:31:48.985 RunCommand(ods-control stop)
+2011-03-23 17:31:48.990 - runCommand: Process started, PID: 17461
+2011-03-23 17:31:48.990 OUTPUT:	Stopping enforcer...
+2011-03-23 17:31:48.990 OUTPUT:	Cannot find PID file
+2011-03-23 17:31:48.990 OUTPUT:	Stopping signer engine..
+2011-03-23 17:31:48.990 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:31:48.990 ERROR:	return code = 1
+2011-03-23 17:31:48.990 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:31:48.999 - runCommand: Process started, PID: 17464
+2011-03-23 17:31:48.999 ERROR:	return code = 1
+2011-03-23 17:31:48.999 RunCommand(ps -e | grep signer)
+2011-03-23 17:31:49.104 - runCommand: Process started, PID: 17467
+2011-03-23 17:31:49.105 ERROR:	return code = 1
+
+2011-03-23 17:31:49.106 00913 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:31:49.106 Requirement: ODSCC20
+
+2011-03-23 17:31:49.107 00919 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:31:49.107 Requirement: ODSCC20
+
+2011-03-23 17:31:49.108 00923 Wait(10)
+
+2011-03-23 17:31:49.108 Requirement: ODSCC20
+
+2011-03-23 17:31:59.111 00925 Wait(10)
+
+2011-03-23 17:31:59.111 Requirement: ODSCC20
+
+2011-03-23 17:32:09.114 00927 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:32:09.115 Requirement: ODSCC20
+
+2011-03-23 17:32:09.116 00930 LoadConfig()
+2011-03-23 17:32:09.116 Requirement: ODSCC20
+2011-03-23 17:32:09.117 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC20T10_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:32:09.166 - runCommand: Process started, PID: 17470
+
+2011-03-23 17:32:09.169 00933 LoadConfig()
+2011-03-23 17:32:09.169 Requirement: ODSCC20
+2011-03-23 17:32:09.169 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:32:09.208 - runCommand: Process started, PID: 17471
+
+2011-03-23 17:32:09.211 00935 Comment: Syslog needs to be changed for this testcase. Ods.log is configured for local5 instead of local0
+
+2011-03-23 17:32:09.211 Requirement: ODSCC20
+
+2011-03-23 17:32:09.213 00937 Comment: Update all the configs.
+
+2011-03-23 17:32:09.213 Requirement: ODSCC20
+
+2011-03-23 17:32:09.215 00939 UpdateAll()
+2011-03-23 17:32:09.215 Requirement: ODSCC20
+2011-03-23 17:32:09.215 RunCommand(ods-ksmutil update all)
+2011-03-23 17:32:11.270 - runCommand: Process started, PID: 17472
+2011-03-23 17:32:11.270 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:32:11.270 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:32:11.270 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:32:11.270 OUTPUT:	Capacity set to 10.
+2011-03-23 17:32:11.271 OUTPUT:	RequireBackup set.
+2011-03-23 17:32:11.271 OUTPUT:	Policy default2 found
+2011-03-23 17:32:11.271 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:32:11.271 OUTPUT:	Policy default found
+2011-03-23 17:32:11.271 OUTPUT:	Zone ods found
+2011-03-23 17:32:11.271 OUTPUT:	Policy set to default.
+2011-03-23 17:32:11.271 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:32:11.271 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:32:11.271 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:32:11.271 00941 Wait(10)
+
+2011-03-23 17:32:11.271 Requirement: ODSCC20
+
+2011-03-23 17:32:21.271 00943 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:32:21.271 Requirement: ODSCC20
+
+2011-03-23 17:32:21.271 00945 Start()
+2011-03-23 17:32:21.271 Requirement: ODSCC20
+2011-03-23 17:32:21.271 RunCommand(ods-control start)
+2011-03-23 17:32:21.273 - runCommand: Background process started, PID: 17480
+2011-03-23 17:32:26.306 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:32:26.318 - runCommand: Process started, PID: 17503
+2011-03-23 17:32:26.318 ERROR:	return code = 1
+2011-03-23 17:32:26.318 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:32:26.334 - runCommand: Process started, PID: 17508
+
+2011-03-23 17:32:26.334 00947 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:32:26.334 Requirement: ODSCC20
+
+2011-03-23 17:32:26.334 00951 Wait(15)
+
+2011-03-23 17:32:26.334 Requirement: ODSCC20
+
+2011-03-23 17:32:41.334 00953 Comment: Check if the logging is succesfull. If a notify (new zonefile update) is available in, the signing & logging is succesful.
+
+2011-03-23 17:32:41.334 Requirement: ODSCC20
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC20T20: Set logging to a different channel and check if only the new channel receives ODS logging
+
+2011-03-23 17:32:43.956 00961 Comment: Channel "local10" is used in the xml template instead of "local0". Local10 is not allowed according tot specs. Only a value between local0 & local7 is allowed.
+
+2011-03-23 17:32:43.956 Requirement: ODSCC20
+
+2011-03-23 17:32:43.956 00963 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:32:43.956 Requirement: ODSCC20
+
+2011-03-23 17:32:43.956 00965 Stop()
+2011-03-23 17:32:43.956 Requirement: ODSCC20
+2011-03-23 17:32:43.956 RunCommand(ods-control stop)
+2011-03-23 17:32:43.960 - runCommand: Process started, PID: 17513
+2011-03-23 17:32:43.960 OUTPUT:	Stopping enforcer...
+2011-03-23 17:32:43.960 OUTPUT:	Cannot find PID file
+2011-03-23 17:32:43.960 OUTPUT:	Stopping signer engine..
+2011-03-23 17:32:43.960 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:32:43.960 ERROR:	return code = 1
+2011-03-23 17:32:43.960 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:32:43.969 - runCommand: Process started, PID: 17516
+2011-03-23 17:32:43.969 ERROR:	return code = 1
+2011-03-23 17:32:43.969 RunCommand(ps -e | grep signer)
+2011-03-23 17:32:43.979 - runCommand: Process started, PID: 17519
+2011-03-23 17:32:43.979 ERROR:	return code = 1
+
+2011-03-23 17:32:43.979 00967 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:32:43.979 Requirement: ODSCC20
+
+2011-03-23 17:32:43.979 00973 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:32:43.979 Requirement: ODSCC20
+
+2011-03-23 17:32:43.979 00977 Wait(10)
+
+2011-03-23 17:32:43.979 Requirement: ODSCC20
+
+2011-03-23 17:32:53.980 00979 Wait(10)
+
+2011-03-23 17:32:53.980 Requirement: ODSCC20
+
+2011-03-23 17:33:03.980 00981 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:33:03.980 Requirement: ODSCC20
+
+2011-03-23 17:33:03.980 00984 LoadConfig()
+2011-03-23 17:33:03.980 Requirement: ODSCC20
+2011-03-23 17:33:03.980 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC20T10_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:33:03.985 - runCommand: Process started, PID: 17522
+
+2011-03-23 17:33:03.985 00987 LoadConfig()
+2011-03-23 17:33:03.985 Requirement: ODSCC20
+2011-03-23 17:33:03.986 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:33:03.989 - runCommand: Process started, PID: 17523
+
+2011-03-23 17:33:03.990 00989 Comment: Syslog needs to be changed for this testcase. Ods.log is configured for local10 instead of local0
+
+2011-03-23 17:33:03.990 Requirement: ODSCC20
+
+2011-03-23 17:33:03.990 00991 Comment: Update all the configs.
+
+2011-03-23 17:33:03.990 Requirement: ODSCC20
+
+2011-03-23 17:33:03.990 00993 UpdateAll()
+2011-03-23 17:33:03.990 Requirement: ODSCC20
+2011-03-23 17:33:03.990 RunCommand(ods-ksmutil update all)
+2011-03-23 17:33:06.761 - runCommand: Process started, PID: 17524
+2011-03-23 17:33:06.762 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:33:06.762 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:33:06.762 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:33:06.762 OUTPUT:	Capacity set to 10.
+2011-03-23 17:33:06.762 OUTPUT:	RequireBackup set.
+2011-03-23 17:33:06.763 OUTPUT:	Policy default2 found
+2011-03-23 17:33:06.763 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:33:06.763 OUTPUT:	Policy default found
+2011-03-23 17:33:06.763 OUTPUT:	Zone ods found
+2011-03-23 17:33:06.763 OUTPUT:	Policy set to default.
+2011-03-23 17:33:06.763 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:33:06.764 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:33:06.764 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:33:06.766 00995 Wait(10)
+
+2011-03-23 17:33:06.766 Requirement: ODSCC20
+
+2011-03-23 17:33:16.768 00997 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:33:16.769 Requirement: ODSCC20
+
+2011-03-23 17:33:16.770 00999 Start()
+2011-03-23 17:33:16.770 Requirement: ODSCC20
+2011-03-23 17:33:16.770 RunCommand(ods-control start)
+2011-03-23 17:33:16.787 - runCommand: Background process started, PID: 17532
+2011-03-23 17:33:21.121 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:33:21.140 - runCommand: Process started, PID: 17555
+2011-03-23 17:33:21.140 ERROR:	return code = 1
+2011-03-23 17:33:21.140 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:33:21.158 - runCommand: Process started, PID: 17560
+
+2011-03-23 17:33:21.158 01001 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:33:21.158 Requirement: ODSCC20
+
+2011-03-23 17:33:21.158 01005 Wait(15)
+
+2011-03-23 17:33:21.158 Requirement: ODSCC20
+
+2011-03-23 17:33:36.158 01007 Comment: Check if the logging is unsuccesfull. If a notify (new zonefile update) is not available in the logging, thelogging is not succesfull.
+
+2011-03-23 17:33:36.158 Requirement: ODSCC20
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC20T30: Change the kasp.xml location and change PolicyFile in conf.xml accordingly
+
+2011-03-23 17:33:38.763 01015 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:33:38.763 Requirement: ODSCC20
+
+2011-03-23 17:33:38.763 01017 Stop()
+2011-03-23 17:33:38.764 Requirement: ODSCC20
+2011-03-23 17:33:38.764 RunCommand(ods-control stop)
+2011-03-23 17:33:38.768 - runCommand: Process started, PID: 17565
+2011-03-23 17:33:38.768 OUTPUT:	Stopping enforcer...
+2011-03-23 17:33:38.768 OUTPUT:	Cannot find PID file
+2011-03-23 17:33:38.768 OUTPUT:	Stopping signer engine..
+2011-03-23 17:33:38.768 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:33:38.768 ERROR:	return code = 1
+2011-03-23 17:33:38.768 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:33:38.777 - runCommand: Process started, PID: 17568
+2011-03-23 17:33:38.777 ERROR:	return code = 1
+2011-03-23 17:33:38.777 RunCommand(ps -e | grep signer)
+2011-03-23 17:33:38.787 - runCommand: Process started, PID: 17571
+2011-03-23 17:33:38.787 ERROR:	return code = 1
+
+2011-03-23 17:33:38.787 01019 Wait(10)
+
+2011-03-23 17:33:38.787 Requirement: ODSCC20
+
+2011-03-23 17:33:48.787 01021 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:33:48.787 Requirement: ODSCC20
+
+2011-03-23 17:33:48.787 01027 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:33:48.788 Requirement: ODSCC20
+
+2011-03-23 17:33:48.788 01031 Wait(10)
+
+2011-03-23 17:33:48.788 Requirement: ODSCC20
+
+2011-03-23 17:33:58.788 01034 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:33:58.788 Requirement: ODSCC20
+
+2011-03-23 17:33:58.788 01037 LoadConfig()
+2011-03-23 17:33:58.788 Requirement: ODSCC20
+2011-03-23 17:33:58.788 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC20T30_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:33:58.793 - runCommand: Process started, PID: 17574
+
+2011-03-23 17:33:58.793 01039 Comment: Make a new directory a copy the kasp.xml file to that new folder.
+
+2011-03-23 17:33:58.793 Requirement: ODSCC20
+
+2011-03-23 17:33:58.794 01045 Comment: Update all the configs.
+
+2011-03-23 17:33:58.794 Requirement: ODSCC20
+
+2011-03-23 17:33:58.794 01047 UpdateAll()
+2011-03-23 17:33:58.794 Requirement: ODSCC20
+2011-03-23 17:33:58.794 RunCommand(ods-ksmutil update all)
+2011-03-23 17:34:04.679 - runCommand: Process started, PID: 17575
+2011-03-23 17:34:04.679 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:34:04.679 OUTPUT:	kasp filename set to /etc/opendnssec/odscc20t30/kasp.xml.
+2011-03-23 17:34:04.679 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:34:04.679 OUTPUT:	Capacity set to 10.
+2011-03-23 17:34:04.679 OUTPUT:	RequireBackup set.
+2011-03-23 17:34:04.679 OUTPUT:	Policy default found
+2011-03-23 17:34:04.679 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:34:04.679 OUTPUT:	Policy test found
+2011-03-23 17:34:04.679 OUTPUT:	Zone ods found
+2011-03-23 17:34:04.679 OUTPUT:	Policy set to default.
+2011-03-23 17:34:04.679 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:34:04.679 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:34:04.679 ERROR:	/etc/opendnssec/odscc20t30/kasp.xml validates
+
+2011-03-23 17:34:04.679 01049 Wait(10)
+
+2011-03-23 17:34:04.679 Requirement: ODSCC20
+
+2011-03-23 17:34:14.680 01051 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:34:14.680 Requirement: ODSCC20
+
+2011-03-23 17:34:14.680 01053 Start()
+2011-03-23 17:34:14.680 Requirement: ODSCC20
+2011-03-23 17:34:14.680 RunCommand(ods-control start)
+2011-03-23 17:34:14.682 - runCommand: Background process started, PID: 17583
+2011-03-23 17:34:19.715 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:34:19.731 - runCommand: Process started, PID: 17606
+2011-03-23 17:34:19.731 ERROR:	return code = 1
+2011-03-23 17:34:19.731 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:34:19.744 - runCommand: Process started, PID: 17611
+
+2011-03-23 17:34:19.744 01055 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:34:19.744 Requirement: ODSCC20
+
+2011-03-23 17:34:19.744 01059 Wait(15)
+
+2011-03-23 17:34:19.744 Requirement: ODSCC20
+
+2011-03-23 17:34:34.744 01061 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:34:34.744 Requirement: ODSCC20
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC20T40: Change the zonelist.xml location and change ZoneListFile in conf.xml accordingly
+
+2011-03-23 17:34:37.364 01069 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:34:37.364 Requirement: ODSCC20
+
+2011-03-23 17:34:37.364 01071 Stop()
+2011-03-23 17:34:37.364 Requirement: ODSCC20
+2011-03-23 17:34:37.364 RunCommand(ods-control stop)
+2011-03-23 17:34:37.368 - runCommand: Process started, PID: 17616
+2011-03-23 17:34:37.368 OUTPUT:	Stopping enforcer...
+2011-03-23 17:34:37.368 OUTPUT:	Cannot find PID file
+2011-03-23 17:34:37.368 OUTPUT:	Stopping signer engine..
+2011-03-23 17:34:37.368 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:34:37.368 ERROR:	return code = 1
+2011-03-23 17:34:37.368 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:34:37.377 - runCommand: Process started, PID: 17619
+2011-03-23 17:34:37.378 ERROR:	return code = 1
+2011-03-23 17:34:37.378 RunCommand(ps -e | grep signer)
+2011-03-23 17:34:37.387 - runCommand: Process started, PID: 17622
+2011-03-23 17:34:37.387 ERROR:	return code = 1
+
+2011-03-23 17:34:37.388 01073 Wait(10)
+
+2011-03-23 17:34:37.388 Requirement: ODSCC20
+
+2011-03-23 17:34:47.388 01075 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:34:47.388 Requirement: ODSCC20
+
+2011-03-23 17:34:47.388 01081 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:34:47.388 Requirement: ODSCC20
+
+2011-03-23 17:34:47.388 01085 Wait(10)
+
+2011-03-23 17:34:47.388 Requirement: ODSCC20
+
+2011-03-23 17:34:57.389 01087 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:34:57.389 Requirement: ODSCC20
+
+2011-03-23 17:34:57.389 01090 LoadConfig()
+2011-03-23 17:34:57.389 Requirement: ODSCC20
+2011-03-23 17:34:57.389 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC20T40_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:34:57.394 - runCommand: Process started, PID: 17625
+
+2011-03-23 17:34:57.394 01092 Comment: Make a new directory a copy the ZoneListFile to that new folder.
+
+2011-03-23 17:34:57.394 Requirement: ODSCC20
+
+2011-03-23 17:34:57.394 01099 LoadConfig()
+2011-03-23 17:34:57.394 Requirement: ODSCC20
+2011-03-23 17:34:57.394 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:34:57.399 - runCommand: Process started, PID: 17626
+
+2011-03-23 17:34:57.399 01101 Comment: Update all the configs.
+
+2011-03-23 17:34:57.399 Requirement: ODSCC20
+
+2011-03-23 17:34:57.400 01103 UpdateAll()
+2011-03-23 17:34:57.400 Requirement: ODSCC20
+2011-03-23 17:34:57.400 RunCommand(ods-ksmutil update all)
+2011-03-23 17:35:01.108 - runCommand: Process started, PID: 17627
+2011-03-23 17:35:01.108 OUTPUT:	zonelist filename set to /etc/opendnssec/odscc20t40/zonelist.xml.
+2011-03-23 17:35:01.108 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:35:01.108 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:35:01.108 OUTPUT:	Capacity set to 10.
+2011-03-23 17:35:01.108 OUTPUT:	RequireBackup set.
+2011-03-23 17:35:01.108 OUTPUT:	Policy default2 found
+2011-03-23 17:35:01.109 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:35:01.109 OUTPUT:	Policy default found
+2011-03-23 17:35:01.109 OUTPUT:	Unable to open /etc/opendnssec/odscc20t40/zonelist.xml
+2011-03-23 17:35:01.109 OUTPUT:	Unable to open /etc/opendnssec/odscc20t40/zonelist.xml
+2011-03-23 17:35:01.109 OUTPUT:	Removing zone ods from database
+2011-03-23 17:35:01.109 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:35:01.109 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:35:01.109 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:35:01.109 01105 Wait(10)
+
+2011-03-23 17:35:01.109 Requirement: ODSCC20
+
+2011-03-23 17:35:11.109 01107 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:35:11.109 Requirement: ODSCC20
+
+2011-03-23 17:35:11.109 01109 Start()
+2011-03-23 17:35:11.109 Requirement: ODSCC20
+2011-03-23 17:35:11.109 RunCommand(ods-control start)
+2011-03-23 17:35:11.111 - runCommand: Background process started, PID: 17635
+2011-03-23 17:35:16.144 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:35:16.158 - runCommand: Process started, PID: 17658
+2011-03-23 17:35:16.158 ERROR:	return code = 1
+2011-03-23 17:35:16.158 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:35:16.173 - runCommand: Process started, PID: 17663
+
+2011-03-23 17:35:16.173 01111 Wait(10)
+
+2011-03-23 17:35:16.173 Requirement: ODSCC20
+
+2011-03-23 17:35:26.173 01113 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:35:26.173 Requirement: ODSCC20
+
+2011-03-23 17:35:26.173 01117 Wait(15)
+
+2011-03-23 17:35:26.173 Requirement: ODSCC20
+
+2011-03-23 17:35:41.174 01119 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:35:41.174 Requirement: ODSCC20
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC20T50: Change the zonefetch.xml location and change ZoneFetchFile in conf.xml accordingly
+
+2011-03-23 17:35:43.785 01128 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:35:43.785 Requirement: ODSCC20
+
+2011-03-23 17:35:43.785 01130 Stop()
+2011-03-23 17:35:43.785 Requirement: ODSCC20
+2011-03-23 17:35:43.785 RunCommand(ods-control stop)
+2011-03-23 17:35:43.790 - runCommand: Process started, PID: 17668
+2011-03-23 17:35:43.790 OUTPUT:	Stopping enforcer...
+2011-03-23 17:35:43.790 OUTPUT:	Cannot find PID file
+2011-03-23 17:35:43.790 OUTPUT:	Stopping signer engine..
+2011-03-23 17:35:43.790 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:35:43.790 ERROR:	return code = 1
+2011-03-23 17:35:43.790 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:35:43.800 - runCommand: Process started, PID: 17671
+2011-03-23 17:35:43.800 ERROR:	return code = 1
+2011-03-23 17:35:43.800 RunCommand(ps -e | grep signer)
+2011-03-23 17:35:43.810 - runCommand: Process started, PID: 17674
+2011-03-23 17:35:43.810 ERROR:	return code = 1
+
+2011-03-23 17:35:43.810 01132 Wait(10)
+
+2011-03-23 17:35:43.810 Requirement: ODSCC20
+
+2011-03-23 17:35:53.811 01134 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:35:53.811 Requirement: ODSCC20
+
+2011-03-23 17:35:53.811 01140 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:35:53.811 Requirement: ODSCC20
+
+2011-03-23 17:35:53.811 01144 Wait(10)
+
+2011-03-23 17:35:53.811 Requirement: ODSCC20
+
+2011-03-23 17:36:03.811 01147 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:36:03.811 Requirement: ODSCC20
+
+2011-03-23 17:36:03.812 01150 LoadConfig()
+2011-03-23 17:36:03.812 Requirement: ODSCC20
+2011-03-23 17:36:03.812 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC20T50_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:36:03.816 - runCommand: Process started, PID: 17677
+
+2011-03-23 17:36:03.817 01152 Comment: Make a new directory a copy the ZoneListFile to that new folder.
+
+2011-03-23 17:36:03.817 Requirement: ODSCC20
+
+2011-03-23 17:36:03.817 01159 LoadConfig()
+2011-03-23 17:36:03.817 Requirement: ODSCC20
+2011-03-23 17:36:03.817 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:36:03.821 - runCommand: Process started, PID: 17678
+
+2011-03-23 17:36:03.821 01161 Comment: Update all the configs.
+
+2011-03-23 17:36:03.821 Requirement: ODSCC20
+
+2011-03-23 17:36:03.821 01163 UpdateAll()
+2011-03-23 17:36:03.821 Requirement: ODSCC20
+2011-03-23 17:36:03.821 RunCommand(ods-ksmutil update all)
+2011-03-23 17:36:05.917 - runCommand: Process started, PID: 17679
+2011-03-23 17:36:05.917 OUTPUT:	zonelist filename set to /etc/opendnssec/odscc20t40/zonelist.xml.
+2011-03-23 17:36:05.917 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:36:05.917 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:36:05.917 OUTPUT:	Capacity set to 10.
+2011-03-23 17:36:05.917 OUTPUT:	RequireBackup set.
+2011-03-23 17:36:05.917 OUTPUT:	Policy default2 found
+2011-03-23 17:36:05.917 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:36:05.917 OUTPUT:	Policy default found
+2011-03-23 17:36:05.917 OUTPUT:	Unable to open /etc/opendnssec/odscc20t40/zonelist.xml
+2011-03-23 17:36:05.917 OUTPUT:	Unable to open /etc/opendnssec/odscc20t40/zonelist.xml
+2011-03-23 17:36:05.917 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:36:05.917 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:36:05.918 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:36:05.918 01165 Wait(10)
+
+2011-03-23 17:36:05.918 Requirement: ODSCC20
+
+2011-03-23 17:36:15.918 01167 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:36:15.918 Requirement: ODSCC20
+
+2011-03-23 17:36:15.918 01169 Start()
+2011-03-23 17:36:15.918 Requirement: ODSCC20
+2011-03-23 17:36:15.918 RunCommand(ods-control start)
+2011-03-23 17:36:15.920 - runCommand: Background process started, PID: 17687
+2011-03-23 17:36:20.953 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:36:20.969 - runCommand: Process started, PID: 17711
+2011-03-23 17:36:20.969 ERROR:	return code = 1
+2011-03-23 17:36:20.969 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:36:20.984 - runCommand: Process started, PID: 17716
+
+2011-03-23 17:36:20.984 01171 Wait(10)
+
+2011-03-23 17:36:20.984 Requirement: ODSCC20
+
+2011-03-23 17:36:30.985 01173 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:36:30.985 Requirement: ODSCC20
+
+2011-03-23 17:36:30.985 01177 Wait(15)
+
+2011-03-23 17:36:30.985 Requirement: ODSCC20
+
+2011-03-23 17:36:45.985 01179 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:36:45.985 Requirement: ODSCC20
+Testcondition - ODSCC30: The configuration of enforcer settings located in conf.xml should operate according to requirements and intentions
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC30T10: Use privileges test: test for enforcer in config only and check if enforcers fails to run
+
+2011-03-23 17:36:48.594 01191 Comment: Privileges have been adjusted in the conf.xml
+
+2011-03-23 17:36:48.594 Requirement: ODSCC30
+
+2011-03-23 17:36:48.594 01193 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:36:48.594 Requirement: ODSCC30
+
+2011-03-23 17:36:48.594 01195 Stop()
+2011-03-23 17:36:48.594 Requirement: ODSCC30
+2011-03-23 17:36:48.594 RunCommand(ods-control stop)
+2011-03-23 17:36:48.598 - runCommand: Process started, PID: 17721
+2011-03-23 17:36:48.598 OUTPUT:	Stopping enforcer...
+2011-03-23 17:36:48.598 OUTPUT:	Cannot find PID file
+2011-03-23 17:36:48.598 OUTPUT:	Stopping signer engine..
+2011-03-23 17:36:48.598 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:36:48.598 ERROR:	return code = 1
+2011-03-23 17:36:48.598 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:36:48.608 - runCommand: Process started, PID: 17724
+2011-03-23 17:36:48.608 ERROR:	return code = 1
+2011-03-23 17:36:48.608 RunCommand(ps -e | grep signer)
+2011-03-23 17:36:48.618 - runCommand: Process started, PID: 17727
+2011-03-23 17:36:48.618 ERROR:	return code = 1
+
+2011-03-23 17:36:48.618 01197 Wait(10)
+
+2011-03-23 17:36:48.618 Requirement: ODSCC30
+
+2011-03-23 17:36:58.619 01199 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:36:58.619 Requirement: ODSCC30
+
+2011-03-23 17:36:58.619 01205 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:36:58.619 Requirement: ODSCC30
+
+2011-03-23 17:36:58.619 01209 Wait(10)
+
+2011-03-23 17:36:58.619 Requirement: ODSCC30
+
+2011-03-23 17:37:08.619 01211 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:37:08.619 Requirement: ODSCC30
+
+2011-03-23 17:37:08.620 01214 LoadConfig()
+2011-03-23 17:37:08.620 Requirement: ODSCC30
+2011-03-23 17:37:08.620 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC30T10_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:37:08.625 - runCommand: Process started, PID: 17730
+
+2011-03-23 17:37:08.625 01217 LoadConfig()
+2011-03-23 17:37:08.625 Requirement: ODSCC30
+2011-03-23 17:37:08.625 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:37:08.629 - runCommand: Process started, PID: 17731
+
+2011-03-23 17:37:08.629 01219 Comment: 
+
+2011-03-23 17:37:08.629 Requirement: ODSCC30
+
+2011-03-23 17:37:08.629 01221 Comment: Update all the configs.
+
+2011-03-23 17:37:08.629 Requirement: ODSCC30
+
+2011-03-23 17:37:08.629 01223 UpdateAll()
+2011-03-23 17:37:08.629 Requirement: ODSCC30
+2011-03-23 17:37:08.629 RunCommand(ods-ksmutil update all)
+2011-03-23 17:37:10.742 - runCommand: Process started, PID: 17732
+2011-03-23 17:37:10.742 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:37:10.742 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:37:10.742 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:37:10.742 OUTPUT:	Capacity set to 10.
+2011-03-23 17:37:10.742 OUTPUT:	RequireBackup set.
+2011-03-23 17:37:10.742 OUTPUT:	Policy default2 found
+2011-03-23 17:37:10.742 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:37:10.742 OUTPUT:	Policy default found
+2011-03-23 17:37:10.742 OUTPUT:	Zone ods found
+2011-03-23 17:37:10.742 OUTPUT:	Policy set to default.
+2011-03-23 17:37:10.742 OUTPUT:	Added zone ods to database
+2011-03-23 17:37:10.742 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:37:10.742 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:37:10.742 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:37:10.743 01225 Wait(10)
+
+2011-03-23 17:37:10.743 Requirement: ODSCC30
+
+2011-03-23 17:37:20.743 01227 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:37:20.743 Requirement: ODSCC30
+
+2011-03-23 17:37:20.743 01229 Start()
+2011-03-23 17:37:20.743 Requirement: ODSCC30
+2011-03-23 17:37:20.743 RunCommand(ods-control start)
+2011-03-23 17:37:20.745 - runCommand: Background process started, PID: 17740
+2011-03-23 17:37:25.779 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:37:25.793 - runCommand: Process started, PID: 17763
+2011-03-23 17:37:25.793 ERROR:	return code = 1
+2011-03-23 17:37:25.793 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:37:25.806 - runCommand: Process started, PID: 17768
+
+2011-03-23 17:37:25.806 01231 Wait(10)
+
+2011-03-23 17:37:25.806 Requirement: ODSCC30
+
+2011-03-23 17:37:35.806 01234 Wait(15)
+
+2011-03-23 17:37:35.806 Requirement: ODSCC30
+
+2011-03-23 17:37:50.807 01236 Comment: The Enforcer should fail to run when restarting ODS with the new conf.xml.
+
+2011-03-23 17:37:50.807 Requirement: ODSCC30
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC30T20: Use privileges test: test for enforcer and kasp.db and check if enforcers runs without errors
+
+2011-03-23 17:37:56.305 01248 Comment: Privileges have been adjusted in the conf.xml
+
+2011-03-23 17:37:56.306 Requirement: ODSCC30
+
+2011-03-23 17:37:56.306 01250 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:37:56.307 Requirement: ODSCC30
+
+2011-03-23 17:37:56.307 01252 Stop()
+2011-03-23 17:37:56.308 Requirement: ODSCC30
+2011-03-23 17:37:56.308 RunCommand(ods-control stop)
+2011-03-23 17:37:56.363 - runCommand: Process started, PID: 17775
+2011-03-23 17:37:56.363 OUTPUT:	Stopping enforcer...
+2011-03-23 17:37:56.363 OUTPUT:	Cannot find PID file
+2011-03-23 17:37:56.363 OUTPUT:	Stopping signer engine..
+2011-03-23 17:37:56.364 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:37:56.364 ERROR:	return code = 1
+2011-03-23 17:37:56.364 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:37:56.457 - runCommand: Process started, PID: 17778
+2011-03-23 17:37:56.458 ERROR:	return code = 1
+2011-03-23 17:37:56.458 RunCommand(ps -e | grep signer)
+2011-03-23 17:37:56.555 - runCommand: Process started, PID: 17781
+2011-03-23 17:37:56.556 ERROR:	return code = 1
+
+2011-03-23 17:37:56.557 01254 Wait(10)
+
+2011-03-23 17:37:56.557 Requirement: ODSCC30
+
+2011-03-23 17:38:06.560 01256 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:38:06.560 Requirement: ODSCC30
+
+2011-03-23 17:38:06.562 01262 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:38:06.562 Requirement: ODSCC30
+
+2011-03-23 17:38:06.564 01266 Wait(10)
+
+2011-03-23 17:38:06.564 Requirement: ODSCC30
+
+2011-03-23 17:38:16.566 01268 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:38:16.567 Requirement: ODSCC30
+
+2011-03-23 17:38:16.569 01271 LoadConfig()
+2011-03-23 17:38:16.569 Requirement: ODSCC30
+2011-03-23 17:38:16.569 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC30T20_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:38:16.617 - runCommand: Process started, PID: 17784
+
+2011-03-23 17:38:16.621 01274 LoadConfig()
+2011-03-23 17:38:16.621 Requirement: ODSCC30
+2011-03-23 17:38:16.621 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:38:16.658 - runCommand: Process started, PID: 17785
+
+2011-03-23 17:38:16.659 01276 Comment: 
+
+2011-03-23 17:38:16.660 Requirement: ODSCC30
+
+2011-03-23 17:38:16.661 01278 Comment: Update all the configs.
+
+2011-03-23 17:38:16.661 Requirement: ODSCC30
+
+2011-03-23 17:38:16.662 01280 UpdateAll()
+2011-03-23 17:38:16.662 Requirement: ODSCC30
+2011-03-23 17:38:16.662 RunCommand(ods-ksmutil update all)
+2011-03-23 17:38:18.166 - runCommand: Process started, PID: 17786
+2011-03-23 17:38:18.166 OUTPUT:	ERROR: opendnssec user can not write to DB file /var/opendnssec/kasp.db
+2011-03-23 17:38:18.166 OUTPUT:	
+2011-03-23 17:38:18.166 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:38:18.166 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:38:18.166 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:38:18.166 OUTPUT:	Capacity set to 10.
+2011-03-23 17:38:18.166 OUTPUT:	RequireBackup set.
+2011-03-23 17:38:18.166 OUTPUT:	Policy default2 found
+2011-03-23 17:38:18.166 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:38:18.166 OUTPUT:	Policy default found
+2011-03-23 17:38:18.166 OUTPUT:	Zone ods found
+2011-03-23 17:38:18.166 OUTPUT:	Policy set to default.
+2011-03-23 17:38:18.166 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:38:18.166 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:38:18.166 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:38:18.166 01282 Wait(10)
+
+2011-03-23 17:38:18.166 Requirement: ODSCC30
+
+2011-03-23 17:38:28.167 01284 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:38:28.167 Requirement: ODSCC30
+
+2011-03-23 17:38:28.167 01286 Start()
+2011-03-23 17:38:28.167 Requirement: ODSCC30
+2011-03-23 17:38:28.167 RunCommand(ods-control start)
+2011-03-23 17:38:28.169 - runCommand: Background process started, PID: 17795
+2011-03-23 17:38:33.202 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:38:33.218 - runCommand: Process started, PID: 17817
+2011-03-23 17:38:33.218 ERROR:	return code = 1
+2011-03-23 17:38:33.218 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:38:33.234 - runCommand: Process started, PID: 17822
+
+2011-03-23 17:38:33.234 01288 Wait(10)
+
+2011-03-23 17:38:33.234 Requirement: ODSCC30
+
+2011-03-23 17:38:43.234 01291 Comment: The Enforcer should start up succesfully when restarting ODS with the new conf.xml.
+
+2011-03-23 17:38:43.234 Requirement: ODSCC30
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC30T30: Change the kasp.db location and change Datastore in conf.xml accordingly
+
+2011-03-23 17:38:48.457 01304 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:38:48.457 Requirement: ODSCC30
+
+2011-03-23 17:38:48.457 01306 Stop()
+2011-03-23 17:38:48.457 Requirement: ODSCC30
+2011-03-23 17:38:48.457 RunCommand(ods-control stop)
+2011-03-23 17:38:48.461 - runCommand: Process started, PID: 17828
+2011-03-23 17:38:48.461 OUTPUT:	Stopping enforcer...
+2011-03-23 17:38:48.461 OUTPUT:	Cannot find PID file
+2011-03-23 17:38:48.462 OUTPUT:	Stopping signer engine..
+2011-03-23 17:38:48.462 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:38:48.462 ERROR:	return code = 1
+2011-03-23 17:38:48.462 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:38:48.477 - runCommand: Process started, PID: 17831
+2011-03-23 17:38:48.477 ERROR:	return code = 1
+2011-03-23 17:38:48.477 RunCommand(ps -e | grep signer)
+2011-03-23 17:38:48.487 - runCommand: Process started, PID: 17834
+2011-03-23 17:38:48.487 ERROR:	return code = 1
+
+2011-03-23 17:38:48.487 01308 Wait(10)
+
+2011-03-23 17:38:48.487 Requirement: ODSCC30
+
+2011-03-23 17:38:58.487 01310 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:38:58.487 Requirement: ODSCC30
+
+2011-03-23 17:38:58.488 01316 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:38:58.488 Requirement: ODSCC30
+
+2011-03-23 17:38:58.488 01320 Wait(10)
+
+2011-03-23 17:38:58.488 Requirement: ODSCC30
+
+2011-03-23 17:39:08.488 01322 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:39:08.488 Requirement: ODSCC30
+
+2011-03-23 17:39:08.488 01325 LoadConfig()
+2011-03-23 17:39:08.488 Requirement: ODSCC30
+2011-03-23 17:39:08.488 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC30T30_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:39:08.493 - runCommand: Process started, PID: 17837
+
+2011-03-23 17:39:08.494 01327 Comment: Make a new directory a copy the kasp.db file to that new folder.
+
+2011-03-23 17:39:08.494 Requirement: ODSCC30
+
+2011-03-23 17:39:08.494 01334 LoadConfig()
+2011-03-23 17:39:08.494 Requirement: ODSCC30
+2011-03-23 17:39:08.494 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:39:08.498 - runCommand: Process started, PID: 17838
+
+2011-03-23 17:39:08.498 01336 Comment: Update all the configs.
+
+2011-03-23 17:39:08.498 Requirement: ODSCC30
+
+2011-03-23 17:39:08.498 01338 UpdateAll()
+2011-03-23 17:39:08.498 Requirement: ODSCC30
+2011-03-23 17:39:08.498 RunCommand(ods-ksmutil update all)
+2011-03-23 17:39:08.503 - runCommand: Process started, PID: 17839
+2011-03-23 17:39:08.503 OUTPUT:	/var/opendnssec/odscc30t30/kasp.db.our_lock could not be opened
+2011-03-23 17:39:08.503 OUTPUT:	Error getting db lock
+2011-03-23 17:39:08.503 OUTPUT:	Failed to connect to database
+2011-03-23 17:39:08.503 ERROR:	SQLite database set to: /var/opendnssec/odscc30t30/kasp.db
+2011-03-23 17:39:08.503 ERROR:	return code = 1
+
+2011-03-23 17:39:08.503 01340 Wait(10)
+
+2011-03-23 17:39:08.503 Requirement: ODSCC30
+
+2011-03-23 17:39:18.504 01342 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:39:18.504 Requirement: ODSCC30
+
+2011-03-23 17:39:18.504 01344 Start()
+2011-03-23 17:39:18.504 Requirement: ODSCC30
+2011-03-23 17:39:18.504 RunCommand(ods-control start)
+2011-03-23 17:39:18.506 - runCommand: Background process started, PID: 17840
+2011-03-23 17:39:23.540 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:39:23.556 - runCommand: Process started, PID: 17863
+2011-03-23 17:39:23.556 ERROR:	return code = 1
+2011-03-23 17:39:23.556 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:39:23.571 - runCommand: Process started, PID: 17868
+
+2011-03-23 17:39:23.571 01346 Wait(10)
+
+2011-03-23 17:39:23.571 Requirement: ODSCC30
+
+2011-03-23 17:39:36.195 01351 Comment: Sign the ods zone with the new configs.
+
+2011-03-23 17:39:36.195 Requirement: ODSCC30
+
+2011-03-23 17:39:36.196 01355 Wait(15)
+
+2011-03-23 17:39:36.196 Requirement: ODSCC30
+
+2011-03-23 17:39:51.196 01357 Comment: Check if the signing was succesfull. If a notify (new zonefile update) is available in the logging, the signing was succesful.
+
+2011-03-23 17:39:51.196 Requirement: ODSCC30
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC30T40: Change the Interval to 60 seconds and check if the enforcer runs every minute
+
+2011-03-23 17:39:53.813 01365 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:39:53.813 Requirement: ODSCC30
+
+2011-03-23 17:39:53.813 01367 Stop()
+2011-03-23 17:39:53.813 Requirement: ODSCC30
+2011-03-23 17:39:53.813 RunCommand(ods-control stop)
+2011-03-23 17:39:53.818 - runCommand: Process started, PID: 17873
+2011-03-23 17:39:53.818 OUTPUT:	Stopping enforcer...
+2011-03-23 17:39:53.818 OUTPUT:	Cannot find PID file
+2011-03-23 17:39:53.818 OUTPUT:	Stopping signer engine..
+2011-03-23 17:39:53.818 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:39:53.818 ERROR:	return code = 1
+2011-03-23 17:39:53.818 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:39:53.827 - runCommand: Process started, PID: 17876
+2011-03-23 17:39:53.827 ERROR:	return code = 1
+2011-03-23 17:39:53.827 RunCommand(ps -e | grep signer)
+2011-03-23 17:39:53.838 - runCommand: Process started, PID: 17879
+2011-03-23 17:39:53.838 ERROR:	return code = 1
+
+2011-03-23 17:39:53.838 01369 Wait(10)
+
+2011-03-23 17:39:53.838 Requirement: ODSCC30
+
+2011-03-23 17:40:03.838 01371 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:40:03.838 Requirement: ODSCC30
+
+2011-03-23 17:40:03.839 01377 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:40:03.839 Requirement: ODSCC30
+
+2011-03-23 17:40:03.839 01381 Wait(10)
+
+2011-03-23 17:40:03.839 Requirement: ODSCC30
+
+2011-03-23 17:40:13.839 01384 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:40:13.839 Requirement: ODSCC30
+
+2011-03-23 17:40:13.839 01387 LoadConfig()
+2011-03-23 17:40:13.839 Requirement: ODSCC30
+2011-03-23 17:40:13.839 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC30T40_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:40:13.844 - runCommand: Process started, PID: 17884
+
+2011-03-23 17:40:13.844 01389 Comment: Make a new directory a copy the ZoneListFile to that new folder.
+
+2011-03-23 17:40:13.844 Requirement: ODSCC30
+
+2011-03-23 17:40:13.845 01393 LoadConfig()
+2011-03-23 17:40:13.845 Requirement: ODSCC30
+2011-03-23 17:40:13.845 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:40:13.848 - runCommand: Process started, PID: 17885
+
+2011-03-23 17:40:13.849 01395 Comment: Update all the configs.
+
+2011-03-23 17:40:13.849 Requirement: ODSCC30
+
+2011-03-23 17:40:13.849 01397 UpdateAll()
+2011-03-23 17:40:13.849 Requirement: ODSCC30
+2011-03-23 17:40:13.849 RunCommand(ods-ksmutil update all)
+2011-03-23 17:40:15.989 - runCommand: Process started, PID: 17886
+2011-03-23 17:40:15.989 OUTPUT:	zonelist filename set to /etc/opendnssec/zonelist.xml.
+2011-03-23 17:40:15.989 OUTPUT:	kasp filename set to /etc/opendnssec/kasp.xml.
+2011-03-23 17:40:15.989 OUTPUT:	Repository SoftHSM found
+2011-03-23 17:40:15.989 OUTPUT:	Capacity set to 10.
+2011-03-23 17:40:15.989 OUTPUT:	RequireBackup set.
+2011-03-23 17:40:15.989 OUTPUT:	Policy default2 found
+2011-03-23 17:40:15.989 OUTPUT:	Info: converting P1Y to seconds; M interpreted as 31 days, Y interpreted as 365 days
+2011-03-23 17:40:15.989 OUTPUT:	Policy default found
+2011-03-23 17:40:15.989 OUTPUT:	Zone ods found
+2011-03-23 17:40:15.989 OUTPUT:	Policy set to default.
+2011-03-23 17:40:15.989 ERROR:	SQLite database set to: /var/opendnssec/kasp.db
+2011-03-23 17:40:15.989 ERROR:	/etc/opendnssec/conf.xml validates
+2011-03-23 17:40:15.989 ERROR:	/etc/opendnssec/kasp.xml validates
+
+2011-03-23 17:40:15.989 01399 Wait(10)
+
+2011-03-23 17:40:15.989 Requirement: ODSCC30
+
+2011-03-23 17:40:25.990 01401 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:40:25.990 Requirement: ODSCC30
+
+2011-03-23 17:40:25.990 01403 Start()
+2011-03-23 17:40:25.990 Requirement: ODSCC30
+2011-03-23 17:40:25.990 RunCommand(ods-control start)
+2011-03-23 17:40:25.992 - runCommand: Background process started, PID: 17895
+2011-03-23 17:40:31.307 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:40:31.461 - runCommand: Process started, PID: 17920
+2011-03-23 17:40:31.462 ERROR:	return code = 1
+2011-03-23 17:40:31.462 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:40:31.589 - runCommand: Process started, PID: 17924
+
+2011-03-23 17:40:31.591 01405 Wait(10)
+
+2011-03-23 17:40:31.591 Requirement: ODSCC30
+
+2011-03-23 17:40:41.594 01407 Comment: Check each minute if the enforcer is running.
+
+2011-03-23 17:40:41.594 Requirement: ODSCC30
+
+2011-03-23 17:40:43.675 01412 Wait(60)
+
+2011-03-23 17:40:43.675 Requirement: ODSCC30
+
+2011-03-23 17:41:46.286 01417 Wait(60)
+
+2011-03-23 17:41:46.286 Requirement: ODSCC30
+
+2011-03-23 17:42:48.905 01422 Wait(60)
+
+2011-03-23 17:42:48.905 Requirement: ODSCC30
+Testcondition - ODSCC40: The datastore settings located in conf.xml should be configurable with different credentials
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC40T10: Change port of database and check if enforcer fails to connect
+
+2011-03-23 17:43:51.527 01432 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:43:51.527 Requirement: ODSCC40
+
+2011-03-23 17:43:51.527 01434 Stop()
+2011-03-23 17:43:51.527 Requirement: ODSCC40
+2011-03-23 17:43:51.527 RunCommand(ods-control stop)
+2011-03-23 17:43:51.531 - runCommand: Process started, PID: 17931
+2011-03-23 17:43:51.531 OUTPUT:	Stopping enforcer...
+2011-03-23 17:43:51.531 OUTPUT:	Cannot find PID file
+2011-03-23 17:43:51.531 OUTPUT:	Stopping signer engine..
+2011-03-23 17:43:51.531 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:43:51.531 ERROR:	return code = 1
+2011-03-23 17:43:51.531 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:43:51.540 - runCommand: Process started, PID: 17934
+2011-03-23 17:43:51.540 ERROR:	return code = 1
+2011-03-23 17:43:51.540 RunCommand(ps -e | grep signer)
+2011-03-23 17:43:51.552 - runCommand: Process started, PID: 17937
+2011-03-23 17:43:51.552 ERROR:	return code = 1
+
+2011-03-23 17:43:51.552 01436 Wait(10)
+
+2011-03-23 17:43:51.552 Requirement: ODSCC40
+
+2011-03-23 17:44:01.553 01438 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:44:01.553 Requirement: ODSCC40
+
+2011-03-23 17:44:01.553 01444 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:44:01.553 Requirement: ODSCC40
+
+2011-03-23 17:44:01.553 01448 Wait(10)
+
+2011-03-23 17:44:01.553 Requirement: ODSCC40
+
+2011-03-23 17:44:11.553 01450 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:44:11.553 Requirement: ODSCC40
+
+2011-03-23 17:44:11.553 01453 LoadConfig()
+2011-03-23 17:44:11.553 Requirement: ODSCC40
+2011-03-23 17:44:11.554 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC40T10_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:44:11.558 - runCommand: Process started, PID: 17940
+
+2011-03-23 17:44:11.559 01456 LoadConfig()
+2011-03-23 17:44:11.559 Requirement: ODSCC40
+2011-03-23 17:44:11.559 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:44:11.562 - runCommand: Process started, PID: 17941
+
+2011-03-23 17:44:11.563 01458 Comment: Update all the configs.
+
+2011-03-23 17:44:11.563 Requirement: ODSCC40
+
+2011-03-23 17:44:11.563 01460 UpdateAll()
+2011-03-23 17:44:11.563 Requirement: ODSCC40
+2011-03-23 17:44:11.563 RunCommand(ods-ksmutil update all)
+2011-03-23 17:44:11.568 - runCommand: Process started, PID: 17942
+2011-03-23 17:44:11.568 OUTPUT:	Error: database in config file does not match libksm
+2011-03-23 17:44:11.568 OUTPUT:	Failed to connect to database
+2011-03-23 17:44:11.568 ERROR:	MySQL database host set to: dnssec-db
+2011-03-23 17:44:11.568 ERROR:	MySQL database port set to: 3000
+2011-03-23 17:44:11.568 ERROR:	MySQL database schema set to: KASP
+2011-03-23 17:44:11.568 ERROR:	MySQL database user set to: kaspuser
+2011-03-23 17:44:11.568 ERROR:	MySQL database password set
+2011-03-23 17:44:11.568 ERROR:	return code = 1
+
+2011-03-23 17:44:11.568 01462 Wait(10)
+
+2011-03-23 17:44:11.568 Requirement: ODSCC40
+
+2011-03-23 17:44:21.569 01464 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:44:21.569 Requirement: ODSCC40
+
+2011-03-23 17:44:21.569 01466 Start()
+2011-03-23 17:44:21.569 Requirement: ODSCC40
+2011-03-23 17:44:21.569 RunCommand(ods-control start)
+2011-03-23 17:44:21.571 - runCommand: Background process started, PID: 17943
+2011-03-23 17:44:26.603 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:44:26.619 - runCommand: Process started, PID: 17966
+2011-03-23 17:44:26.620 ERROR:	return code = 1
+2011-03-23 17:44:26.620 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:44:26.632 - runCommand: Process started, PID: 17971
+
+2011-03-23 17:44:26.633 01468 Wait(10)
+
+2011-03-23 17:44:26.633 Requirement: ODSCC40
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC40T20: Use default port (1213) for database and configure a false port and check if enforcer fails to connect
+
+2011-03-23 17:44:44.436 01485 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:44:44.436 Requirement: ODSCC40
+
+2011-03-23 17:44:44.436 01487 Stop()
+2011-03-23 17:44:44.436 Requirement: ODSCC40
+2011-03-23 17:44:44.436 RunCommand(ods-control stop)
+2011-03-23 17:44:44.440 - runCommand: Process started, PID: 17976
+2011-03-23 17:44:44.441 OUTPUT:	Stopping enforcer...
+2011-03-23 17:44:44.441 OUTPUT:	Cannot find PID file
+2011-03-23 17:44:44.441 OUTPUT:	Stopping signer engine..
+2011-03-23 17:44:44.441 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:44:44.441 ERROR:	return code = 1
+2011-03-23 17:44:44.441 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:44:44.450 - runCommand: Process started, PID: 17979
+2011-03-23 17:44:44.450 ERROR:	return code = 1
+2011-03-23 17:44:44.450 RunCommand(ps -e | grep signer)
+2011-03-23 17:44:44.460 - runCommand: Process started, PID: 17982
+2011-03-23 17:44:44.460 ERROR:	return code = 1
+
+2011-03-23 17:44:44.460 01489 Wait(10)
+
+2011-03-23 17:44:44.460 Requirement: ODSCC40
+
+2011-03-23 17:44:54.460 01491 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:44:54.460 Requirement: ODSCC40
+
+2011-03-23 17:44:54.460 01497 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:44:54.460 Requirement: ODSCC40
+
+2011-03-23 17:44:54.461 01501 Wait(10)
+
+2011-03-23 17:44:54.461 Requirement: ODSCC40
+
+2011-03-23 17:45:04.461 01503 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:45:04.461 Requirement: ODSCC40
+
+2011-03-23 17:45:04.461 01506 LoadConfig()
+2011-03-23 17:45:04.461 Requirement: ODSCC40
+2011-03-23 17:45:04.461 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC40T20_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:45:04.466 - runCommand: Process started, PID: 17985
+
+2011-03-23 17:45:04.466 01509 LoadConfig()
+2011-03-23 17:45:04.466 Requirement: ODSCC40
+2011-03-23 17:45:04.466 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:45:04.470 - runCommand: Process started, PID: 17986
+
+2011-03-23 17:45:04.470 01511 Comment: Update all the configs.
+
+2011-03-23 17:45:04.470 Requirement: ODSCC40
+
+2011-03-23 17:45:04.470 01513 UpdateAll()
+2011-03-23 17:45:04.471 Requirement: ODSCC40
+2011-03-23 17:45:04.471 RunCommand(ods-ksmutil update all)
+2011-03-23 17:45:04.477 - runCommand: Process started, PID: 17987
+2011-03-23 17:45:04.477 OUTPUT:	Error: database in config file does not match libksm
+2011-03-23 17:45:04.477 OUTPUT:	Failed to connect to database
+2011-03-23 17:45:04.477 ERROR:	MySQL database host set to: dnssec-db
+2011-03-23 17:45:04.477 ERROR:	MySQL database port set to: 1213
+2011-03-23 17:45:04.477 ERROR:	MySQL database schema set to: KASP
+2011-03-23 17:45:04.477 ERROR:	MySQL database user set to: kaspuser
+2011-03-23 17:45:04.477 ERROR:	MySQL database password set
+2011-03-23 17:45:04.477 ERROR:	return code = 1
+
+2011-03-23 17:45:04.478 01515 Wait(10)
+
+2011-03-23 17:45:04.478 Requirement: ODSCC40
+
+2011-03-23 17:45:14.478 01517 Comment: all done! hsm_close results: 1
+
+2011-03-23 17:45:14.478 Requirement: ODSCC40
+
+2011-03-23 17:45:14.478 01519 Start()
+2011-03-23 17:45:14.478 Requirement: ODSCC40
+2011-03-23 17:45:14.478 RunCommand(ods-control start)
+2011-03-23 17:45:14.480 - runCommand: Background process started, PID: 17988
+2011-03-23 17:45:19.516 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:45:19.530 - runCommand: Process started, PID: 18010
+2011-03-23 17:45:19.530 ERROR:	return code = 1
+2011-03-23 17:45:19.530 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:45:19.544 - runCommand: Process started, PID: 18015
+
+2011-03-23 17:45:19.544 01521 Wait(10)
+
+2011-03-23 17:45:19.544 Requirement: ODSCC40
+
+-------------------------------------------------------------------------------
+Testcase - ODSCC40T30: Use a different port for both database and config and check if enforcer successfully connects
+
+2011-03-23 17:45:37.370 01536 Comment: MySQL port is 3307 instead of 3306. Changed in config.xml and my.cnf
+
+2011-03-23 17:45:37.370 Requirement: ODSCC40
+
+2011-03-23 17:45:37.370 01537 Comment: Stop the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:45:37.370 Requirement: ODSCC40
+
+2011-03-23 17:45:37.370 01539 Stop()
+2011-03-23 17:45:37.370 Requirement: ODSCC40
+2011-03-23 17:45:37.370 RunCommand(ods-control stop)
+2011-03-23 17:45:37.375 - runCommand: Process started, PID: 18020
+2011-03-23 17:45:37.375 OUTPUT:	Stopping enforcer...
+2011-03-23 17:45:37.375 OUTPUT:	Cannot find PID file
+2011-03-23 17:45:37.375 OUTPUT:	Stopping signer engine..
+2011-03-23 17:45:37.375 ERROR:	Unable to connect to engine: connect() failed: No such file or directory
+2011-03-23 17:45:37.375 ERROR:	return code = 1
+2011-03-23 17:45:37.375 RunCommand(ps -e | grep enforcer)
+2011-03-23 17:45:37.385 - runCommand: Process started, PID: 18023
+2011-03-23 17:45:37.385 ERROR:	return code = 1
+2011-03-23 17:45:37.386 RunCommand(ps -e | grep signer)
+2011-03-23 17:45:37.397 - runCommand: Process started, PID: 18026
+2011-03-23 17:45:37.397 ERROR:	return code = 1
+
+2011-03-23 17:45:37.397 01541 Wait(10)
+
+2011-03-23 17:45:37.397 Requirement: ODSCC40
+
+2011-03-23 17:45:47.397 01543 Comment: Clear the tmp and signed folder with the next 2 commands.
+
+2011-03-23 17:45:47.397 Requirement: ODSCC40
+
+2011-03-23 17:45:47.397 01549 Comment: Purge the keys in the SoftHSM repositories.
+
+2011-03-23 17:45:47.397 Requirement: ODSCC40
+
+2011-03-23 17:45:47.398 01553 Wait(10)
+
+2011-03-23 17:45:47.398 Requirement: ODSCC40
+
+2011-03-23 17:45:57.398 01555 Comment: Rebuild ODS with MySQL database instead of SQLlite
+
+2011-03-23 17:45:57.398 Requirement: ODSCC40
+
+2011-03-23 17:45:57.398 01561 Wait(60)
+
+2011-03-23 17:45:57.398 Requirement: ODSCC40
+
+2011-03-23 17:46:57.398 01565 Wait(60)
+
+2011-03-23 17:46:57.398 Requirement: ODSCC40
+
+2011-03-23 17:47:57.399 01569 Wait(60)
+
+2011-03-23 17:47:57.399 Requirement: ODSCC40
+
+2011-03-23 17:48:57.399 01571 Comment: After installation replace the original mysql config file with the adjusted one. Port is 3307 instead of the standard 3306 port.
+
+2011-03-23 17:48:57.399 Requirement: ODSCC40
+
+2011-03-23 17:48:57.399 01575 Comment: Update the mySQL configuration
+
+2011-03-23 17:48:57.399 Requirement: ODSCC40
+
+2011-03-23 17:48:57.399 01579 Wait(10)
+
+2011-03-23 17:48:57.399 Requirement: ODSCC40
+
+2011-03-23 17:49:07.400 01582 Comment: Change the configuration with predefined xml config files.
+
+2011-03-23 17:49:07.400 Requirement: ODSCC40
+
+2011-03-23 17:49:07.400 01585 LoadConfig()
+2011-03-23 17:49:07.400 Requirement: ODSCC40
+2011-03-23 17:49:07.400 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/conf/ODSCC40T30_conf.xml /etc/opendnssec/conf.xml)
+2011-03-23 17:49:07.405 - runCommand: Process started, PID: 18029
+
+2011-03-23 17:49:07.405 01588 LoadConfig()
+2011-03-23 17:49:07.405 Requirement: ODSCC40
+2011-03-23 17:49:07.405 RunCommand(cp /home/ods/ods_testautomation/ods_sit_conf/kasp/kasp.xml /etc/opendnssec/kasp.xml)
+2011-03-23 17:49:07.409 - runCommand: Process started, PID: 18030
+
+2011-03-23 17:49:07.409 01590 Comment: Run setup for rebuild of database
+
+2011-03-23 17:49:07.409 Requirement: ODSCC40
+
+2011-03-23 17:49:07.409 01594 Wait(20)
+
+2011-03-23 17:49:07.409 Requirement: ODSCC40
+
+2011-03-23 17:49:27.410 01596 Comment: Update all the configs.
+
+2011-03-23 17:49:27.410 Requirement: ODSCC40
+
+2011-03-23 17:49:27.410 01598 UpdateAll()
+2011-03-23 17:49:27.410 Requirement: ODSCC40
+2011-03-23 17:49:27.410 RunCommand(ods-ksmutil update all)
+2011-03-23 17:49:27.416 - runCommand: Process started, PID: 18031
+2011-03-23 17:49:27.416 OUTPUT:	Error: database in config file does not match libksm
+2011-03-23 17:49:27.416 OUTPUT:	Failed to connect to database
+2011-03-23 17:49:27.416 ERROR:	MySQL database host set to: dnssec-db
+2011-03-23 17:49:27.416 ERROR:	MySQL database port set to: 3307
+2011-03-23 17:49:27.416 ERROR:	MySQL database schema set to: KASP
+2011-03-23 17:49:27.416 ERROR:	MySQL database user set to: kaspuser
+2011-03-23 17:49:27.416 ERROR:	MySQL database password set
+2011-03-23 17:49:27.416 ERROR:	return code = 1
+
+2011-03-23 17:49:27.416 01600 Wait(10)
+
+2011-03-23 17:49:27.416 Requirement: ODSCC40
+
+2011-03-23 17:49:37.417 01602 Comment: Start the ODS-Enforcer and ODS-Signer
+
+2011-03-23 17:49:37.417 Requirement: ODSCC40
+
+2011-03-23 17:49:37.417 01604 Start()
+2011-03-23 17:49:37.417 Requirement: ODSCC40
+2011-03-23 17:49:37.417 RunCommand(ods-control start)
+2011-03-23 17:49:37.419 - runCommand: Background process started, PID: 18032
+2011-03-23 17:49:42.450 RunCommand(ps -e | awk '{print $4}' | grep -x ods-enforcerd)
+2011-03-23 17:49:42.470 - runCommand: Process started, PID: 18055
+2011-03-23 17:49:42.471 ERROR:	return code = 1
+2011-03-23 17:49:42.471 RunCommand(ps -ef | grep signer | grep -v grep | awk '{print $8 " " $9}')
+2011-03-23 17:49:42.483 - runCommand: Process started, PID: 18060
+
+2011-03-23 17:49:42.484 01606 Wait(10)
+
+2011-03-23 17:49:42.484 Requirement: ODSCC40
+Quantifier follows nothing in regex; marked by <-- HERE in m/? <-- HERE ?/ at ActionWords.pm line 682, <FH> line 51442.
+
