@@ -5,8 +5,8 @@ STATE = ["HID", "RUM", "OMN", "UNR", "---"]
 HID = 0; RUM = 1; OMN = 2; UNR = 3; NOCARE = -1
 DS = 0;  DK = 1;  RD = 2;  RS = 3
 
-ALLOW_UNSIGNED = True
-#~ ALLOW_UNSIGNED = False
+#~ ALLOW_UNSIGNED = True
+ALLOW_UNSIGNED = False
 
 class Key:
 	next_id = 0
@@ -124,15 +124,15 @@ def updatezone(keylist):
 			change |= updatekey(keylist, keyindex)
 
 keylist = []
-keylist.append(Key([OMN, OMN, OMN, NOCARE], True, 0)) #KSK
-keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
 #~ 
 #~ keylist.append(Key([HID, HID, HID, NOCARE], True, 1)) #KSK
-keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
+#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
 
 #~ keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK
 #~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
 
-#~ keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK
+keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK, hidden, introducing
 
 updatezone(keylist)
