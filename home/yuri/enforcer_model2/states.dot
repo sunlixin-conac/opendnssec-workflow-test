@@ -1,0 +1,16 @@
+digraph {
+    node [shape = doublecircle];
+    H; 
+
+    node [shape = circle];
+    O; 
+    R; 
+    U; 
+
+    H->R;
+    O->U;
+    R->O;
+    R->U;
+    U->H;
+    U->R;
+   }
