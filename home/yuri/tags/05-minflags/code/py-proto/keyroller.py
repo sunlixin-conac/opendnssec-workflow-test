@@ -11,8 +11,6 @@ UNRETENTIVE   = "-"
 COMMITTED     = "C"
 POSTCOMMITTED = "P"
 
-REVOKED       = "!"
-
 class Record:
     def __init__(self, state):
         self.state = state
@@ -21,9 +19,7 @@ class Record:
         return str(self.state)
 
 class Key:
-    def __init__(self, name, alg, roles, goal, initstate, minds=False, \
-            mindnskey=False, minrrsig=False, \
-            standby=False, revoked=False):
+    def __init__(self, name, alg, roles, goal, initstate, minds=False, mindnskey=False, minrrsig=False):
         self.name = name
         self.alg = alg
         self.roles = roles
@@ -36,8 +32,6 @@ class Key:
         self.minds = minds
         self.mindnskey = mindnskey
         self.minrrsig = minrrsig
-        self.standby = standby
-        self.revoked = revoked
     def __repr__(self):
         return self.name
 
@@ -48,12 +42,9 @@ def printkc(kc):
         strds     = "_"
         strdnskey = "_"
         strrrsig  = "_"
-        strstandby   = "      "
         if ds(k): strds = ds(k)
         if dnskey(k): strdnskey = dnskey(k)
         if rrsig(k): strrrsig = rrsig(k)
-        if standby(k): strstandby = "(Hold)"
-        
         
         pub = C(dnskey(k)) or R(dnskey(k)) or O(dnskey(k))
         act = C(rrsig(k)) or R(rrsig(k)) or O(rrsig(k))
@@ -61,10 +52,10 @@ def printkc(kc):
         conf = []
         if pub: conf.append("PUB")
         if act: conf.append("ACT")
-        print "key %s: [%s %s %s] goal(k)=%s alg(k)=%s %s %s %s"%(str(k.name), 
+        print "key %s: [%s %s %s] goal(k)=%s alg(k)=%s %s %s"%(str(k.name), 
             strds, strdnskey, 
             strrrsig, str(k.goal), str(k.alg), 
-            str(",".join(list(roles(k)))), str(",".join(conf)), strstandby)
+            str(",".join(list(roles(k)))), str(",".join(conf)))
     print ""
 
 def debug(k, s):
@@ -98,8 +89,6 @@ def rrsig(k): return record(k, "rrsig")
 def goal(k):  return k.goal
 def alg(k):   return k.alg
 def roles(k): return k.roles
-def standby(k): return k.standby
-def revoked(k): return k.revoked
 def state(r): 
     if not r: return "~"
     else: return r.state
@@ -112,7 +101,6 @@ def C(r):     return state(r) == COMMITTED
 def O(r):     return state(r) == OMNIPRESENT
 def U(r):     return state(r) == UNRETENTIVE
 def P(r):     return state(r) == POSTCOMMITTED
-def F(r):     return state(r) == REVOKED
 
 def reliable(func, k, kc):
     return O(func(k)) or \
@@ -146,13 +134,13 @@ def valid(kc):
 def proc_ds(kc, k, ds_record, now):
     if H(ds_record):
         if goal(k) == OMNIPRESENT:
-            if not minds(k) and not standby(k):
+            if not minds(k):
                 if O(dnskey(k)) or exists(kc, lambda l:
                         alg(l) == alg(k) and
                         reliable(ds, l, kc) and
                         reliable(dnskey, l, kc)):
                     return RUMOURED
-            if minds(k) and O(dnskey(k)) and not standby(k):
+            if minds(k) and O(dnskey(k)):
                     return COMMITTED
                
 
@@ -206,25 +194,15 @@ def proc_dnskey(kc, k, dnskey_record, now):
                 if (not "ksk" in roles(k) or O(ds(k))) and \
                 (not "zsk" in roles(k) or O(rrsig(k))):
                     return COMMITTED
-            if (not mindnskey(k) or standby or not exists(kc, lambda l: alg(l)==alg(k) and reliable(dnskey, l, kc) and "ksk" in roles(l))) \
-                    and (reliable(rrsig, k, kc) or exists(kc, lambda l:
-                        alg(k) == alg(l) and
-                        reliable(dnskey, l, kc) and
-                        reliable(rrsig, l, kc))):
-                return RUMOURED
-            
-            
-            #~ if not ("ksk" in roles(k) and standby(k)):
-                #~ if mindnskey(k):
-#~ 
-                #~ if not mindnskey(k) or standby(k) or not exists(kc, lambda l: alg(l)==alg(k) and reliable(dnskey, l, kc) and "ksk" in roles(l)):
-                    #~ if O(rrsig(k)):
-                        #~ return RUMOURED
-                    #~ if exists(kc, lambda l:
-                        #~ alg(k) == alg(l) and
-                        #~ reliable(dnskey, l, kc) and
-                        #~ reliable(rrsig, l, kc)):
-                        #~ return RUMOURED
+            #~ if not mindnskey(k):
+            if not mindnskey(k) or not exists(kc, lambda l: alg(l)==alg(k) and reliable(dnskey, l, kc) and "ksk" in roles(l)):
+                if O(rrsig(k)):
+                    return RUMOURED
+                if exists(kc, lambda l:
+                    alg(k) == alg(l) and
+                    reliable(dnskey, l, kc) and
+                    reliable(rrsig, l, kc)):
+                    return RUMOURED
     
     elif R(dnskey_record):
         if goal(k) == HIDDEN:
@@ -239,10 +217,10 @@ def proc_dnskey(kc, k, dnskey_record, now):
                 
     elif O(dnskey_record):
         if goal(k) == HIDDEN:
-            if not revoked(k) and ("ksk" not in roles(k) or O(ds(k))) and ("zsk" not in roles(k) or O(rrsig(k))) and exists(kc, lambda l: C(dnskey(l)) and alg(k) == alg(l) and roles(k) == roles(l)):
+            if ("ksk" not in roles(k) or O(ds(k))) and ("zsk" not in roles(k) or O(rrsig(k))) and exists(kc, lambda l: C(dnskey(l)) and alg(k) == alg(l) and roles(k) == roles(l)):
                 return POSTCOMMITTED
             #~ if ("zsk" not in roles(k) or not MinSig or H(rrsig(k)) or not exists(kc, lambda l: H(rrsig(l)) and alg(k) == alg(l))):
-            if not revoked(k) and not P(ds(k)) and not P(rrsig(k)) and \
+            if not P(ds(k)) and not P(rrsig(k)) and \
                 forall(kc, lambda x: True, lambda l:
                     ("ksk" not in roles(l) or 
                     H(ds(l)) or 
@@ -261,29 +239,6 @@ def proc_dnskey(kc, k, dnskey_record, now):
                         reliable(dnskey, m, kc) and 
                         reliable(rrsig, m, kc)))):            
                 return UNRETENTIVE
-            if revoked(k) and not P(ds(k)) and not P(rrsig(k)) and \
-                forall(kc, lambda x: True, lambda l:
-                    ("ksk" not in roles(l) or 
-                    H(ds(l)) or 
-                    (reliable(dnskey, l, kc) and k != l) or 
-                    exists(kc, lambda m:
-                        alg(m)==alg(l) and 
-                        reliable(ds, m, kc) and 
-                        reliable(dnskey, m, kc) and 
-                        k != m))
-                and
-                    (H(dnskey(l)) or
-                    reliable(rrsig, l, kc) or 
-                    exists(kc, lambda m:
-                        alg(m)==alg(l) and 
-                        k != m and 
-                        reliable(dnskey, m, kc) and 
-                        reliable(rrsig, m, kc)))):            
-                return REVOKED
-
-    elif F(dnskey_record):
-        if dnskey_record.time <= now:
-            return UNRETENTIVE
 
     elif P(dnskey_record):
         if dnskey_record.time <= now:
@@ -300,13 +255,11 @@ def proc_dnskey(kc, k, dnskey_record, now):
 def proc_rrsig(kc, k, rrsig_record, now):
     if H(rrsig_record):
         if goal(k) == OMNIPRESENT:
-            #~ if not ("zsk" in roles(k) and standby(k)):
-            if not standby(k):
-                if minrrsig(k):
-                    if O(dnskey(k)):
-                        return COMMITTED
-                if not minrrsig(k) or not exists(kc, lambda l: reliable(rrsig, l, kc) and alg(k)==alg(l)):
-                    return RUMOURED
+            if minrrsig(k):
+                if O(dnskey(k)):
+                    return COMMITTED
+            if not minrrsig(k) or not exists(kc, lambda l: reliable(rrsig, l, kc) and alg(k)==alg(l)):
+                return RUMOURED
         
     elif C(rrsig_record):
         if rrsig_record.time <= now:
@@ -461,13 +414,13 @@ kc = set()
 #~ kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
 #~ enforce(kc)
 
-#### zsk new alg rollover
-#~ kc = set()
-#~ kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
-##kc.add(Key("KSK2", 1, set(["ksk"]), OMNIPRESENT, HIDDEN, False, False, False, standby=True))
-#~ kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
-#~ kc.add(Key("ZSK2", 1, set(["zsk"]), OMNIPRESENT, HIDDEN))
-#~ enforce(kc)
+#~ #### zsk new alg rollover
+kc = set()
+kc.add(Key("KSK1", 1, set(["ksk"]), HIDDEN, OMNIPRESENT))
+kc.add(Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN, False, True, False))
+kc.add(Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT))
+kc.add(Key("ZSK1", 2, set(["zsk"]), OMNIPRESENT, HIDDEN))
+enforce(kc)
 
 #~ #### zsk,ksk  to csk roll
 #~ kc = set()
@@ -527,21 +480,3 @@ kc = set()
 #~ print "\t\tEND ENFORCER\n"
 #~ print "\t\tEND STATE"
 #~ printkc(kc)
-
-
-kc = set()
-k1 = Key("KSK1", 1, set(["ksk"]), OMNIPRESENT, OMNIPRESENT)
-k2 = Key("KSK2", 2, set(["ksk"]), OMNIPRESENT, HIDDEN, True, False, False, standby=True)
-z1 = Key("ZSK1", 1, set(["zsk"]), HIDDEN, OMNIPRESENT)
-z2 = Key("ZSK1", 2, set(["zsk"]), HIDDEN, OMNIPRESENT)
-kc.add(k1)
-kc.add(k2)
-kc.add(z1)
-kc.add(z2)
-enforce(kc)
-
-k2.standby = False
-k1.revoked = True
-k1.goal = HIDDEN
-
-enforce(kc)

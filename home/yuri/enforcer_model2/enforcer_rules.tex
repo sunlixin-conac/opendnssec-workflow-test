@@ -1,0 +1,48 @@
+\documentclass[a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\begin{document}
+
+Let $A$ represent DS, $B$ DNSKEY, $C$ RRSIG DNSKEY, and $D$ RRSIG.
+
+
+superscript
+
+direction
+\begin{tabular}{ r | c  c }
+	& \multicolumn{2}{c}{P} \\
+   & $\leq$ 1 & 1 \\ \hline
+  in & $\uparrow$ & + \\
+  out & $\downarrow$ & - \\
+\end{tabular}
+
+$B_{x}^{+}$ There exist some key material $x$ with DNSKEY on introducing
+and fully propagated to all validators. or: $\exists x \in Keys \cdot Dnskeystate(x) = Omnipresent$
+
+$A_{x}^{+}$ is stronger than $A_{x}^{\uparrow}$. When the latter is true
+the former is true as well.  $A_{x}^{+} \rightarrow A_{x}^{\uparrow}$.
+
+%~ not exist_key([RUM, NOCARE, NOCARE, NOCARE], keylist, key.alg) and (key.isOmn(DK) and key.isOmn(RD) or key.isHid(DS)) or \
+
+\begin{eqnarray}
+&& A_{x}^{\uparrow} \\
+&& \neg A_{x}^{\uparrow} (A^{-} \vee B^{+} C^{+}) \vee A_{x}^{\uparrow}
+	B_{x}^{+} C_{x}^{+} \vee A_{x}^{+} B_{x}^{\uparrow} C_{x}^{\uparrow}
+	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}\\
+&& \neg B_{x}^{\uparrow} (B^{-} \vee D^{+}) \vee B_{x}^{\uparrow}
+	D_{x}^{+} \vee B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+}
+	D_{y}^{\downarrow}
+\end{eqnarray}
+
+Each key material is travelling in a set direction. Each record strives to
+a stable state which satisfies travel direction and maximises certainty. The
+step towards certainty can be taken without consequence (given timing).
+A change of direction however MUST NOT worsen to dnssec validity.
+
+Step 1; check which of the five rules hold. Step 2: check which of those
+still hold in the new situation. If all are true, apply change.
+
+
+\end{document}

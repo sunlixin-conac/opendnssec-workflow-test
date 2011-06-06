@@ -10,8 +10,6 @@ digraph {
     C [pos = "+2.0, +0.0!"]; 
     P [pos = "-2.0, +0.0!"]; 
 
-    F [pos = "+0.0, +0.5!"]; 
-
     H->{R C};
     R->O [style = "dotted"];
     R->U;
@@ -21,7 +19,4 @@ digraph {
    
     C->O [style = "dotted"];
     P->H [style = "dotted"];
-    
-    O->F;
-    F->U [style = "dotted"];
 }

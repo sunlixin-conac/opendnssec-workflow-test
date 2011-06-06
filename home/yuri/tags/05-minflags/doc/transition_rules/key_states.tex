@@ -4,10 +4,8 @@
 \usepackage{color}
 
 \definecolor{MinSig}{RGB}{255,163,53}
-\definecolor{Stdby}{RGB}{224,41,62}
 %~ \definecolor{MinSig}{RGB}{199,154,0}
 \newcommand{\highlightMinSig}[1]{\textcolor{MinSig}{\bf{#1}}}
-\newcommand{\highlightStandby}[1]{\textcolor{Stdby}{\bf{#1}}}
 
 %~ \newcommand{\mathbox}[1]{\fbox{\begin{minipage}{\linewidth}#1\end{minipage}}}
 \newcommand{\mathbox}[1]{#1}
@@ -190,9 +188,6 @@ We define the following operations on a key $k$:
 			set as small as possible.
 	\item[$MinRrsig(k)$] Boolean. If true, key will strive to keep the
 			signiture count low.
-	\item[$Standby(k)$] Boolean. If true, ksk will not introduce DNSKEY
-			and zsk will not introduce RRSIGs.
-	\item[$Revoke(k)$] Boolean. 
 \end{itemize}
 
 \section{DNSSEC Validity} \label{validity}
@@ -330,7 +325,6 @@ involving the $Ds$ state of a non-KSK key is always false.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
 \highlightMinSig{			\neg MinDs(k) \wedge }\\
-\highlightStandby{			\neg Standby(k) \wedge }\\
 \hskip 1cm		(O(Dnskey(k)) \vee \\
 \hskip 1cm		\exists k' \in \mathbb{K} \cdot ( \\
 \hskip 2cm			Alg(k)=Alg(k') \wedge \\
@@ -339,13 +333,11 @@ involving the $Ds$ state of a non-KSK key is always false.
 		\end{array}
 		\right\}\vdash [submit], R(Ds(k)) 
 	\end{equation}
-	
 \highlightMinSig{
 	\begin{equation}
 		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
-\highlightStandby{			\neg Standby(k) \wedge }\\
 			MinDs(k) \wedge \\
 			O(Dnskey(k))
 		\end{array}
@@ -492,7 +484,6 @@ be extra carefull about the type of key the record belongs to.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
 \highlightMinSig{			(\neg MinDnskey(k) \vee}\\
-\highlightStandby{\hskip 1cm	Standby(k) \vee }\\
 \highlightMinSig{\hskip 1cm \exists k' \not \in \mathbb{K} \cdot (}\\
 \highlightMinSig{\hskip 2cm	Alg(k)=Alg(k') \wedge}\\
 \highlightMinSig{\hskip 2cm	Reliable(dnskey, k') \wedge }\\
@@ -545,7 +536,6 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 \hskip 0cm				H(Goal(k)) \wedge \\
-\highlightStandby{\neg Revoke(k) \wedge }\\
 \hskip 0cm				O(Ds(k)) \wedge \\
 \hskip 0cm				O(Rrsig(k)) \wedge \\
 \hskip 0cm				\exists k' \in \mathbb{K} \cdot (\\
@@ -565,10 +555,15 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 			H(Goal(k)) \wedge \\
+%~ \highlightMinSig{\hskip 0cm	(zsk \not \in Roles(k) \vee }\\
+%~ \highlightMinSig{\hskip 1cm		\neg MinSig \vee }\\
+%~ \highlightMinSig{\hskip 1cm		H(Rrsig(k)) \vee }\\
+%~ \highlightMinSig{\hskip 1cm		\exists k' \not \in \mathbb{K} \cdot (}\\
+%~ \highlightMinSig{\hskip 2cm		H(Rrsig(k')) \wedge }\\
+%~ \highlightMinSig{\hskip 2cm		Alg(k) = Alg(k')))} \wedge \\
 
-\highlightStandby{\neg Revoke(k) \wedge }\\
-\highlightMinSig{\neg P(Ds(k)) \wedge }\\
-\highlightMinSig{\neg P(Rrsig(k)) \wedge }\\
+\highlightMinSig{P(Ds(k)) \wedge }\\
+\highlightMinSig{P(Rrsig(k)) \wedge }\\
 
 \hskip 0cm	\forall k' \in \mathbb{K} \cdot (\\
 \hskip 1cm		(ksk \not \in Roles(k') \vee\\
@@ -591,47 +586,6 @@ be extra carefull about the type of key the record belongs to.
 		\end{array}
 		\right\} \vdash [withdraw], U(Dnskey(k))
 	\end{equation}
-	
-	\begin{equation}
-		\left.
-		\begin{array}{l}
-			H(Goal(k)) \wedge \\
-
-\highlightStandby{Revoke(k) \wedge }\\
-\highlightMinSig{\neg P(Ds(k)) \wedge }\\
-\highlightMinSig{\neg P(Rrsig(k)) \wedge }\\
-
-\hskip 0cm	\forall k' \in \mathbb{K} \cdot (\\
-\hskip 1cm		(ksk \not \in Roles(k') \vee\\
-\hskip 1cm		H(Ds(k')) \vee \\
-\hskip 1cm		(Reliable(Dnskey, k') \wedge \\
-\hskip 2cm			k \neq k') \vee \\
-\hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
-\hskip 2cm			k \neq k'' \wedge \\
-\hskip 2cm			Alg(k')=Alg(k'') \wedge \\
-\hskip 2cm			Reliable(Ds, k'') \wedge \\
-\hskip 2cm			Reliable(Dnskey, k''))) \\
-\hskip 1cm		\wedge \\
-\hskip 1cm		(H(Dnskey(k')) \vee \\
-\hskip 1cm		Reliable(Rrsig, k'))  \vee \\
-\hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
-\hskip 2cm			k \neq k'' \wedge \\
-\hskip 2cm			Alg(k')=Alg(k'') \wedge \\
-\hskip 2cm			Reliable(Dnskey, k'') \wedge \\
-\hskip 2cm			Reliable(Rrsig, k''))))
-		\end{array}
-		\right\} \highlightStandby{\vdash [revoke], F(Dnskey(k))}
-	\end{equation}
-}
-
-\subsubsection{$F(Dnskey(k))$}
-
-\mathbox{
-\highlightStandby{
-	\begin{equation}
-			T_{now} \geq T_{whatever} \vdash U(Dnskey(k))
-	\end{equation}
-	}
 }
 
 \subsubsection{$U(Dnskey(k))$}
@@ -673,7 +627,6 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
-\highlightStandby{			\neg Standby(k) \wedge }\\
 \highlightMinSig{	(\neg MinSig(k) \vee }\\
 \highlightMinSig{\hskip 1cm	\exists k' \not \in \mathbb{K}\cdot (}\\
 \highlightMinSig{\hskip 2cm		Alg(k)=Alg(k') \wedge }\\
@@ -687,7 +640,6 @@ be extra carefull about the type of key the record belongs to.
 		\left.
 		\begin{array}{l}
 			O(Goal(k)) \wedge \\
-\highlightStandby{			\neg Standby(k) \wedge }\\
 			MinSig(k) \wedge \\
 			O(Dnskey(k)) \\
 		\end{array}
