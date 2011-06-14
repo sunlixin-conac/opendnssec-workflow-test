@@ -1,11 +1,9 @@
 digraph {
-    node [shape = doublecircle];
-    H [label = "Hidden"]; 
-
-    node [shape = circle];
+    node [shape = circle, fixedsize = true, height = 1.5];
     O [label = "Omnipresent"]; 
     R [label = "Rumoured"]; 
     U [label = "Unretentive"]; 
+    H [label = "Hidden", shape = doublecircle]; 
 
     H->R;
     O->U;
@@ -13,4 +11,4 @@ digraph {
     R->U;
     U->H;
     U->R;
-   }
+}

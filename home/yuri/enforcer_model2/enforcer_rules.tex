@@ -2,6 +2,17 @@
 \usepackage{graphicx}
 \usepackage{amssymb,amsmath}
 \usepackage[english]{babel}
+\usepackage{multirow}
+
+\usepackage{color}
+\definecolor{MinSig}{RGB}{255,163,53}
+\definecolor{Stdby}{RGB}{224,41,62}
+%~ \definecolor{MinSig}{RGB}{199,154,0}
+\newcommand{\highlightMinSig}[1]{\textcolor{MinSig}{\bf{#1}}}
+\newcommand{\highlightStandby}[1]{\textcolor{Stdby}{\bf{#1}}}
+
+%~ \newcommand{\mathbox}[1]{\fbox{\begin{minipage}{\linewidth}#1\end{minipage}}}
+\newcommand{\mathbox}[1]{#1}
 
 \title{\textsc{Dnssec} Key State Transitions}
 \author{Yuri Schaeffer, Yuri@NLnetLabs.nl}
@@ -10,30 +21,110 @@
 \begin{document}
 \maketitle
 
-\section{Warning}
-This document is a rough explanation of an idea. It is based on earlier
-work and may use but not introduce terminology of an other document. 
-Possibly introduce completely new notations, skip reasoning steps without 
-warning (well, you are warned now) and be plain wrong. This document is considered unsuitable
-for young children and Liberal-Arts majors. Read at OWN RISK.
+%~ \section{Warning}
+%~ This document is a rough explanation of an idea. It is based on earlier
+%~ work and may use but not introduce terminology of an other document. 
+%~ Possibly introduce completely new notations, skip reasoning steps without 
+%~ warning (well, you are warned now) and be plain wrong. This document is considered unsuitable
+%~ for young children and Liberal-Arts majors. Read at OWN RISK.
+%~ 
+%~ \tableofcontents
 
 \section{Introduction}
-I introduce a new method to decide which records of a key to publish
-or unpublish. It is largely based on my previous work. We still use
-the perspective of the validators, and have therefore the same statemachine
-as before.
 
-To increase readability and confusability I write DS as $A$, Dnskey as $B$,
-Rrsig Dnskey as $C$, and Rrsig as $D$. I also introduce a new notation 
-to indicate the state of a record which is used as a superscript.
+A key roll-over is a process that runs over time, at any time each 
+key has a state. Matthijs Mekking introduced the idea that a key has 
+a private part, a public part, and a parent part. Each of these 
+parts have their own state-machine an together represent a 
+'key-state'.
 
-direction
-\begin{tabular}{ r | c  c }
-	& \multicolumn{2}{c}{P} \\
-   & $\leq$ 1 & 1 \\ \hline
-  in & $\uparrow$ & + \\
-  out & $\downarrow$ & - \\
-\end{tabular}
+This idea forms the basis for this document. However a cache 
+centered rather than a roll-over centered approach is chosen. This 
+allows us to generalize much of the logic. All parts of the 
+key-state now represent records which are actually published to the 
+world. The state of a record tells if and how well the record is 
+known to caching resolvers\footnote{ This document happely mixes the 
+terms cache, resolver and validator. In all cases a DNSSEC 
+validating caching resolver is meant.}. As a result each record now 
+has exactly the same state machine. Furthermore instead of 3 parts 
+we use 4 parts per key.
+
+With these ingredients we can formalize the boundries of DNSSEC. We say 
+a zone is in a valid DNSSEC state if a validator can build a chain of 
+trust from that state. Alternatively, a unsigned zone is also considered
+valid, as long as it is not bogus\footnote{Bogus: 
+		The validating resolver has a trust anchor and a secure
+	  delegation indicating that subsidiary data is signed, but the 
+	  response fails to validate for some reason: missing 
+	  signatures, expired signatures, signatures with unsupported 
+	  algorithms, data missing that the relevant NSEC RR says should 
+	  be present, and so forth. (RFC4033) }. In terms of end-user, 
+	  if the user is able to get an address for
+a name, the zone is valid. With our formal definition we can test the
+current state for validity and have a precise way of deciding we can
+take a transition to a next key state.
+
+\section{Cache Centered Approach}
+
+In a cache centered approach we do not define how rollovers should 
+work exactly. The state of a key is represents how well it is know 
+to \emph{any} caching validator. Either all caches have a record, no 
+caches have a record, or some caches \emph{might} have it en some 
+caches \emph{might not}. In the latter case we must simply wait long 
+enough and the record will enter one of the certain states again. We 
+will discuss the key states in section~\ref{sec:keystates}.
+
+Each key has a goal, an internal desire to be either known to all 
+caches around the world or no caches at all. A system can make any 
+state transition as long as it makes sure that the validity of a 
+zone in general is not compromised. This does also imply that a 
+key's goal can be changed at any time without the zone going bogus. 
+E.g. if a key has a desire to disappear but is the only key left it 
+will stay on duty for as long as necessary. Also, new keys can be 
+introduced at any time.
+
+This approach has a number of advantages. Here, in contrast to a 
+roll-over centered approach, keys have no direct relation to each 
+other. The system does not try to roll from one specific key to 
+another specific key but rather satisfy all goals while remaining 
+valid as a whole. Essentially the roll-over is a side effect of the 
+strive to satisfy key goals. New keys can be introduced and goals 
+can be redefined at any time without a problem. This makes the 
+system agile, robust, and capable of handling unexpected situations. 
+Another advantage is that our system will `think' the same was as 
+the validators we are trying to satisfy. It always knows how 
+resolvers (might) see the data and makes kepping that data valid its 
+core business. 
+
+%~ key ring
+%~ key states
+%~ ksk vs zsk
+%~ mutators (breaks)
+
+\section{Keys}
+
+\subsection{Keyring}
+
+Although zones can share key material the records are published 
+independently. As a result each zone must have its own collection of 
+key states. Let us refer to this collection as a keyring denoted by 
+$\mathbb{K}$. A Keyring and a Zone have a 1-on-1 relation.
+
+Keys not known to any resolver can freely be added to or removed 
+from the keyring. Similar, if a key is in none of the keyrings the 
+key material can be purged safely from the keystorage.
+
+\subsection{Key States} \label{sec:keystates}
+
+The state of a key is publicly represented as a DS record, DNSKEY 
+record, RRSIG DNSKEY record and the RRSIGs over all the data in the 
+zone. The latter consists of multiple records but all share the same 
+state, although technically incorrect we will refer to it as the 
+RRSIG record.
+
+Because each of the four records can be introduced at a different 
+time and at a different pace, all need their own state machine 
+(Figure~\ref{fig:statemachine}).
 
 \begin{figure}[h]
 	\centering
@@ -42,30 +133,177 @@ direction
 	\label{fig:statemachine}
 \end{figure}
 
-The subscript refers to the key from the current record. For example:
-$B_{x}^{+}$ Means there exist some key material $x$ with DNSKEY ($B$) on introducing 
-and fully propagated to all validators ($+$). or: $\exists x \in Keys \cdot Dnskeystate(x) = Omnipresent$
-$B^{+}$ (without the subscript refers to the key currently being evaluated.
-Furthermore, $A_{x}^{+}$ is stronger than $A_{x}^{\uparrow}$. When the latter is true
-the former is true as well.  $A_{x}^{+} \rightarrow A_{x}^{\uparrow}$.
+
+\paragraph{Reputation} The state of a resource record is defined by 
+its reputation in world's caches. There are 2 certain states, \emph
+{Hidden} and \emph {Omnipresent}. In the first state a resource 
+record is not available in any cache (anymore). Similarly in the 
+latter state we are sure all caches have a copy of the record or can 
+at least obtain it (i.e. they have no old unexpired resource record 
+set).
+
+The two other states represent uncertainty: \emph{Rumoured} and \emph
+{Unretentive}. Both mean that some caches do and some don't know 
+about the resource record. In the former state a record is being 
+actively published and will somewhere in the future be known by all 
+caches. While the latter state the record is not published (any 
+longer) and will disappear from collective memory over time.
+
+Since DNS involves caches and TTLs, it is entirely possible for a 
+record being in the \emph{Rumoured} state while in fact every cache 
+in the world holds the record. The problem is the uncertainty, we 
+have no way to know a record is fully propagated other than waiting 
+the worst case propagation time. This is also true for the \emph
+{Unretentive} state.
+
+\paragraph{Summary} A record is always in one of these four states:
+
+\begin{itemize}
+\item[\emph{Hidden}:] 		
+			The record is in no cache at all.
+\item[\emph{Rumoured}:] 		
+			The record is published but not every cache might be aware.
+\item[\emph{Omnipresent}:]
+			Every cache has this record.
+\item[\emph{Unretentive}:]
+			The record is withdrawn but some caches might still have it.
+\end{itemize} 
+
+\paragraph{Formal definition of record states} Let $r$ be a record, 
+$Anounced$ the collection of records that are actively published, 
+and $\mathbb{C}$ the collection of all caches in the world. The 
+states are defined by:
+
+\begin{displaymath}
+\begin{array}{lllll}
+       r\in Hidden      & \equiv & \forall c \in \mathbb{C} \cdot r \not \in c \\
+       r\in Rumoured    & \equiv & \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r\in c \wedge r\in Announced\\
+       r\in Omnipresent & \equiv & \forall c \in \mathbb{C} \cdot r \in c \\
+       r\in Unretentive & \equiv & \exists c \in \mathbb{C} \cdot r \not \in c \wedge \exists c \in \mathbb{C} \cdot r \in c \wedge r \notin Announced \\
+\end{array}
+\end{displaymath}
+
+\subsection{Goal}
+
+Each key in the keyring has a goal. The goal is an internal drive 
+for the individual records to reach a certain state. The goal is 
+either $introducing$ or $\neg introducing$. While the goal is 
+$introducing$ the record tries to go to the Omnipresent state. In 
+the other case its direction of movement is towards the hidden 
+state. When a record has fulfilled its goal the record is said to be 
+stable. The record can become unstable again iff the goal changes.
+
+\subsection{Role}
+
+A key has one or two roles. It is a `key Signing key' (KSK), a `zone 
+signing key' (ZSK), or both --- combined signing key (CSK). This 
+document does not spent too much time on these roles as our model 
+isn't concerned with the difference. It simply checks whether or not 
+there is a key with certain properties. For example, a KSK has no 
+RRSIG record. Every statement about its RRSIG record evaluates to 
+False. A ZSK has no DS and RRSIG DNSKEY record. A CSK has all records.
+
+%~ \subsection{Key Properties}
+%~ \label{sec:key_properties}
+%~ 
+%~ A key and its context can be described as a tuple of states $\langle 
+%~ Ds,Dnskey,Rrsig\rangle$ for the resource records DS, DNSKEY and RRSIG.
+%~ Only keys acting in the role of $ksk$ have a $Ds$ state, similar
+%~ only a $zsk$ has a $Rrsig$ state. Furthermore we require the signature
+%~ over the DNSKEY set to propagate together with the DNSKEY.
+%~ We define the following operations on a key $k$:
+%~ 
+%~ \begin{itemize}
+	%~ \item[$Ds(k)$] State of DS record belonging key $k$.
+	%~ \item[$Dnskey(k)$] State of DNSKEY record belonging key $k$.
+	%~ \item[$Rrsig(k)$] State of RRSIG record belonging key $k$.
+	%~ \item[$Goal(k)$] $Goal(k) \in \{Omnipresent, Hidden\}$] the state each record
+		%~ should move towards.
+	%~ \item[$Roles(k)$] $Roles(k) \subseteq \{zsk,ksk\}$] excluding $\emptyset$, the 
+		%~ role(s) a key $k$ should be used for.
+		%~ $Ds(k) \wedge Dnskey(k) \equiv ksk \in Roles(k)$ and
+		%~ $Dnskey(k) \wedge Rrsig(k) \equiv zsk \in Roles(k)$
+	%~ \item[$Alg(k)$] Algorithm of key $k$ for which a transitive and 
+		%~ commutative equivalence is defined.
+	%~ \item[$MinDs(k)$] Boolean. If true, key will strive to keep the DS
+			%~ set as small as possible.
+	%~ \item[$MinDnskey(k)$] Boolean. If true, key will strive to keep the DNSKEY
+			%~ set as small as possible.
+	%~ \item[$MinRrsig(k)$] Boolean. If true, key will strive to keep the
+			%~ signiture count low.
+	%~ \item[$Standby(k)$] Boolean. If true, ksk will not introduce DNSKEY
+			%~ and zsk will not introduce RRSIGs.
+	%~ \item[$Revoke(k)$] Boolean. 
+%~ \end{itemize}
+
+\section{Model}
+
+\subsection{Notation}
+
+For readability let $A$ denote a DS record, $B$ the DNSKEY, $C$ the 
+RRSIG DNSKEY, and $D$ the RRSIG. The state of a record is indicated 
+with superscript and can be found in Table~\ref{tab:states}. These 
+states correspondent directly with the states from Figure~\ref 
+{fig:statemachine}. The subscript of a record denotes the key it 
+belongs to. When no subscript is given the record belongs to the 
+current evaluated key. E.g: the statement ``the DS of key $z$ is in 
+the Omnipresent state'' can be written as $A^{+}_{z}$. 
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ r r | c  c }
+	&			&	\multicolumn{2}{c}{P} \\
+	&			& 	$\leq$ 1	& 1 \\ \cline{2-4}
+\multirow{2}{*}{direction}  
+	&	in		& $\uparrow$	& + \\
+	&	out		& $\downarrow$	& - \\
+\end{tabular}
+\caption{Notation of states in superscript}
+\label{tab:states}
+\end{table}
+
+%~ notation
+%~ rules
+%~ algorithm
+
+
+Furthermore, the certain states are stronger than the uncertain 
+states. So a Hidden record is also said to be Unretentive. 
+$A_{x}^{-} \rightarrow A_{x}^{\downarrow}$.
 
 \section{Rules}
+
+The system uses three rules, Equation~\eqref{eqn:rule1}\eqref{eqn:rule2}\eqref{eqn:rule3}.
+To see we can transition the state of a record to the next we first 
+check the three rules. They \emph{should} all be True, if not we apparently
+have an invalid zone on our hands. This isn't our fault (presumably\footnote{
+The system should never bring the zone to an invalid state, if it does
+it is considered a serious bug!}) but we have to deal with it.
+
+Next we evaluate the rules again but pretend we gave the record the 
+requested state. At least the rules with a positive outcome \emph{must}
+still be positive if we were to apply this state transition. If not
+we may 
+
+----
+
 
 The below rules *should* be true for each record. A detailed explanation follows 
 later after the overview.
 
 \begin{eqnarray}
-&& A_{x}^{\uparrow} \\
-&& \neg A_{x}^{\uparrow} (A^{-} \vee B^{+} C^{+}) \vee A_{x}^{\uparrow}
+\label{eqn:rule1}
+rule1:	&& A_{x}^{\uparrow} \\
+\label{eqn:rule2}
+rule2:	&& \neg A_{x}^{\uparrow} (A^{-} \vee B^{+} C^{+}) \vee A_{x}^{\uparrow}
 	B_{x}^{+} C_{x}^{+} \vee A_{x}^{+} B_{x}^{\uparrow} C_{x}^{\uparrow}
 	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}\\
-&& \neg B_{x}^{\uparrow} (B^{-} \vee D^{+}) \vee B_{x}^{\uparrow}
+\label{eqn:rule3}
+rule3:	&& \neg B_{x}^{\uparrow} (B^{-} \vee D^{+}) \vee B_{x}^{\uparrow}
 	D_{x}^{+} \vee B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+}
 	D_{y}^{\downarrow}
 \end{eqnarray}
-
-Each key material is traveling in a set direction (goal). Each record strives to
-a stable state which satisfies travel direction and maximizes certainty. 
 
 The method of advancing the states is the same. Look at each individual  record
 for each key in the zone. Keep looping over this set while there are 
@@ -137,5 +375,598 @@ and a key with DNSKEY omnipresent and its RRSIG unretentive or hidden.
 
 Note: Although the notation does not reflect it, it is stated implicit
 that each statement about any key is only applicable to keys of the same algorithm.
+
+
+\section{DNSSEC Validity} \label{validity}
+
+With the definitions of Section~\ref{sec:keystates} and beyond we can
+express the validity of a zone with respect to DNSSEC. After each state
+transition the validity must still hold. If not, the zone might be treated as
+\emph{bogus} by some or all validators. This check does only takes the 
+total set of states in to account, it has no notion of time. It can
+only guarantee every cache has a consistent view on the data when all
+transitions respected the time constraint and it was ran after each
+transition.
+
+This check is not intended to be used by key management software but
+functions to validate our transition model, either empirical or by 
+formal proof.
+
+\begin{equation}
+\begin{array}{l}
+Reliable(func, k) \equiv \\
+\hskip 1cm 		O(func(k)) \vee \\
+\hskip 2cm 			C(func(k)) \wedge \\
+\hskip 2cm 			\exists k' \in \mathbb{K} \cdot (\\
+\hskip 3cm 				P(func(k')) \wedge \\
+\hskip 3cm 				Alg(k)=Alg(k'))
+\end{array}
+\end{equation}
+
+\begin{equation}
+\begin{array}{l}
+Valid(\mathbb{K}) \equiv \\
+\hskip 1cm		\exists k \in \mathbb{K} \cdot ( O(Ds(k)) \vee C(Ds(k)) \wedge \exists k' \in \mathbb{K} \cdot P(Ds(k')))
+\hskip 0cm		\wedge \\
+\hskip 1cm		\forall k \in \mathbb{K} \cdot (\\
+\hskip 2cm			(H(Ds(k)) \vee \\
+\hskip 2cm			Reliable(Dnskey, k) \vee \\
+\hskip 2cm				\exists k' \in \mathbb{K} \cdot (\\
+\hskip 3cm				Alg(k) = Alg(k') \wedge \\
+\hskip 3cm				Reliable(Ds, k') \wedge \\
+\hskip 3cm				Reliable(Dnskey, k') )) \\
+\hskip 2cm			\wedge\\
+\hskip 2cm			(H(Dnskey(k)) \vee \\
+\hskip 2cm			Reliable(Rrsig, k) \vee \\
+\hskip 2cm			\exists k' \in \mathbb{K} \cdot (\\
+\hskip 3cm				Alg(k) = Alg(k') \wedge \\
+\hskip 3cm				Reliable(Dnskey, k') \wedge \\
+\hskip 3cm				Reliable(Rrsig, k') )))
+\end{array}
+\end{equation}
+
+\section{Additional Considerations}
+
+\emph{Please ignore this section}
+\subsection{5011 Hack}
+
+extra F state between O and S. Conditions $O\rightarrow S \equiv O\rightarrow F + F\rightarrow S$.
+O-F: set revoke bit. F-S: wait till bit propagated. 
+
+\section{Rollover Scenarios}
+
+The proposed state machine has no notion of rollover scenarios. It cares
+only about the validity of the zone in terms of DNSSEC. Stricly following
+the transition rules results in the fastest possible transition. It is
+however sometimes desired to do a slower rollover in favor of the size 
+of the data, traffic, computing power or external interaction. Current
+described rollover mechanisms can be described as a set of constraints
+on the previously mentioned quantities.
+
+Important to realize is that different rollover mechanisms do not need
+different rules. All operate within the boundries of DNSSEC validity
+which is descibed by our model. A rollover is nothing more than a
+requirement to do certain transitions in a pre defined order. To achieve
+that, selective brakes have to be applied on the system.
+
+\begin{description}
+\item [Minimize Parent Interactions]
+	Rolling to a new KSK requires the
+	submission of a new and withdrawing of an old DS record in the parent of
+	the deligation. Child-Parent interaction may be slow, performing
+	these two actions simultainiously could save time and efford.
+\item [Minimize Signatures]
+	Especially for large zones it may be 
+	desireable to prevent having more than one signature over each 
+	resource record set. Also this allows the signer to do a smooth
+	signature transition.
+\item [Minimize DNSKEY Set] Since keys can get rather large one might
+	want to limit the size of this set.
+\end{description}
+
+On top of this one might want to prevent replacing all signatures at 
+once. A suddent transition may cause a peak load on the servers and can
+cause too much stress on the signer. 
+
+These `brakes' are defined for each individual key, as defined in 
+Section~\ref{sec:key_properties}. So one key can have the $MinRrsig$ 
+property while another keys does not. The big advantage is that a 
+policy rollover does not introduce additional complications. 
+
+
+
+\subsection{Signer Configuration Mapping}
+
+\begin{eqnarray}
+Published(k) &\equiv & R(Dnskey(k)) \vee C(Dnskey(k)) \vee O(Dnskey(k)) \\
+Active(k) &\equiv & R(Rrsig(k)) \vee C(Rrsig(k)) \vee O(Rrsig(k))
+\end{eqnarray}
+
+\section{Transition Rules}
+
+The transition rules are explicitly written in such a way that at 
+least one valid chain is being kept; a zone can not go insecure\footnote{
+This prevents the system taking an 'insecure shortcut' to a new key.}. To support the insecure concept one could introduce a 
+\textsc{null} key. The \textsc{null} key has it's unique (\textsc 
+{null}-)algorithm. Its resource records have state but no actual 
+public data. This key can be rolled in and out like any other key.
+
+\subsection{Transition Rules for $Ds(k)$}
+
+Transition rules for Ds states are only defined for KSKs. Furthermore
+a $Ds$ state of key $k$ implies that $k$ has the role of KSK. A premise 
+involving the $Ds$ state of a non-KSK key is always false.
+
+\subsubsection{$H(Ds(k))$}
+
+
+
+\mathbox{
+	
+	The DS record is hidden, available in no cache whatsoever.
+	Before submitting either the DNSKEY must be propagated or an other 
+	key with the same algorithm must be ready.
+	
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			O(Goal(k)) \wedge \\
+\highlightMinSig{			\neg MinDs(k) \wedge }\\
+\highlightStandby{			\neg Standby(k) \wedge }\\
+\hskip 1cm		(O(Dnskey(k)) \vee \\
+\hskip 1cm		\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 2cm			Alg(k)=Alg(k') \wedge \\
+\hskip 2cm			Reliable(Ds, k') \wedge \\
+\hskip 2cm			Reliable(Dnskey, k')))
+		\end{array}
+		\right\}\vdash [submit], R(Ds(k)) 
+	\end{equation}
+	
+\highlightMinSig{
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			O(Goal(k)) \wedge \\
+\highlightStandby{			\neg Standby(k) \wedge }\\
+			MinDs(k) \wedge \\
+			O(Dnskey(k))
+		\end{array}
+		\right\}\vdash C(Ds(k))
+	\end{equation}
+	}
+}
+
+\subsubsection{$R(Ds(k))$}
+
+\mathbox{
+	
+	Because the DS record was never fully known in the world (at 
+	least to our own knowledge) we can savely withdraw it. Nothing 
+	started to depend on it yet.
+	
+	\begin{equation}
+		\begin{split}
+			H(Goal(k)) \vdash U(Ds(k))
+		\end{split}
+	\end{equation}
+
+	This transition depend on external processes, possibly human. If it 
+	is confirmed the process was successfull and enough time has passed
+	since then, we may conclude the DS record is now $Omnipresent$.
+	
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			O(Goal(k)) \wedge \\
+			Confirmed(k_{ds}) \wedge \\
+			T_{now} \geq T_{whatever}
+		\end{array}
+		\right\}\vdash O(Ds(k))
+	\end{equation}
+}
+
+\subsubsection{$C(Ds(k))$}
+
+\highlightMinSig{	\begin{equation}
+		\left.
+		\begin{array}{l}
+			Confirmed(k_{ds}) \wedge \\
+			T_{now} \geq T_{whatever}
+		\end{array}
+		\right\}\vdash O(Ds(k))
+	\end{equation}}
+
+
+\subsubsection{$O(Ds(k))$}
+
+\mathbox{
+
+	We may withdraw a DS record if there is another valid chain and
+	we do not risk breaking another chain of the same algorithm.
+\highlightMinSig{
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+\hskip 0cm				H(Goal(k)) \wedge \\
+\hskip 0cm				O(Dnskey(k)) \wedge \\
+\hskip 0cm				\exists k' \in \mathbb{K} \cdot C(Ds(k'))\\
+		\end{array}
+		\right\} \vdash [withdraw], P(Ds(k)) \\
+	\end{equation}
+	}
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+\hskip 0cm			H(Goal(k)) \wedge \\
+\highlightMinSig{\hskip 0cm		\neg P(Dnskey(k)) \wedge }\\
+\hskip 0cm			\exists k' \in \mathbb{K} \cdot (\\
+\hskip 1cm				k' \neq k \wedge \\
+\hskip 1cm				(O(Ds(k'))\vee \\
+\hskip 2cm					C(Ds(k')) \wedge \\
+\hskip 2cm					\exists k'' \in \mathbb{K}\cdot P(Ds(k'')))) \wedge \\
+\hskip 0cm				\forall k' \in \mathbb{K} \cdot ( \\
+\hskip 1cm					Alg(k) \neq Alg(k') \vee \\
+\hskip 1cm					H(Ds(k')) \vee \\
+\hskip 1cm					Reliable(Dnskey, k') \vee \\
+\hskip 1cm					\exists k'' \in \mathbb{K} \cdot (\\
+\hskip 2cm 						Alg(k'')=Alg(k') \wedge \\
+\hskip 2cm 						Reliable(Ds, k'') \wedge \\
+\hskip 2cm 						Reliable(Dnskey, k'') \wedge \\
+\hskip 2cm 						k'' \neq k))
+		\end{array}
+		\right\} \vdash [withdraw], U(Ds(k)) \\
+	\end{equation}
+}
+
+\subsubsection{$P(Ds(k))$}
+\highlightMinSig{
+\begin{equation}
+		T_{now} \geq T_{whatever} \vdash H(Ds(k))
+\end{equation}
+}
+
+\subsubsection{$U(Ds(k))$}
+
+\mathbox{
+
+	Again, without punishment we can move between the two uncertain 
+	states.
+
+	\begin{equation}
+			O(Goal(k)) \vdash [submit], R(Ds(k)) 
+	\end{equation}
+
+	We must wait till at least $T_{whatever}$ before transition to State 
+	$Hidden$.
+	
+	\begin{equation}
+			T_{now} \geq T_{whatever} \vdash H(Ds(k))
+	\end{equation}
+}
+
+
+\subsection{Transition rules for $Dnskey(k)$}
+
+Every key, independent of role, has a DNSKEY record. Therefore we must
+be extra carefull about the type of key the record belongs to.
+
+\subsubsection{$H(Dnskey(k))$}
+
+\mathbox{
+
+	A KSK can only introduce a DNSKEY record if there is a ZSK of the
+	same algorithm ready. A ZSK may additionally introduce it if its 
+	RRSIG is $Omnipresent$.
+\highlightMinSig{
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			O(Goal(k)) \wedge \\
+			MinDnskey(k) \wedge \\
+			(ksk \not \in Roles(k) \vee O(Ds(k))) \wedge \\
+			(zsk \not \in Roles(k) \vee O(Rrsig(k)))
+		\end{array}
+		\right\} \vdash [submit], C(Dnskey(k))
+	\end{equation}
+}
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			O(Goal(k)) \wedge \\
+\highlightMinSig{			(\neg MinDnskey(k) \vee}\\
+\highlightStandby{\hskip 1cm	Standby(k) \vee }\\
+\highlightMinSig{\hskip 1cm \exists k' \not \in \mathbb{K} \cdot (}\\
+\highlightMinSig{\hskip 2cm	Alg(k)=Alg(k') \wedge}\\
+\highlightMinSig{\hskip 2cm	Reliable(dnskey, k') \wedge }\\
+\highlightMinSig{\hskip 2cm	ksk \in Roles(k'))) \wedge }\\
+\hskip 0cm	(Reliable(Rrsig, k) \vee \\
+\hskip 1cm	\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 2cm		Alg(k)=Alg(k') \wedge \\
+\hskip 2cm		Reliable(Dnskey, k) \wedge \\
+\hskip 2cm		Reliable(Rrsig, k)))\\
+		\end{array}
+		\right\} \vdash [submit], R(Dnskey(k))
+	\end{equation}
+}
+
+\subsubsection{$R(Dnskey(k))$}
+
+\mathbox{
+
+	We can jump freely between uncertain states.
+	
+	\begin{equation}
+			H(Goal(k)) \vdash [withdraw], U(Dnskey(k))
+	\end{equation}
+
+	We did wait long enough to make sure the dnskey record is known in 
+	every cache?
+	
+	\begin{equation}
+		\begin{split}
+			O(Goal(k)) \wedge T_{now} \geq T_{whatever} \vdash O(Dnskey(k))
+		\end{split}
+	\end{equation}
+}
+
+\subsubsection{$C(Dnskey(k))$}
+\highlightMinSig{
+	\begin{equation}
+		\begin{split}
+			 T_{now} \geq T_{whatever} \vdash O(Dnskey(k))
+		\end{split}
+	\end{equation}
+}
+
+\subsubsection{$O(Dnskey(k))$}
+
+\mathbox{
+
+\highlightMinSig{
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+\hskip 0cm				H(Goal(k)) \wedge \\
+\highlightStandby{\neg Revoke(k) \wedge }\\
+\hskip 0cm				O(Ds(k)) \wedge \\
+\hskip 0cm				O(Rrsig(k)) \wedge \\
+\hskip 0cm				\exists k' \in \mathbb{K} \cdot (\\
+\hskip 1cm					C(Dnskey(k')) \wedge \\
+\hskip 1cm					Alg(k)=Alg(k') \wedge \\
+\hskip 1cm					Roles(k) = Roles(k'))\\
+		\end{array}
+		\right\} \vdash [withdraw], P(Ds(k)) \\
+	\end{equation}
+	}
+
+	If not part of a chain, withdraw. If there is still a DS make sure 
+	there is some other valid chain for this algorithm. If none for 
+	this algorithm are broken, some other algorithm will do as well.
+	
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			H(Goal(k)) \wedge \\
+
+\highlightStandby{\neg Revoke(k) \wedge }\\
+\highlightMinSig{\neg P(Ds(k)) \wedge }\\
+\highlightMinSig{\neg P(Rrsig(k)) \wedge }\\
+
+\hskip 0cm	\forall k' \in \mathbb{K} \cdot (\\
+\hskip 1cm		(ksk \not \in Roles(k') \vee\\
+\hskip 1cm		H(Ds(k')) \vee \\
+\hskip 1cm		(Reliable(Dnskey, k') \wedge \\
+\hskip 2cm			k \neq k') \vee \\
+\hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
+\hskip 2cm			k \neq k'' \wedge \\
+\hskip 2cm			Alg(k')=Alg(k'') \wedge \\
+\hskip 2cm			Reliable(Ds, k'') \wedge \\
+\hskip 2cm			Reliable(Dnskey, k''))) \\
+\hskip 1cm		\wedge \\
+\hskip 1cm		(H(Dnskey(k')) \vee \\
+\hskip 1cm		Reliable(Rrsig, k'))  \vee \\
+\hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
+\hskip 2cm			k \neq k'' \wedge \\
+\hskip 2cm			Alg(k')=Alg(k'') \wedge \\
+\hskip 2cm			Reliable(Dnskey, k'') \wedge \\
+\hskip 2cm			Reliable(Rrsig, k''))))
+		\end{array}
+		\right\} \vdash [withdraw], U(Dnskey(k))
+	\end{equation}
+	
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			H(Goal(k)) \wedge \\
+
+\highlightStandby{Revoke(k) \wedge }\\
+\highlightMinSig{\neg P(Ds(k)) \wedge }\\
+\highlightMinSig{\neg P(Rrsig(k)) \wedge }\\
+
+\hskip 0cm	\forall k' \in \mathbb{K} \cdot (\\
+\hskip 1cm		(ksk \not \in Roles(k') \vee\\
+\hskip 1cm		H(Ds(k')) \vee \\
+\hskip 1cm		(Reliable(Dnskey, k') \wedge \\
+\hskip 2cm			k \neq k') \vee \\
+\hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
+\hskip 2cm			k \neq k'' \wedge \\
+\hskip 2cm			Alg(k')=Alg(k'') \wedge \\
+\hskip 2cm			Reliable(Ds, k'') \wedge \\
+\hskip 2cm			Reliable(Dnskey, k''))) \\
+\hskip 1cm		\wedge \\
+\hskip 1cm		(H(Dnskey(k')) \vee \\
+\hskip 1cm		Reliable(Rrsig, k'))  \vee \\
+\hskip 1cm		\exists k'' \in \mathbb{K} \cdot (\\
+\hskip 2cm			k \neq k'' \wedge \\
+\hskip 2cm			Alg(k')=Alg(k'') \wedge \\
+\hskip 2cm			Reliable(Dnskey, k'') \wedge \\
+\hskip 2cm			Reliable(Rrsig, k''))))
+		\end{array}
+		\right\} \highlightStandby{\vdash [revoke], F(Dnskey(k))}
+	\end{equation}
+}
+
+\subsubsection{$F(Dnskey(k))$}
+
+\mathbox{
+\highlightStandby{
+	\begin{equation}
+			T_{now} \geq T_{whatever} \vdash U(Dnskey(k))
+	\end{equation}
+	}
+}
+
+\subsubsection{$U(Dnskey(k))$}
+
+\mathbox{
+
+	We can jump freely between uncertain states.
+
+	\begin{equation}
+			Goal(K)=O \vdash [submit], R(Dnskey(k))
+	\end{equation}
+
+	State may transition to $Hidden$ given enough time passed to propagate 
+	change. 
+	\begin{equation}
+			T_{now} \geq T_{whatever} \vdash H(Dnskey(k))
+	\end{equation}
+}
+
+\subsubsection{$P(Dnskey(k))$}
+
+\mathbox{
+
+\highlightMinSig{
+	\begin{equation}
+			T_{now} \geq T_{whatever} \vdash H(Dnskey(k))
+	\end{equation}
+	}
+}
+
+\subsection{Transition rules for $Rrsig(k)$}
+
+\subsubsection{$H(Rrsig(k))$}
+
+\mathbox{
+	Signatures may be introduced at any possible time.
+
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			O(Goal(k)) \wedge \\
+\highlightStandby{			\neg Standby(k) \wedge }\\
+\highlightMinSig{	(\neg MinSig(k) \vee }\\
+\highlightMinSig{\hskip 1cm	\exists k' \not \in \mathbb{K}\cdot (}\\
+\highlightMinSig{\hskip 2cm		Alg(k)=Alg(k') \wedge }\\
+\highlightMinSig{\hskip 2cm		Reliable(Rrsig, k'))) }\\
+		\end{array}
+		\right\} \vdash [submit], R(Rrsig(k))
+	\end{equation}
+
+\highlightMinSig{
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+			O(Goal(k)) \wedge \\
+\highlightStandby{			\neg Standby(k) \wedge }\\
+			MinSig(k) \wedge \\
+			O(Dnskey(k)) \\
+		\end{array}
+		\right\} \vdash C(Rrsig(k))
+	\end{equation}
+	}
+}
+
+\subsubsection{$R(Rrsig(k))$}
+
+\mathbox{
+
+	We can jump freely between uncertain states.
+	
+	\begin{equation}
+		H(Goal(k)) \vdash [withdraw], U(Rrsig(k))
+	\end{equation}
+
+	Enough time passed to know for sure the signatures are propagated.
+	
+	\begin{equation}
+		O(Goal(k)) \wedge T_{now} \geq T_{whatever} \vdash O(Rrsig(k))
+	\end{equation}
+}
+
+
+\subsubsection{$C(Rrsig(k))$}
+\highlightMinSig{
+	\begin{equation}
+		T_{now} \geq T_{whatever} \vdash O(Rrsig(k))
+	\end{equation}
+}
+
+\subsubsection{$O(Rrsig(k))$}
+
+\mathbox{
+
+\highlightMinSig{
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+\hskip 0cm				H(Goal(k)) \wedge \\
+\hskip 0cm				O(Dnskey(k)) \wedge \\
+\hskip 0cm				\exists k' \in \mathbb{K} \cdot (\\
+\hskip 1cm					C(Rrsig(k')) \wedge \\
+\hskip 1cm					Alg(k)=Alg(k'))\\
+		\end{array}
+		\right\} \vdash [withdraw], P(Ds(k)) \\
+	\end{equation}
+	}
+
+	If the dnskey is gone from all caches can we withdraw the 
+	signatures safely. In any other case a fully propagated ZSK will 
+	also do.
+
+	\begin{equation}
+		\left.
+		\begin{array}{l}
+\hskip 0cm			H(Goal(k)) \wedge  \\
+\highlightMinSig{\hskip 0cm			\neg P(Dnskey(k)) \wedge  }\\
+\hskip 1cm			(H(Dnskey(k)) \vee \\
+\hskip 1cm			\exists k' \in \mathbb{K} \cdot ( \\
+\hskip 2cm				k' \not = k  \wedge\\
+\hskip 2cm				Alg(k) = Alg(k')  \wedge\\
+\hskip 2cm				Reliable(Dnskey, k')  \wedge\\
+\hskip 2cm				Reliable(Rrsig, k')))
+		\end{array}
+		\right\} \vdash U(Rrsig(k))
+	\end{equation}
+}
+
+\subsubsection{$U(Rrsig(k))$}
+
+\mathbox{
+
+	We can jump freely between uncertain states.
+
+	\begin{equation}
+		O(Goal(k)) \vdash [submit], R(Rrsig(k))
+	\end{equation}
+
+	After some time we know this signatures are no longer know to the
+	world.
+	
+	\begin{equation}
+		T_{now} \geq T_{whatever} \vdash H(Rrsig(k))
+	\end{equation}
+}
+
+\subsubsection{$P(Rrsig(k))$}
+
+Please note that the timing depends on smooth transition.
+
+\highlightMinSig{
+	\begin{equation}
+		T_{now} \geq T_{whatever} \vdash H(Rrsig(k))
+	\end{equation}
+}
 
 \end{document}
