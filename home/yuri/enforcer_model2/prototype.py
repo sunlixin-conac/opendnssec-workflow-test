@@ -19,6 +19,7 @@ class Key:
 		self.alg = alg
 
 	def isOmn(self, i): return self.state[i] == OMN
+	#~ def isHid(self, i): return self.state[i] == HID or self.state[i] == DEA
 	def isHid(self, i): return self.state[i] == HID
 	def isRum(self, i): return self.state[i] == RUM or self.isOmn(i)
 	def isUnr(self, i): return self.state[i] == UNR or self.isHid(i)
@@ -58,6 +59,9 @@ def eval_rule2(keylist, key):
 			exist_key([NOCARE, OMN, NOCARE, RUM], keylist, key.alg) and \
 			exist_key([NOCARE, OMN, NOCARE, UNR], keylist, key.alg)
 
+def eval_rule3(keylist, key):
+	return key.state[1] >= key.state[2]
+
 #overwrites keylist[ki].state[ri] = st
 def evaluate(keylist, ki, ri, st):
 	key = keylist[ki]
@@ -67,22 +71,25 @@ def evaluate(keylist, ki, ri, st):
 	rule0_pre = eval_rule0(keylist, key)
 	rule1_pre = eval_rule1(keylist, key)
 	rule2_pre = eval_rule2(keylist, key)
-	print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre
+	rule3_pre = eval_rule3(keylist, key)
+	print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre, rule3_pre
 	
 	key.state[ri] = st
 	
 	rule0 = not rule0_pre or eval_rule0(keylist, key) or ALLOW_UNSIGNED
 	rule1 = not rule1_pre or eval_rule1(keylist, key)
 	rule2 = not rule2_pre or eval_rule2(keylist, key)
-	print >> stderr, NAME[ri], rule0, rule1, rule2
+	rule3 = not rule3_pre or eval_rule3(keylist, key)
+	print >> stderr, NAME[ri], rule0, rule1, rule2, rule3
 	
 	key.state[ri] = oldstate
 	
-	return rule0 and rule1 and rule2
+	return rule0 and rule1 and rule2 and rule3
 
 # next desired state given current and goal
 def nextState(intro, cur_state):
 	return [[HID, UNR, UNR, HID], [RUM, OMN, OMN, RUM]][intro][cur_state]
+	#~ return [[HID, UNR, UNR, DEA, DEA], [RUM, OMN, OMN, RUM, DEA]][intro][cur_state]
 
 def updaterecord(keylist, keyindex, recordindex):
 	key = keylist[keyindex]
@@ -122,17 +129,18 @@ def updatezone(keylist):
 			print >> stderr
 			print " "*50*key.alg, key
 			change |= updatekey(keylist, keyindex)
+		print
 
 keylist = []
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
-#~ 
-#~ keylist.append(Key([HID, HID, HID, NOCARE], True, 1)) #KSK
-#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
+
+keylist.append(Key([HID, HID, HID, NOCARE], True, 1)) #KSK
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 1)) #ZSK
 
 #~ keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK
 #~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
 
-keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK, hidden, introducing
+#~ keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK, hidden, introducing
 
 updatezone(keylist)
