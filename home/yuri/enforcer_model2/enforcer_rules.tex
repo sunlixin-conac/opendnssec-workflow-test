@@ -24,29 +24,37 @@
 \begin{document}
 \maketitle
 
-%~ \section{Warning}
-%~ This document is a rough explanation of an idea. It is based on earlier
-%~ work and may use but not introduce terminology of an other document. 
-%~ Possibly introduce completely new notations, skip reasoning steps without 
-%~ warning (well, you are warned now) and be plain wrong. This document is considered unsuitable
-%~ for young children and Liberal-Arts majors. Read at OWN RISK.
-%~ 
-%~ \tableofcontents
+\section{Warning}
+This document is a rough explanation of an idea. It is based on earlier
+work and may use but not introduce terminology of an other document. 
+Possibly introduce completely new notations, skip reasoning steps without 
+warning (well, you are warned now) and be plain wrong. This document is considered unsuitable
+for young children and Liberal-Arts majors. Read at OWN RISK.
+
+\subsection{Incompleteness / TODO}
+\begin{description}
+\item[Minimize Flags] define how the (in this document yet undefined) 
+minimize flags should exactly modify the rules.
+\item[Notation] Brush up notation of rules.
+\end{description}
+
+\tableofcontents
 
 \section{Introduction}
 
 A key roll-over is a process that runs over time, at any time each 
-key has a state. Matthijs Mekking introduced the idea that a key has 
+key has a state. Matthijs Mekking introduced the idea\cite{mekking} that a key has 
 a private part, a public part, and a parent part. Each of these 
 parts have their own state-machine an together represent a 
 'key-state'.
 
-This idea forms the basis for this document. However a cache 
-centered rather than a roll-over centered approach is chosen. This 
+%~ However a cache 
+%~ centered rather than a roll-over centered approach is chosen. 
+This idea forms the basis for this document and 
 allows us to generalize much of the logic. All parts of the 
 key-state now represent records which are actually published to the 
 world. The state of a record tells if and how well the record is 
-known to caching resolvers\footnote{ This document happely mixes the 
+known to caching resolvers\footnote{ This document mixes the 
 terms cache, resolver and validator. In all cases a DNSSEC 
 validating caching resolver is meant.}. As a result each record now 
 has exactly the same state machine. Furthermore instead of 3 parts 
@@ -77,10 +85,10 @@ caches \emph{might not}. In the latter case we must simply wait long
 enough and the record will enter one of the certain states again. We 
 will discuss the key states in section~\ref{sec:keystates}.
 
-Each key has a goal, an internal desire to be either known to all 
-caches around the world or no caches at all. A system can make any 
-state transition as long as it makes sure that the validity of a 
-zone in general is not compromised. This does also imply that a 
+Each key has a goal, the goal is either to be published and to be 
+known to all caches around the world or to none at all. A system can 
+make any state transition as long as it makes sure that the validity 
+of a zone in general is not compromised. This does also imply that a 
 key's goal can be changed at any time without the zone going bogus. 
 E.g. if a key has a desire to disappear but is the only key left it 
 will stay on duty for as long as necessary. Also, new keys can be 
@@ -96,7 +104,7 @@ can be redefined at any time without a problem. This makes the
 system agile, robust, and capable of handling unexpected situations. 
 Another advantage is that our system will `think' the same was as 
 the validators we are trying to satisfy. It always knows how 
-resolvers (might) see the data and makes kepping that data valid its 
+resolvers (might) see the data and makes keeping that data valid its 
 core business. 
 
 %~ key ring
@@ -119,7 +127,7 @@ key material can be purged safely from the keystorage.
 
 \subsection{Key States} \label{sec:keystates}
 
-The state of a key is publicly represented as a DS record, DNSKEY 
+The state of a key is publicly represented by the DS record, DNSKEY 
 record, RRSIG DNSKEY record and the RRSIGs over all the data in the 
 zone. The latter consists of multiple records but all share the same 
 state, although technically incorrect we will refer to it as the 
@@ -138,12 +146,12 @@ time and at a different pace, all need their own state machine
 
 
 \paragraph{Reputation} The state of a resource record is defined by 
-its reputation in world's caches. There are 2 certain states, \emph
+its reputation in world's caches. There are 2 certain states, \emph 
 {Hidden} and \emph {Omnipresent}. In the first state a resource 
-record is not available in any cache (anymore). Similarly in the 
-latter state we are sure all caches have a copy of the record or can 
-at least obtain it (i.e. they have no old unexpired resource record 
-set).
+record is not available in any cache (any longer or at start). 
+Similarly in the latter state we are sure all caches have a copy of 
+the record or can at least obtain it (i.e. they have no old 
+resource record set with expired TTL).
 
 The two other states represent uncertainty: \emph{Rumoured} and \emph
 {Unretentive}. Both mean that some caches do and some don't know 
@@ -159,9 +167,6 @@ have no way to know a record is fully propagated other than waiting
 the worst case propagation time. This is also true for the \emph
 {Unretentive} state.
 
-TODO: INTRODUCE ORDENING IN STATES, SO WE CAN SAY HIDDEN $<$ RUMOURED.
-THIS ALLOWS US TO TELL THE DNSKEY RRSIG NOT TO OVERTAKE THE DNSKEY.
-
 \paragraph{Summary} A record is always in one of these four states:
 
 \begin{itemize}
@@ -176,7 +181,7 @@ THIS ALLOWS US TO TELL THE DNSKEY RRSIG NOT TO OVERTAKE THE DNSKEY.
 \end{itemize} 
 
 \paragraph{Formal definition of record states} Let $r$ be a record, 
-$Anounced$ the collection of records that are actively published, 
+$Announced$ the collection of records that are actively published, 
 and $\mathbb{C}$ the collection of all caches in the world. The 
 states are defined by:
 
@@ -189,22 +194,29 @@ states are defined by:
 \end{array}
 \end{displaymath}
 
+\paragraph{Ordering} We also define a ordering on record states so 
+we can compare states. $ hidden < rumoured < omnipresent < 
+unretentive$. This represents the normal lifecycle for a record as 
+depicted in Figure~\ref{fig:statemachine}.
+
+
 \subsection{Goal}
 
 Each key in the keyring has a goal. The goal is an internal drive 
 for the individual records to reach a certain state. The goal is 
-either $introducing$ or $\neg introducing$. While the goal is 
-$introducing$ the record tries to go to the Omnipresent state. In 
+either `well-known' or `not-known'. While the goal is 
+`well-known' (the key is said to be $introducing$) the record tries to go to the Omnipresent state. In 
 the other case its direction of movement is towards the hidden 
-state. When a record has fulfilled its goal the record is said to be 
-stable. The record can become unstable again iff the goal changes.
+state and is said to be $outroducing$. When a record has fulfilled its goal the record is said to be 
+stable. The record can become unstable again only if the goal changes (or
+the state changes somehow by user intervention, but this is potentially harmful).
 
 \subsection{Role}
 
 A key has one or two roles. It is a `key Signing key' (KSK), a `zone 
 signing key' (ZSK), or both --- combined signing key (CSK). This 
-document does not spent too much time on these roles as our model 
-isn't concerned with the difference. It simply checks whether or not 
+document does not spend too much time on these roles as our model 
+is not concerned with the difference. It simply checks whether or not 
 there is a key with certain properties. For example, a KSK has no 
 RRSIG record. Every statement about its RRSIG record evaluates to 
 False. A ZSK has no DS and RRSIG DNSKEY record. A CSK has all records.
@@ -250,9 +262,11 @@ For readability let $A$ denote a DS record, $B$ the DNSKEY, $C$ the
 RRSIG DNSKEY, and $D$ the RRSIG. The state of a record is indicated 
 with superscript and can be found in Table~\ref{tab:states}. These 
 states correspondent directly with the states from Figure~\ref 
-{fig:statemachine}. The subscript of a record denotes the key it 
-belongs to. When no subscript is given the record belongs to the 
-current evaluated key. E.g: the statement ``the DS of key $z$ is in 
+{fig:statemachine}. I.e. $hidden \equiv -$, $rumoured \equiv 
+\uparrow$, $omnipresent \equiv +$, $unretentive \equiv \downarrow$.
+The subscript of a record denotes the key it 
+belongs to. The
+current evaluated key has subscript $i$. E.g: the statement ``the DS of key $z$ is in 
 the Omnipresent state'' can be written as $A^{+}_{z}$. 
 
 
@@ -279,8 +293,8 @@ $A_{x}^{-} \rightarrow A_{x}^{\downarrow}$.
 
 \subsection{Rules}
 
-The system uses three rules, Equation~\eqref{eqn:rule1}\eqref{eqn:rule2}\eqref{eqn:rule3}.
-To see we can transition the state of a record to the next we first 
+The system uses four rules, Equation~\eqref{eqn:rule1}\eqref{eqn:rule2}\eqref{eqn:rule3}\eqref{eqn:rule4}.
+To see if we can transition a record to the next state we first 
 test the three rules. They \emph{should} all be True, if not we apparently
 have an invalid zone on our hands. This isn't our fault (presumably\footnote{
 The system should never bring the zone to an invalid state, if it does
@@ -297,27 +311,29 @@ rules become negative prevents locks in our statemachine and will to
 some extend repair invalid situations in a graceful manner. Also, it 
 allows unsigned zones to exist without special tricks.
 
-The three rules \emph{should} be true for each record of all keys. The 
+The four rules \emph{should} be true for each record of all keys. The 
 rules will be explained in a later section.
 
 \begin{eqnarray}
 \label{eqn:rule1}
 rule1:	&& A_{x}^{\uparrow} \\
 \label{eqn:rule2}
-rule2:	&& \neg A_{x}^{\uparrow} (A^{-} \vee B^{+} C^{+}) \vee A_{x}^{\uparrow}
+rule2:	&& A_{x}^{\neg \uparrow} (A_{i}^{-} \vee B_{i}^{+} C_{i}^{+}) \vee A_{x}^{\uparrow}
 	B_{x}^{+} C_{x}^{+} \vee A_{x}^{+} B_{x}^{\uparrow} C_{x}^{\uparrow}
 	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}\\
 \label{eqn:rule3}
-rule3:	&& \neg B_{x}^{\uparrow} (B^{-} \vee D^{+}) \vee B_{x}^{\uparrow}
+rule3:	&& B_{x}^{\neg \uparrow} (B_{i}^{-} \vee D_{i}^{+}) \vee B_{x}^{\uparrow}
 	D_{x}^{+} \vee B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+}
-	D_{y}^{\downarrow}
+	D_{y}^{\downarrow} \\
+\label{eqn:rule4}
+rule4: && B_{i} \geq C_{i}
 \end{eqnarray}
 
 \subsection{Algorithm}
 
 The defined rules are just for deciding if a single record may change its
 state to the next. Algorithm~\ref{alg:alg} describes how this can be 
-done for a whole zone while also take timing in to account. 
+done for a whole zone while also take timing into account. 
 
 \begin{algorithm}
 \caption{Advance keys within a zone, return time for next run.}
@@ -353,7 +369,7 @@ done for a whole zone while also take timing in to account.
 \end{algorithmic}
 \end{algorithm}
 
-Three funtions might need more explanation:
+Three functions might need more explanation:
 \begin{description}
 \item[desiredState(state, goal)]	returns the state a record 
 wants to change to given its movement direction and current state.
@@ -376,9 +392,9 @@ be a DS Rumoured or Omnipresent at all times. Does not matter which key
 or what algorithm.
 
 \begin{equation}
-\neg A_{x}^{\uparrow} (A^{-} \vee B^{+} C^{+}) \vee A_{x}^{\uparrow}
+A_{x}^{\neg \uparrow} (A_{i}^{-} \vee B_{i}^{+} C_{i}^{+}) \vee A_{x}^{\uparrow}
 	B_{x}^{+} C_{x}^{+} \vee A_{x}^{+} B_{x}^{\uparrow} C_{x}^{\uparrow}
-	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}\\
+	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}
 \end{equation}
 
 The second rule basically describes the dependency of the DS record
@@ -391,9 +407,9 @@ Although not stated explicitly, all records in the statement must have
 the same algorithm.
 
 \begin{equation}
-\neg B_{x}^{\uparrow} (B^{-} \vee D^{+}) \vee 
-	B_{x}^{\uparrow} D_{x}^{+} \vee 
-	B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+} D_{y}^{\downarrow}
+B_{x}^{\neg \uparrow} (B_{i}^{-} \vee D_{i}^{+}) \vee B_{x}^{\uparrow}
+	D_{x}^{+} \vee B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+}
+	D_{y}^{\downarrow}
 \end{equation}
 
 The third rule expresses the dependency of the DNSKEY on the RRSIG. 
@@ -403,7 +419,142 @@ swapped.
 
 Again, all record must have the same algorithm.
 
+\begin{equation}
+B_{i} \geq C_{i}
+\end{equation}
+
+The state of the RRSIG DNSKEY may not be greater than the state of the
+DNSKEY. In the normal case both records are published together. In case
+of 5011 we need to introduce a new DNSKEY for some time \emph{without}
+signing the DNSKEY RRset. We must however prevent the signature to be 
+introduced or outroduced before the actual DNSKEY.
+
 \section{Examples}
+
+Names for rollovers are taken from ``DNSSEC Key Timing 
+Considerations Follow-Up''. The tables in the following sections 
+contain different kind of roll overs. Each row in the table 
+represents a time step and the first row is the start situation. 
+When a key does not change during a time step the record cells are left 
+blank.
+
+\subsection{ZSK Double Signature}
+Without any policy directives a double signature rollover will be executed
+as this is the fastest way.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ |ccc|cc|cc|l| }
+\hline
+\multicolumn{3}{|c|}{KSK1 (in)} & \multicolumn{2}{c|}{ZSK1 (out)} & \multicolumn{2}{c|}{ZSK2 (in)} & Time\\
+\hline
+$A^{+}$ & $B^{+}$ & $C^{+}$ & $B^{+}$          & $D^{+}$          & $B^{-}$        & $D^{-}$        & \\
+        &         &         &                  &                  & $B^{\uparrow}$ & $D^{\uparrow}$ & $0$\\
+        &         &         & $B^{\downarrow}$ & $D^{\downarrow}$ & $B^{+}$        & $D^{+}$        & $MaxTTL(key, sig)$\\
+        &         &         & $B^{-}$          & $D^{-}$          &                &                & $MaxTTL(key, sig)$\\
+\hline
+\multicolumn{7}{|l|}{Total time} & $2 \times MaxTTL(key, sig)$\\
+\hline
+\end{tabular}
+\caption{ZSK Double Signature rollover}
+\label{tab:roll_dubsig}
+\end{table}
+
+Let us walk trough the example in Table~\ref{tab:roll_dubsig}. We'll 
+evaluate each record from left to right. The KSK is ignored in our 
+description as there are no changes during the rollover.
+
+Since ZSK1 has is outroducing its records try to move to the 
+unretentive state ($\downarrow$). This may not happen yet. For 
+example the desired state for the DNSKEY (B) of ZSK1 is unretentive. 
+Currently using ZSK1 as key $i$ all four rules are true. If we would 
+now use the new state rule2 would become false.  the 
+$A_{x}^{\uparrow}B_{x}^{+} C_{x}^{+}$ part would no longer be true.
+Therefore we may not take this transition at this moment and we may
+stop look at the other rules, although rule3 would also become false.
+
+For both the DNSKEY as the RRSIG of ZSK2 all rules are true prior to 
+a transition. After a transition they would still be true, so we can 
+take these records safely to the nest state.
+
+In the second time step (row 3) we can still not progress ZKS1 
+initially. But, given enough time passed we may bring ZSK2's records 
+to the next state. Suppose both the DNSKEY and RRSIG of ZSK2 change 
+at the same time. In this very same time step we are now suddenly 
+allowed to outroduce the records of ZSK1. Because we keep looping 
+over all records of all keys till no record changes anymore the 
+order of evaluation does not matter for the effectivity of the 
+algorithm (it might affect the efficiency however).
+
+The last time step has no actions for ZSK2 as all its records are in a stable
+state. The records in ZSK1 can go to hidden ($-$). Their state has no effect
+on any of the rules as ZSK2 causes all rules to be true anyway.
+
+\subsection{Other examples}
+
+Further examples are not explained in detail and are here for reference.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ |ccc|cc|cc|l| }
+\hline
+\multicolumn{3}{|c|}{KSK1 (in)} & \multicolumn{2}{c|}{ZSK1 (out)} & \multicolumn{2}{c|}{ZSK2 (in)} & Time\\
+\hline
+$A^{+}$ & $B^{+}$ & $C^{+}$ & $B^{+}$          & $D^{+}$          & $B^{-}$        & $D^{-}$        & \\
+        &         &         &                  &                  & $B^{\uparrow}$ & $D^{-}$        & $0$\\
+        &         &         & $B^{+}$          & $D^{\downarrow}$ & $B^{+}$        & $D^{\uparrow}$ & $TTL(key)$\\
+        &         &         & $B^{\downarrow}$ & $D^{-}$          & $B^{+}$        & $D^{+}$        & $TTL(sig)$\\
+        &         &         & $B^{-}$          & $D^{-}$          &                &                & $TTL(key)$\\
+\hline
+\multicolumn{7}{|l|}{Total time} & $2 \times TTL(key) + TTL(sig)$\\
+\hline
+\end{tabular}
+\caption{ZSK Pre-Pubplucation rollover}
+\label{tab:roll_prepub}
+\end{table}
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ |ccc|cc|cc|l| }
+\hline
+\multicolumn{3}{|c|}{KSK1 (in)} & \multicolumn{2}{c|}{ZSK1 (out)} & \multicolumn{2}{c|}{ZSK2 (in)} & Time\\
+\hline
+$A^{+}$ & $B^{+}$ & $C^{+}$ & $B^{+}$          & $D^{+}$          & $B^{-}$        & $D^{-}$        & \\
+        &         &         &                  &                  & $B^{-}$        & $D^{\uparrow}$ & $0$\\
+        &         &         & $B^{\downarrow}$ & $D^{+}$          & $B^{\uparrow}$ & $D^{+}$        & $TTL(sig)$\\
+        &         &         & $B^{-}$          & $D^{\downarrow}$ & $B^{+}$        & $D^{+}$        & $TTL(key)$\\
+        &         &         & $B^{-}$          & $D^{-}$          &                &                & $TTL(sig)$\\
+\hline
+\multicolumn{7}{|l|}{Total time} & $2 \times TTL(sig) + TTL(key)$\\
+\hline
+\end{tabular}
+\caption{ZSK Double RRSIG rollover}
+\label{tab:roll_doublerrsig}
+\end{table}
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ |ccc|cc|cccc|l| }
+\hline
+\multicolumn{3}{|c|}{KSK1 (out)} & \multicolumn{2}{c|}{ZSK1 (out)} & \multicolumn{4}{c|}{CSK1 (in)} & Time\\
+\hline
+$A^{+}$ & $B^{+}$ & $C^{+}$ & $B^{+}$          & $D^{+}$          & $A^{-}$ & $B^{-}$ & $C^{-}$ & $D^{-}$               & \\
+        &         &         &                  &                  & $A^{-}$ & $B^{-}$ & $C^{-}$ & $D^{\uparrow}$        & 0\\
+        &         &         &                  &                  & $A^{-}$ & $B^{\uparrow}$ & $C^{\uparrow}$ & $D^{+}$ & TTL(sig)\\
+$A^{\downarrow}$  & $B^{+}$ & $C^{+}$ &        &                  & $A^{\uparrow}$ & $B^{+}$ & $C^{+}$ & $D^{+}$        & TTL(key)\\
+$A^{-}$  & $B^{\downarrow}$ & $C^{\downarrow}$ & $B^{\downarrow}$ &$D^{+}$ & $A^{+}$ & $B^{+}$ & $C^{+}$ & $D^{+}$               & TTL(ds)\\
+$A^{-}$  & $B^{-}$ & $C^{-}$ & $B^{-}$ &$D^{\downarrow}$ &    &   &   &                                        & TTL(key)\\
+        &         &         & $B^{-}$ & $D^{-}$                   &    &   &   &                                        & TTL(sig)\\
+\hline
+\multicolumn{9}{|l|}{Total time} & $2 \times TTL(key) + 2 \times TTL(sig) + TTL(ds)$\\
+\hline
+\end{tabular}
+\caption{Split Key to Single Key Algorithm rollover}
+\label{tab:roll_doublerrsig}
+\end{table}
+
 
 %~ \section{Rollover Scenarios}
 %~ 
@@ -444,5 +595,16 @@ Again, all record must have the same algorithm.
 %~ Section~\ref{sec:key_properties}. So one key can have the $MinRrsig$ 
 %~ property while another keys does not. The big advantage is that a 
 %~ policy rollover does not introduce additional complications. 
+
+\begin{thebibliography}{9}
+
+\bibitem{mekking}
+  Matthijs Mekking,
+  \emph{DNSSEC Key Timing Considerations Follow-Up}.
+  Internet-Draft,
+  draft-mekking-dnsop-dnssec-key-timing-bis-00,
+  February 25, 2011.
+
+\end{thebibliography}
 
 \end{document}
