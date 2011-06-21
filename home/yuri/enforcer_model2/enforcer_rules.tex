@@ -320,11 +320,11 @@ rules will be explained in a later section.
 \label{eqn:rule1}
 rule1:	&& A_{x}^{\uparrow} \\
 \label{eqn:rule2}
-rule2:	&& A_{x}^{\neg \uparrow} (A_{i}^{-} \vee B_{i}^{+} C_{i}^{+}) \vee A_{x}^{\uparrow}
+rule2:	&& \neg A_{x}^{\uparrow} (A_{i}^{-} \vee B_{i}^{+} C_{i}^{+}) \vee A_{x}^{\uparrow}
 	B_{x}^{+} C_{x}^{+} \vee A_{x}^{+} B_{x}^{\uparrow} C_{x}^{\uparrow}
 	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}\\
 \label{eqn:rule3}
-rule3:	&& B_{x}^{\neg \uparrow} (B_{i}^{-} \vee D_{i}^{+}) \vee B_{x}^{\uparrow}
+rule3:	&& \neg B_{x}^{\uparrow} (B_{i}^{-} \vee D_{i}^{+}) \vee B_{x}^{\uparrow}
 	D_{x}^{+} \vee B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+}
 	D_{y}^{\downarrow} \\
 \label{eqn:rule4}
@@ -394,7 +394,7 @@ be a DS Rumoured or Omnipresent at all times. Does not matter which key
 or what algorithm.
 
 \begin{equation}
-A_{x}^{\neg \uparrow} (A_{i}^{-} \vee B_{i}^{+} C_{i}^{+}) \vee A_{x}^{\uparrow}
+\neg A_{x}^{\uparrow} (A_{i}^{-} \vee B_{i}^{+} C_{i}^{+}) \vee A_{x}^{\uparrow}
 	B_{x}^{+} C_{x}^{+} \vee A_{x}^{+} B_{x}^{\uparrow} C_{x}^{\uparrow}
 	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}
 \end{equation}
@@ -409,7 +409,7 @@ Although not stated explicitly, all records in the statement must have
 the same algorithm.
 
 \begin{equation}
-B_{x}^{\neg \uparrow} (B_{i}^{-} \vee D_{i}^{+}) \vee B_{x}^{\uparrow}
+\neg B_{x}^{\uparrow} (B_{i}^{-} \vee D_{i}^{+}) \vee B_{x}^{\uparrow}
 	D_{x}^{+} \vee B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+}
 	D_{y}^{\downarrow}
 \end{equation}
