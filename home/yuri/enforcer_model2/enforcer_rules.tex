@@ -7,6 +7,8 @@
 \usepackage{algorithmic}
 \usepackage{algorithm}
 
+\usepackage{threeparttable} %footnotes in tables
+
 \usepackage{color}
 \definecolor{MinSig}{RGB}{255,163,53}
 \definecolor{Stdby}{RGB}{224,41,62}
@@ -443,21 +445,31 @@ Without any policy directives a double signature rollover will be executed
 as this is the fastest way.
 
 \begin{table}[h]
-\centering
-\begin{tabular}{ |ccc|cc|cc|l| }
-\hline
-\multicolumn{3}{|c|}{KSK1 (in)} & \multicolumn{2}{c|}{ZSK1 (out)} & \multicolumn{2}{c|}{ZSK2 (in)} & Time\\
-\hline
-$A^{+}$ & $B^{+}$ & $C^{+}$ & $B^{+}$          & $D^{+}$          & $B^{-}$        & $D^{-}$        & \\
-        &         &         &                  &                  & $B^{\uparrow}$ & $D^{\uparrow}$ & $0$\\
-        &         &         & $B^{\downarrow}$ & $D^{\downarrow}$ & $B^{+}$        & $D^{+}$        & $MaxTTL(key, sig)$\\
-        &         &         & $B^{-}$          & $D^{-}$          &                &                & $MaxTTL(key, sig)$\\
-\hline
-\multicolumn{7}{|l|}{Total time} & $2 \times MaxTTL(key, sig)$\\
-\hline
-\end{tabular}
-\caption{ZSK Double Signature rollover}
-\label{tab:roll_dubsig}
+	\centering
+	\begin{threeparttable} 
+		
+		\begin{tabular}{ |ccc|cc|cc|l| }
+		\hline
+		\multicolumn{3}{|c|}{KSK1 (in)} & \multicolumn{2}{c|}{ZSK1 (out)} & \multicolumn{2}{c|}{ZSK2 (in)} & Time\\
+		\hline
+		$A^{+}$ & $B^{+}$ & $C^{+}$ & $B^{+}$          & $D^{+}$          & $B^{-}$        & $D^{-}$        & \\
+				&         &         &                  &                  & $B^{\uparrow}$ & $D^{\uparrow}$ & $0$\\
+				&         &         & $B^{\downarrow}$ & $D^{\downarrow}$ & $B^{+}$        & $D^{+}$        & $MaxTTL(key, sig)$\\
+				&         &         & $B^{-}$          & $D^{-}$          &                &                & $MinTTL(key, sig)$\\
+		\hline
+		\multicolumn{7}{|l|}{Total time} & $TTL(sig) + TTL(key)$\tnote{1}\\
+		\hline
+		\end{tabular}
+		
+		\begin{tablenotes}[para]
+		\item[1] The total time does not seem obvious from this table.
+			The `fast' record set will have to wait while the `slow'
+			record set is swapping keys.
+		\end{tablenotes}
+		
+	\end{threeparttable}
+	\caption{ZSK Double Signature rollover}
+	\label{tab:roll_dubsig}
 \end{table}
 
 Let us walk trough the example in Table~\ref{tab:roll_dubsig}. We'll 
