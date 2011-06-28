@@ -51,6 +51,61 @@ def exist_key(states, keylist, alg):
 				break
 		if match: return True
 	return False
+	#~ 
+#~ def special_ds(keylist, alg):
+	#~ states = [HID, NOCARE, NOCARE, NOCARE]
+	#~ for key in keylist:
+		#~ if not (alg == -1 or alg == key.alg): continue
+		#~ for i, target, keystate in zip(range(4), states, key.state):
+			#~ if target == NOCARE or keystate == NOCARE: continue #geen eis
+			#~ if not key.isBetterOrEq(i, target):
+				#~ # B and C must be +
+				#~ if not (key.isOmn(DK) and key.isOmn(RD)):
+					#~ return False
+	#~ return True
+	
+def special_ds2(keylist, alg):
+	for key in keylist:
+		if not (alg == -1 or alg == key.alg): continue
+		if key.isHid(DS): continue
+		if key.isNcr(DS): continue
+		#exist k?
+		e = False
+		for k in keylist:
+			if not (alg == -1 or alg == k.alg): continue
+			if k.state[DS] == key.state[DS] and k.isOmn(DK) and k.isOmn(RD):
+				e = True
+				break
+		if not e: return False
+	return True
+		
+#~ def special_dk(keylist, alg):
+	#~ states = [NOCARE, HID, NOCARE, NOCARE]
+	#~ for key in keylist:
+		#~ if not (alg == -1 or alg == key.alg): continue
+		#~ for i, target, keystate in zip(range(4), states, key.state):
+			#~ if target == NOCARE or keystate == NOCARE: continue #geen eis
+			#~ if not key.isBetterOrEq(i, target):
+				#~ # B and C must be +
+				#~ if not (key.isOmn(RS)):
+					#~ return False
+	#~ return True
+
+def special_dk2(keylist, alg):
+	for key in keylist:
+		if not (alg == -1 or alg == key.alg): continue
+		if key.isHid(DK): continue
+		#exist k?
+		e = False
+		for k in keylist:
+			if not (alg == -1 or alg == k.alg): continue
+			if k.state[DK] == key.state[DK] and k.isOmn(RS):
+				e = True
+				break
+		if not e: return False
+	return True
+		
+		
 		
 def forall_except(states, keylist, alg, k):
 	for key in keylist:
@@ -69,31 +124,23 @@ def eval_rule0(keylist, key):
 
 def eval_rule1(keylist, key):
 		return \
-		forall_except([HID, NOCARE, NOCARE, NOCARE], keylist, key.alg, key) and \
-		not key.isNcr(DS) and \
-		(key.isHid(DS) or key.isOmn(DK)) or \
+		key.isHid(DS) and key.isHid(DK) and key.isHid(RD) or \
 		\
-		key.isHid(DS) and key.isHid(DK) or \
+		special_ds2(keylist, key.alg) or \
 		\
 		exist_key([RUM, OMN, OMN, NOCARE], keylist, key.alg) and \
 		exist_key([UNR, OMN, OMN, NOCARE], keylist, key.alg) or \
 		\
 		exist_key([OMN, OMN, OMN, NOCARE], keylist, key.alg) or \
 		\
-		exist_key([OMN, RUM, NOCARE, NOCARE], keylist, key.alg) and \
+		exist_key([OMN, RUM, RUM, NOCARE], keylist, key.alg) and \
 		exist_key([OMN, UNR, NOCARE, NOCARE], keylist, key.alg)
-		#~ \
-		#~ exist_key([OMN, RUM, RUM, NOCARE], keylist, key.alg) and \
-		#~ exist_key([OMN, UNR, UNR, NOCARE], keylist, key.alg)
 
 def eval_rule2(keylist, key):
 	return \
-		forall_except([NOCARE, HID, NOCARE, NOCARE], keylist, key.alg, key) and \
-		(key.isHid(DK) or key.isOmn(RS)) or \
-		\
 		key.isHid(DK) and key.isHid(RS) or \
-		key.isHid(DK) and key.isRum(RS) or \
-		key.isRum(DK) and key.isOmn(RS) or \
+		\
+		special_dk2(keylist, key.alg) or \
 		\
 		exist_key([NOCARE, RUM, NOCARE, OMN], keylist, key.alg) and \
 		exist_key([NOCARE, UNR, NOCARE, OMN], keylist, key.alg) or \
@@ -117,6 +164,9 @@ def evaluate(keylist, ki, ri, st):
 	rule1_pre = eval_rule1(keylist, key)
 	rule2_pre = eval_rule2(keylist, key)
 	rule3_pre = eval_rule3(keylist, key)
+	## This could be an error er we are introducing a new zone
+	#~ if not ((rule0_pre or ALLOW_UNSIGNED) and rule1_pre and rule2_pre and rule3_pre):
+		#~ print "ERRRRRRRRRRRRRRRR", NAME[ri], STATE[st]
 	print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre, rule3_pre
 	#~ print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre
 	
@@ -249,9 +299,9 @@ def simulate(keylist):
 	return "\n".join(history)
 
 scenarios = []
-
-#~ #ZSK
 #~ 
+#ZSK
+
 keylist = []
 title = "zsk roll"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
@@ -352,7 +402,7 @@ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, hidden, introducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, hidden, introducing
 keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK, omnipresent, outroducing
 scenarios.append((title, keylist))
-
+#~ 
 keylist = []
 title = "split roll to csk diff alg"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, hidden, introducing
@@ -360,25 +410,18 @@ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, hidden, introduc
 keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, omnipresent, outroducing
 scenarios.append((title, keylist))
 
-#~ --------------------------------
-#~ 
-#~ keylist = []
-#~ title = "split to single algorithm roll"
-#~ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
-#~ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
-#~ keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, hidden, introducing
-#~ scenarios.append((title, keylist))
-#~ 
-#~ keylist = []
-#~ title = "unsigned to signed split"
-#~ keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK
-#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
-#~ scenarios.append((title, keylist))
-#~ 
-#~ keylist = []
-#~ title = "unsigned to signed csk"
-#~ keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK
-#~ scenarios.append((title, keylist))
+#--------------------------------
+
+keylist = []
+title = "unsigned to signed split"
+keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
+scenarios.append((title, keylist))
+
+keylist = []
+title = "unsigned to signed csk"
+keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK
+scenarios.append((title, keylist))
 #~ 
 #~ keylist = []
 #~ title = "zsk roll no KSK"
