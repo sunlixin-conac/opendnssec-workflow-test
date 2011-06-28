@@ -123,9 +123,9 @@ def eval_rule0(keylist, key):
 	return exist_key([RUM, NOCARE, NOCARE, NOCARE], keylist, -1)
 
 def eval_rule1(keylist, key):
+		#~ return \
+		#~ key.isHid(DS) and key.isHid(DK) and key.isHid(RD) or \
 		return \
-		key.isHid(DS) and key.isHid(DK) and key.isHid(RD) or \
-		\
 		special_ds2(keylist, key.alg) or \
 		\
 		exist_key([RUM, OMN, OMN, NOCARE], keylist, key.alg) and \
@@ -137,9 +137,9 @@ def eval_rule1(keylist, key):
 		exist_key([OMN, UNR, NOCARE, NOCARE], keylist, key.alg)
 
 def eval_rule2(keylist, key):
-	return \
-		key.isHid(DK) and key.isHid(RS) or \
-		\
+	#~ return \
+		#~ key.isHid(DK) and key.isHid(RS) or \
+		return \
 		special_dk2(keylist, key.alg) or \
 		\
 		exist_key([NOCARE, RUM, NOCARE, OMN], keylist, key.alg) and \
