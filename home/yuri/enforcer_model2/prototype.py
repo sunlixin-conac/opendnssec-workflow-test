@@ -11,18 +11,19 @@ ALLOW_UNSIGNED = False
 class Key:
 	next_id = 0
 
-	def __init__(self, state = [HID,HID,HID,HID], intro = True, alg = 0):
+	def __init__(self, state = [HID,HID,HID,HID], intro = True, alg = 0, minds = False, minkey = False, minsig = False):
 		self.state = state
 		self.lastchange = [0,0,0,0]
 		self.intro = intro
 		self.id = Key.next_id
 		Key.next_id += 1
 		self.alg = alg
-		self.minds = False
-		self.minkey = False
-		self.minsig = True
-		#~ self.minsig = False
+		self.minds = minds
+		self.minkey = minkey
+		self.minsig = minsig
 
+	def isNcr(self, i): return self.state[i] == NOCARE
+	
 	def isOmn(self, i): return self.state[i] == OMN
 	def isHid(self, i): return self.state[i] == HID
 	def isRum(self, i): return self.state[i] == RUM or self.isOmn(i)
@@ -50,21 +51,52 @@ def exist_key(states, keylist, alg):
 				break
 		if match: return True
 	return False
+		
+def forall_except(states, keylist, alg, k):
+	for key in keylist:
+		if key == k: continue
+		if alg != key.alg and alg != -1: continue
+		for i, target, keystate in zip(range(4), states, key.state):
+			if target == NOCARE or keystate == NOCARE: continue #geen eis
+			if not key.isBetterOrEq(i, target):
+				#~ print key, keystate
+				return False
+		# this key is ok
+	return True
 
 def eval_rule0(keylist, key):
 	return exist_key([RUM, NOCARE, NOCARE, NOCARE], keylist, -1)
 
 def eval_rule1(keylist, key):
-	return not exist_key([RUM, NOCARE, NOCARE, NOCARE], keylist, key.alg) and \
-		(key.isOmn(DK) and key.isOmn(RD) or key.isHid(DS)) or \
-		exist_key([RUM, OMN, OMN, NOCARE], keylist, key.alg) or \
+		return \
+		forall_except([HID, NOCARE, NOCARE, NOCARE], keylist, key.alg, key) and \
+		not key.isNcr(DS) and \
+		(key.isHid(DS) or key.isOmn(DK)) or \
+		\
+		key.isHid(DS) and key.isHid(DK) or \
+		\
+		exist_key([RUM, OMN, OMN, NOCARE], keylist, key.alg) and \
+		exist_key([UNR, OMN, OMN, NOCARE], keylist, key.alg) or \
+		\
+		exist_key([OMN, OMN, OMN, NOCARE], keylist, key.alg) or \
+		\
 		exist_key([OMN, RUM, RUM, NOCARE], keylist, key.alg) and \
 		exist_key([OMN, UNR, UNR, NOCARE], keylist, key.alg)
 
 def eval_rule2(keylist, key):
-	return not exist_key([NOCARE, RUM, NOCARE, NOCARE], keylist, key.alg) and \
-		(key.isOmn(RS) or key.isHid(DK)) or \
-		exist_key([NOCARE, RUM, NOCARE, OMN], keylist, key.alg) or \
+	return \
+		forall_except([NOCARE, HID, NOCARE, NOCARE], keylist, key.alg, key) and \
+		(key.isHid(DK) or key.isOmn(RS)) or \
+		\
+		key.isHid(DK) and key.isHid(RS) or \
+		key.isHid(DK) and key.isRum(RS) or \
+		key.isRum(DK) and key.isOmn(RS) or \
+		\
+		exist_key([NOCARE, RUM, NOCARE, OMN], keylist, key.alg) and \
+		exist_key([NOCARE, UNR, NOCARE, OMN], keylist, key.alg) or \
+		\
+		exist_key([NOCARE, OMN, NOCARE, OMN], keylist, key.alg) or \
+		\
 		exist_key([NOCARE, OMN, NOCARE, RUM], keylist, key.alg) and \
 		exist_key([NOCARE, OMN, NOCARE, UNR], keylist, key.alg)
 
@@ -73,6 +105,7 @@ def eval_rule3(keylist, key):
 
 #overwrites keylist[ki].state[ri] = st
 def evaluate(keylist, ki, ri, st):
+	print >> stderr, "want to move %s to %s"%(NAME[ri], STATE[st])
 	key = keylist[ki]
 	oldstate = key.state[ri]
 	# see if rule is true, substitute, see if rule is still true
@@ -107,13 +140,13 @@ def policy(key, ri, nextstate):
 	if ri == DS:
 		if key.minds and key.state[DK] != OMN: return False
 	elif ri == DK:
-		if key.minkey and (key.state[DS] != OMN or key.state[RS] != OMN): return False
+		if key.minkey and ((key.state[DS] != OMN and key.state[DS] != NOCARE) or key.state[RS] != OMN): return False
 	elif ri == RS:
 		if key.minsig and key.state[DK] != OMN: return False
 	return True
 
 def time(key, ri, now):
-	TTL = [11, 2, 2, 5]
+	TTL = [11, 1, 1, 3]
 	last = key.lastchange[ri]
 	t = last + TTL[ri]
 	t_ok = (t <= now) or last == 0;
@@ -181,53 +214,16 @@ def keystostr(keylist):
 	return "\n".join(map(lambda key: str(key), keylist))
 
 def prettyheader(keylist):
+	bar = ("-"*17 + "+")*len(keylist) + "-"*6
 	return " |".join(map(lambda key: key.prettyheader(), keylist)) + \
-			" | T\n" + "-"*58
+			" | T\n" + bar
 	
 def prettystate(keylist, now):
 	return " |".join(map(lambda key: key.prettystate(), keylist)) + \
 			" | " + str(now)
 
-def simulate():
-	keylist = []
-	
-	## split to single algorithm roll
-	keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
-	keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
-	keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, hidden, introducing
-
-	#~ ## unsigned to signed split
-	#~ keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK
-	#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
-
-	#~ ## unsigned to signed csk
-	#~ keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK
-
-	#~ ## zsk roll no KSK
-	#~ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
-	#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
- 
-	#~ ## zsk roll
-	#~ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
-	#~ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
-	#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
-
-	#~ ## Ksk roll
-	#~ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
-	#~ keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, omnipresent, outroducing
-	#~ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], True, 0)) #ZSK, omnipresent, outroducing
-
-	#~ ## ksk roll with broken zsk
-	#~ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
-	#~ keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, omnipresent, outroducing
-	#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
-
-	#~ ## zsk into to csk
-	#~ keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK
-	#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
-
-
-	print keystostr(keylist)
+def simulate(keylist):
+	#~ print keystostr(keylist)
 	history = []
 	history.append( prettyheader(keylist) )
 	history.append( prettystate(keylist, None) )
@@ -237,18 +233,88 @@ def simulate():
 	now = epoch;
 	while True:
 		t = updatezone(keylist, now)
-		print "\n", keystostr(keylist)
-		history.append( prettystate(keylist, now) )
+		print >> stderr, "\n", keystostr(keylist)
+		history.append( prettystate(keylist, now-epoch) )
 		if t == 0:
-			print "nothing more to do. stop."
+			#~ print "nothing more to do. stop."
 			break
 		if t < now: 
-			print "event for past! stop!"
+			print >> stderr, "event for past! stop!"
 			break
-		print "TIME: advancing from %d to %d"%(now, t)
+		print >> stderr, "TIME: advancing from %d to %d"%(now, t)
 		now = t
-		
-	print "\n" + "\n".join(history)
+	return "\n".join(history)
+
+scenarios = []
 	
-if __name__ == "__main__":
-	simulate()
+keylist = []
+title = "split to single algorithm roll"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, hidden, introducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "unsigned to signed split"
+keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
+scenarios.append((title, keylist))
+
+keylist = []
+title = "unsigned to signed csk"
+keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK
+scenarios.append((title, keylist))
+
+keylist = []
+title = "zsk roll no KSK"
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
+scenarios.append((title, keylist))
+ 
+keylist = []
+title = "zsk roll"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "zsk roll minkey"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0, minkey=True)) #ZSK, omnipresent, outroducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "zsk roll minsig"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0, minsig=True)) #ZSK, omnipresent, outroducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "Ksk roll"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], True, 0)) #ZSK, omnipresent, outroducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "ksk roll with broken zsk"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "zsk into to csk"
+keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
+scenarios.append((title, keylist))
+
+for t,k in scenarios:
+	print t +"\n"
+	print simulate(k) +"\n"
+
+#~ if __name__ == "__main__":
+	#~ simulate()
