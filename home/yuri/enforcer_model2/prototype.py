@@ -80,8 +80,11 @@ def eval_rule1(keylist, key):
 		\
 		exist_key([OMN, OMN, OMN, NOCARE], keylist, key.alg) or \
 		\
-		exist_key([OMN, RUM, RUM, NOCARE], keylist, key.alg) and \
-		exist_key([OMN, UNR, UNR, NOCARE], keylist, key.alg)
+		exist_key([OMN, RUM, NOCARE, NOCARE], keylist, key.alg) and \
+		exist_key([OMN, UNR, NOCARE, NOCARE], keylist, key.alg)
+		#~ \
+		#~ exist_key([OMN, RUM, RUM, NOCARE], keylist, key.alg) and \
+		#~ exist_key([OMN, UNR, UNR, NOCARE], keylist, key.alg)
 
 def eval_rule2(keylist, key):
 	return \
@@ -140,7 +143,7 @@ def policy(key, ri, nextstate):
 	if ri == DS:
 		if key.minds and key.state[DK] != OMN: return False
 	elif ri == DK:
-		if key.minkey and ((key.state[DS] != OMN and key.state[DS] != NOCARE) or key.state[RS] != OMN): return False
+		if key.minkey and ((key.state[DS] != OMN and key.state[DS] != NOCARE) or (key.state[RS] != OMN and key.state[RS] != NOCARE)): return False
 	elif ri == RS:
 		if key.minsig and key.state[DK] != OMN: return False
 	return True
@@ -246,31 +249,9 @@ def simulate(keylist):
 	return "\n".join(history)
 
 scenarios = []
-	
-keylist = []
-title = "split to single algorithm roll"
-keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
-keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
-keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, hidden, introducing
-scenarios.append((title, keylist))
 
-keylist = []
-title = "unsigned to signed split"
-keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK
-keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
-scenarios.append((title, keylist))
-
-keylist = []
-title = "unsigned to signed csk"
-keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK
-scenarios.append((title, keylist))
-
-keylist = []
-title = "zsk roll no KSK"
-keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
-keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
-scenarios.append((title, keylist))
- 
+#~ #ZSK
+#~ 
 keylist = []
 title = "zsk roll"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
@@ -292,6 +273,8 @@ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, out
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0, minsig=True)) #ZSK, omnipresent, outroducing
 scenarios.append((title, keylist))
 
+#KSK
+
 keylist = []
 title = "Ksk roll"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
@@ -300,17 +283,125 @@ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], True, 0)) #ZSK, omnipresent, outr
 scenarios.append((title, keylist))
 
 keylist = []
-title = "ksk roll with broken zsk"
+title = "Ksk roll minkey"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
-keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, omnipresent, outroducing
-keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, NOCARE], True, 0, minkey=True)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], True, 0)) #ZSK, omnipresent, outroducing
 scenarios.append((title, keylist))
 
 keylist = []
-title = "zsk into to csk"
-keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK
-keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
+title = "Ksk roll minds"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, NOCARE], True, 0, minds=True)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], True, 0)) #ZSK, omnipresent, outroducing
 scenarios.append((title, keylist))
+
+#~ # split to split
+
+keylist = []
+title = "split roll"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, hidden, introducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, hidden, introducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "split roll diff alg"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, NOCARE], True, 1)) #KSK, hidden, introducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 1)) #ZSK, hidden, introducing
+scenarios.append((title, keylist))
+
+#CSK
+
+keylist = []
+title = "csk roll"
+keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK, hidden, introducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "csk roll diff alg"
+keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, hidden, introducing
+scenarios.append((title, keylist))
+
+# CSK to split
+
+keylist = []
+title = "csk roll to split"
+keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, hidden, introducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, hidden, introducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "csk roll to split diff alg"
+keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK, omnipresent, outroducing
+keylist.append(Key([HID, HID, HID, NOCARE], True, 1)) #KSK, hidden, introducing
+keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 1)) #ZSK, hidden, introducing
+scenarios.append((title, keylist))
+
+#split to CSK
+
+keylist = []
+title = "split roll to csk"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, hidden, introducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, hidden, introducing
+keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK, omnipresent, outroducing
+scenarios.append((title, keylist))
+
+keylist = []
+title = "split roll to csk diff alg"
+keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, hidden, introducing
+keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, hidden, introducing
+keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, omnipresent, outroducing
+scenarios.append((title, keylist))
+
+#~ --------------------------------
+#~ 
+#~ keylist = []
+#~ title = "split to single algorithm roll"
+#~ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+#~ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+#~ keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, hidden, introducing
+#~ scenarios.append((title, keylist))
+#~ 
+#~ keylist = []
+#~ title = "unsigned to signed split"
+#~ keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK
+#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
+#~ scenarios.append((title, keylist))
+#~ 
+#~ keylist = []
+#~ title = "unsigned to signed csk"
+#~ keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK
+#~ scenarios.append((title, keylist))
+#~ 
+#~ keylist = []
+#~ title = "zsk roll no KSK"
+#~ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
+#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
+#~ scenarios.append((title, keylist))
+ #~ 
+#~ 
+#~ 
+#~ 
+#~ 
+#~ keylist = []
+#~ title = "ksk roll with broken zsk"
+#~ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
+#~ keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, omnipresent, outroducing
+#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
+#~ scenarios.append((title, keylist))
+#~ 
+#~ keylist = []
+#~ title = "zsk into to csk"
+#~ keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK
+#~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
+#~ scenarios.append((title, keylist))
 
 for t,k in scenarios:
 	print t +"\n"
