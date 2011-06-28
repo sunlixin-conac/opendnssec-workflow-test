@@ -151,7 +151,9 @@ def eval_rule2(keylist, key):
 		exist_key([NOCARE, OMN, NOCARE, UNR], keylist, key.alg)
 
 def eval_rule3(keylist, key):
-	return key.state[1] >= key.state[2]
+	#~ return not ((key.state[RD] == RUM and key.state[DK] == HID) or (key.state[RD] == UNR and key.state[DK] == OMN))
+	return not ((key.state[RD] == UNR and key.state[DK] == OMN))
+	#~ return key.state[1] >= key.state[2]
 
 #overwrites keylist[ki].state[ri] = st
 def evaluate(keylist, ki, ri, st):
@@ -163,26 +165,26 @@ def evaluate(keylist, ki, ri, st):
 	rule0_pre = eval_rule0(keylist, key)
 	rule1_pre = eval_rule1(keylist, key)
 	rule2_pre = eval_rule2(keylist, key)
-	rule3_pre = eval_rule3(keylist, key)
+	#~ rule3_pre = eval_rule3(keylist, key)
 	## This could be an error er we are introducing a new zone
 	#~ if not ((rule0_pre or ALLOW_UNSIGNED) and rule1_pre and rule2_pre and rule3_pre):
 		#~ print "ERRRRRRRRRRRRRRRR", NAME[ri], STATE[st]
-	print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre, rule3_pre
-	#~ print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre
+	#~ print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre, rule3_pre
+	print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre
 	
 	key.state[ri] = st
 	
 	rule0 = not rule0_pre or eval_rule0(keylist, key) or ALLOW_UNSIGNED
 	rule1 = not rule1_pre or eval_rule1(keylist, key)
 	rule2 = not rule2_pre or eval_rule2(keylist, key)
-	rule3 = not rule3_pre or eval_rule3(keylist, key)
-	print >> stderr, NAME[ri], rule0, rule1, rule2, rule3
-	#~ print >> stderr, NAME[ri], rule0, rule1, rule2
+	#~ rule3 = not rule3_pre or eval_rule3(keylist, key)
+	#~ print >> stderr, NAME[ri], rule0, rule1, rule2, rule3
+	print >> stderr, NAME[ri], rule0, rule1, rule2
 	
 	key.state[ri] = oldstate
 	
-	return rule0 and rule1 and rule2 and rule3
-	#~ return rule0 and rule1 and rule2
+	#~ return rule0 and rule1 and rule2 and rule3
+	return rule0 and rule1 and rule2
 
 # next desired state given current and goal
 def nextState(intro, cur_state):
@@ -194,6 +196,8 @@ def policy(key, ri, nextstate):
 		if key.minds and key.state[DK] != OMN: return False
 	elif ri == DK:
 		if key.minkey and ((key.state[DS] != OMN and key.state[DS] != NOCARE) or (key.state[RS] != OMN and key.state[RS] != NOCARE)): return False
+	elif ri == RD:
+		if key.state[DK] == HID: return False
 	elif ri == RS:
 		if key.minsig and key.state[DK] != OMN: return False
 	return True
@@ -275,13 +279,16 @@ def prettystate(keylist, now):
 	return " |".join(map(lambda key: key.prettystate(), keylist)) + \
 			" | " + str(now)
 
-def simulate(keylist):
+def simulate(keylist, allow_unsigned):
 	#~ print keystostr(keylist)
 	history = []
 	history.append( prettyheader(keylist) )
 	history.append( prettystate(keylist, None) )
 
 	epoch = 42 # 0 has a special meaning
+
+	global ALLOW_UNSIGNED 
+	ALLOW_UNSIGNED = allow_unsigned
 
 	now = epoch;
 	while True:
@@ -307,21 +314,21 @@ title = "zsk roll"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 keylist = []
 title = "zsk roll minkey"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0, minkey=True)) #ZSK, omnipresent, outroducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 keylist = []
 title = "zsk roll minsig"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0, minsig=True)) #ZSK, omnipresent, outroducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 #KSK
 
@@ -330,21 +337,21 @@ title = "Ksk roll"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], True, 0)) #ZSK, omnipresent, outroducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 keylist = []
 title = "Ksk roll minkey"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, NOCARE], True, 0, minkey=True)) #KSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], True, 0)) #ZSK, omnipresent, outroducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 keylist = []
 title = "Ksk roll minds"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, NOCARE], True, 0, minds=True)) #KSK, omnipresent, outroducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], True, 0)) #ZSK, omnipresent, outroducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 #~ # split to split
 
@@ -354,7 +361,7 @@ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outrod
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, hidden, introducing
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, hidden, introducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 keylist = []
 title = "split roll diff alg"
@@ -362,7 +369,7 @@ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outrod
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, NOCARE], True, 1)) #KSK, hidden, introducing
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 1)) #ZSK, hidden, introducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 #CSK
 
@@ -370,13 +377,13 @@ keylist = []
 title = "csk roll"
 keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK, hidden, introducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 keylist = []
 title = "csk roll diff alg"
 keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, hidden, introducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 # CSK to split
 
@@ -385,14 +392,14 @@ title = "csk roll to split"
 keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, hidden, introducing
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, hidden, introducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 keylist = []
 title = "csk roll to split diff alg"
 keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK, omnipresent, outroducing
 keylist.append(Key([HID, HID, HID, NOCARE], True, 1)) #KSK, hidden, introducing
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 1)) #ZSK, hidden, introducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 #split to CSK
 
@@ -401,14 +408,14 @@ title = "split roll to csk"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, hidden, introducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, hidden, introducing
 keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK, omnipresent, outroducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 #~ 
 keylist = []
 title = "split roll to csk diff alg"
 keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, hidden, introducing
 keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, hidden, introducing
 keylist.append(Key([HID, HID, HID, HID], True, 1)) #CSK, omnipresent, outroducing
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 #--------------------------------
 
@@ -416,18 +423,23 @@ keylist = []
 title = "unsigned to signed split"
 keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK
 keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
 
 keylist = []
 title = "unsigned to signed csk"
 keylist.append(Key([HID, HID, HID, HID], True, 0)) #CSK
-scenarios.append((title, keylist))
+scenarios.append((title, keylist, False))
+
+keylist = []
+title = "signed csk to unsigned"
+keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK
+scenarios.append((title, keylist, True))
 #~ 
 #~ keylist = []
 #~ title = "zsk roll no KSK"
 #~ keylist.append(Key([NOCARE, OMN, NOCARE, OMN], False, 0)) #ZSK, omnipresent, outroducing
 #~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
-#~ scenarios.append((title, keylist))
+#~ scenarios.append((title, keylist, False))
  #~ 
 #~ 
 #~ 
@@ -438,17 +450,17 @@ scenarios.append((title, keylist))
 #~ keylist.append(Key([OMN, OMN, OMN, NOCARE], False, 0)) #KSK, omnipresent, outroducing
 #~ keylist.append(Key([HID, HID, HID, NOCARE], True, 0)) #KSK, omnipresent, outroducing
 #~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK, omnipresent, outroducing
-#~ scenarios.append((title, keylist))
+#~ scenarios.append((title, keylist, False))
 #~ 
 #~ keylist = []
 #~ title = "zsk into to csk"
 #~ keylist.append(Key([OMN, OMN, OMN, OMN], False, 0)) #CSK
 #~ keylist.append(Key([NOCARE, HID, NOCARE, HID], True, 0)) #ZSK
-#~ scenarios.append((title, keylist))
+#~ scenarios.append((title, keylist, False))
 
-for t,k in scenarios:
+for t,k,a in scenarios:
 	print t +"\n"
-	print simulate(k) +"\n"
+	print simulate(k,a) +"\n"
 
 #~ if __name__ == "__main__":
 	#~ simulate()
