@@ -3,21 +3,20 @@
 \usepackage{amssymb,amsmath}
 \usepackage[english]{babel}
 \usepackage{multirow}
-
 \usepackage{algorithmic}
 \usepackage{algorithm}
-
+%~ \usepackage{subequations}
 \usepackage{threeparttable} %footnotes in tables
-
 \usepackage{color}
-\definecolor{MinSig}{RGB}{255,163,53}
-\definecolor{Stdby}{RGB}{224,41,62}
-%~ \definecolor{MinSig}{RGB}{199,154,0}
-\newcommand{\highlightMinSig}[1]{\textcolor{MinSig}{\bf{#1}}}
-\newcommand{\highlightStandby}[1]{\textcolor{Stdby}{\bf{#1}}}
 
-%~ \newcommand{\mathbox}[1]{\fbox{\begin{minipage}{\linewidth}#1\end{minipage}}}
-\newcommand{\mathbox}[1]{#1}
+\definecolor{quotemarkcolor}{rgb}{0.8,0.8,0.8}
+\newenvironment{fancyquotation}{
+   \begin{quotation}
+	\noindent\llap{\raisebox{-2em}[2em][0pt]{\scalebox{5}{\color{quotemarkcolor}``}}}
+}{
+	\hfill\raisebox{-3em}[0em][0pt]{\scalebox{5}{\color{quotemarkcolor}''}}
+   \end{quotation}
+}
 
 \title{\textsc{Dnssec} Key State Transitions}
 \author{Yuri Schaeffer, Yuri@NLnetLabs.nl}
@@ -26,6 +25,22 @@
 \begin{document}
 \maketitle
 
+\section{Three Laws of DNSSEC}
+\begin{description}
+\item[First Law] An Enforcer may not injure a zone by revoking its DS record.
+\item[Second Law] An Enforcer must keep a secure KSK or an insecure KSK if that does not conflict with he first rule.
+\item[Third Law] An Enforcer must protect its ZSK security unless revoking does not conflict with the first or second rule.
+\item[Zeroth Law] An enforcer may not harm a zone, or, by inaction, allow zones to come to harm.
+\end{description}
+
+\begin{fancyquotation}
+Trevize frowned. ``How do you decide what is injurious, or not injurious, to humanity as a whole?''
+
+``Precisely, sir,'' said Daneel. ``In theory, the Zeroth Law was the answer to our problems. In practice, we could never decide. A human being is a concrete object. Injury to a person can be estimated and judged. Humanity is an abstraction.''
+\end{fancyquotation}
+\hfill--Foundation and Earth
+
+
 \section{Warning}
 This document is a rough explanation of an idea. It is based on earlier
 work and may use but not introduce terminology of an other document. 
@@ -33,14 +48,7 @@ Possibly introduce completely new notations, skip reasoning steps without
 warning (well, you are warned now) and be plain wrong. This document is considered unsuitable
 for young children and Liberal-Arts majors. Read at OWN RISK.
 
-\subsection{Incompleteness / TODO}
-\begin{description}
-\item[Minimize Flags] define how the (in this document yet undefined) 
-minimize flags should exactly modify the rules.
-\item[Notation] Brush up notation of rules.
-\end{description}
-
-\tableofcontents
+\pagebreak\tableofcontents
 
 \section{Introduction}
 
@@ -260,8 +268,8 @@ False. A ZSK has no DS and RRSIG DNSKEY record. A CSK has all records.
 
 \subsection{Notation}
 
-For readability let $A$ denote a DS record, $B$ the DNSKEY, $C$ the 
-RRSIG DNSKEY, and $D$ the RRSIG. The state of a record is indicated 
+For readability let $D$ denote a DS record, $K$ the DNSKEY, $k$ the 
+RRSIG DNSKEY, and $S$ the RRSIG. The state of a record is indicated 
 with superscript and can be found in Table~\ref{tab:states}. These 
 states correspondent directly with the states from Figure~\ref 
 {fig:statemachine}. I.e. $hidden \equiv -$, $rumoured \equiv 
@@ -269,7 +277,7 @@ states correspondent directly with the states from Figure~\ref
 The subscript of a record denotes the key it 
 belongs to. The
 current evaluated key has subscript $i$. E.g: the statement ``the DS of key $z$ is in 
-the Omnipresent state'' can be written as $A^{+}_{z}$. 
+the Omnipresent state'' can be written as $D^{+}_{z}$. 
 
 
 \begin{table}[h]
@@ -285,17 +293,14 @@ the Omnipresent state'' can be written as $A^{+}_{z}$.
 \label{tab:states}
 \end{table}
 
-%~ notation
-%~ rules
-%~ algorithm
-
-Furthermore, the certain states are a subset of the uncertain states. So 
-a Hidden record is also said to be Unretentive. 
-$A_{x}^{-} \rightarrow A_{x}^{\downarrow}$.
+%~ %%%% Depricated
+%~ Furthermore, the certain states are a subset of the uncertain states. So 
+%~ a Hidden record is also said to be Unretentive. 
+%~ $A_{x}^{-} \rightarrow A_{x}^{\downarrow}$.
 
 \subsection{Rules}
 
-The system uses four rules, Equation~\eqref{eqn:rule1}\eqref{eqn:rule2}\eqref{eqn:rule3}\eqref{eqn:rule4}.
+The system uses three rules, Equation~\eqref{eqn:rule1}\eqref{eqn:rule2}\eqref{eqn:rule3}.
 To see if we can transition a record to the next state we first 
 test the three rules. They \emph{should} all be True, if not we apparently
 have an invalid zone on our hands. This isn't our fault (presumably\footnote{
@@ -313,22 +318,38 @@ rules become negative prevents locks in our statemachine and will to
 some extend repair invalid situations in a graceful manner. Also, it 
 allows unsigned zones to exist without special tricks.
 
-The four rules \emph{should} be true for each record of all keys. The 
+The three rules \emph{should} be true for each record of all keys. The 
 rules will be explained in a later section.
+
+\newcommand{\record}[3]{#1_{#2}^{#3}}
+
+\newcommand{\A}[2]{\record{D}{#1}{#2}}
+\newcommand{\B}[2]{\record{K}{#1}{#2}}
+\newcommand{\C}[2]{\record{k}{#1}{#2}}
+\newcommand{\D}[2]{\record{S}{#1}{#2}}
 
 \begin{eqnarray}
 \label{eqn:rule1}
-rule1:	&& A_{x}^{\uparrow} \\
+rule1(i)
+&:& 	\exists x\cdot\A{x}{\uparrow} \vee \A{x}{+}\\
+\nonumber
+\\
 \label{eqn:rule2}
-rule2:	&& \neg A_{x}^{\uparrow} (A_{i}^{-} \vee B_{i}^{+} C_{i}^{+}) \vee A_{x}^{\uparrow}
-	B_{x}^{+} C_{x}^{+} \vee A_{x}^{+} B_{x}^{\uparrow} C_{x}^{\uparrow}
-	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}\\
+rule2(i)
+&:&		\forall x \cdot (\A{x}{-} \vee \exists y \cdot \B{y}{+}\C{y}{+} (\A{x}{}=\A{y}{}) ) \nonumber \\
+&\vee& 	\exists x\cdot\A{x}{+} \B{x}{+} \C{x}{+} \nonumber \\
+&\vee& 	\exists x,y\cdot\A{x}{\uparrow} \B{x}{+} \C{x}{+} \A{y}{\downarrow} \B{y}{+} \C{y}{+} \\
+&\vee&	\exists x,y\cdot \A{x}{+} \B{x}{\uparrow} \C{x}{\uparrow}	\A{y}{+} \B{y}{\downarrow} \nonumber \\
+&;&		alg(i)=alg(x)=alg(y) \nonumber \\
+\nonumber 
+\\
 \label{eqn:rule3}
-rule3:	&& \neg B_{x}^{\uparrow} (B_{i}^{-} \vee D_{i}^{+}) \vee B_{x}^{\uparrow}
-	D_{x}^{+} \vee B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+}
-	D_{y}^{\downarrow} \\
-\label{eqn:rule4}
-rule4: && B_{i} \geq C_{i}
+rule3(i)
+&:&		\forall x \cdot (\B{x}{-} \vee \exists y \cdot \D{y}{+} (\B{x}{}=\B{y}{}) ) \nonumber\\
+&\vee&	\exists x\cdot \B{x}{+} \D{x}{+} \nonumber\\
+&\vee&	\exists x,y\cdot \B{x}{\uparrow} \D{x}{+} \B{y}{\downarrow} \D{y}{+} \\
+&\vee&	\exists x,y\cdot \B{x}{+} \D{x}{\uparrow} \B{y}{+} \D{y}{\downarrow} \nonumber \\
+&;&		alg(i)=alg(x)=alg(y) \nonumber 
 \end{eqnarray}
 
 \subsection{Algorithm}
@@ -385,51 +406,57 @@ type of record and the time of last change. This is policy specific.
 
 \section{Rules explained}
 
-\begin{equation}
-A_{x}^{\uparrow} 
-\end{equation}
+In a nutshell, the first rule makes sure the zone is kept signed at all times, the second keeps the KSK in a valid state and the third the ZSK. The three rules do influence each other. For example rule 3 does allow having no ZSK, but only if there is no KSK. Rule 2 does allow having no KSK but only if there is no DS published. Rule 1 seems simple but it is the only thing that keeps the zone from going unsigned.
 
-The notation is not sufficient here. What I mean to say is there must
-be a DS Rumoured or Omnipresent at all times. Does not matter which key
-or what algorithm.
+Disabling rule 1 will allow both other rules to go to unsigned (in a gracefull manner).
 
-\begin{equation}
-\neg A_{x}^{\uparrow} (A_{i}^{-} \vee B_{i}^{+} C_{i}^{+}) \vee A_{x}^{\uparrow}
-	B_{x}^{+} C_{x}^{+} \vee A_{x}^{+} B_{x}^{\uparrow} C_{x}^{\uparrow}
-	A_{y}^{+} B_{y}^{\downarrow} C_{y}^{\downarrow}
-\end{equation}
+\begin{eqnarray}
+\label{eqn:rule1Expl}
+rule1(i)
+&:& 	\exists x\cdot\A{x}{\uparrow} \vee \A{x}{+}
+\end{eqnarray}
 
-The second rule basically describes the dependency of the DS record
-on the DNSKEY record and the signature thereof. Either there is no DS
-published and the DNSKEY is well known, another DS is published with the
-DNSKEY well known, or two DS's are well known and their DNSKEYS are being 
-swapped.
+At all times there must be a DS published \eqref{eqn:rule1Expl}. The only exception is when the user wants his zone unsigned, this must be explicitly stated. If so, this rule must skipped. Skipping in other situations is possible, but ill advised. The enforcer may do a rollover via an unsigned zone.
 
-Although not stated explicitly, all records in the statement must have
-the same algorithm.
+In words: there must always exist a DS record introducing or omnipresent. It does not matter what algorithm or which key this DS belongs to. This seems incomplete but really forms a fundament for rule number 2.
 
-\begin{equation}
-\neg B_{x}^{\uparrow} (B_{i}^{-} \vee D_{i}^{+}) \vee B_{x}^{\uparrow}
-	D_{x}^{+} \vee B_{x}^{+} D_{x}^{\uparrow} B_{y}^{+}
-	D_{y}^{\downarrow}
-\end{equation}
+\begin{subequations}
+\label{eqn:rule2Expl}
+\begin{align}
+rule2(i)
+&:&		\forall x \cdot (\A{x}{-} \vee \exists y \cdot \B{y}{+}\C{y}{+} (\A{x}{}=\A{y}{}) ) \label{r2eUnsigned}\\
+&\vee& 	\exists x\cdot\A{x}{+} \B{x}{+} \C{x}{+} \label{r2eTrivial}\\
+&\vee& 	\exists x,y\cdot\A{x}{\uparrow} \B{x}{+} \C{x}{+} \A{y}{\downarrow} \B{y}{+} \C{y}{+} \label{r2eMinds}\\
+&\vee&	\exists x,y\cdot \A{x}{+} \B{x}{\uparrow} \C{x}{\uparrow}	\A{y}{+} \B{y}{\downarrow} \label{r2eMinkey}\\
+&;&		alg(i)=alg(x)=alg(y) \label{r2eAlg}
+\end{align}
+\end{subequations}
 
-The third rule expresses the dependency of the DNSKEY on the RRSIG. 
-Either there is no DNSKEY at all, the DNSKEY is being introduced with
-the RRSIG well known, or two DNSKEYs exist and their RRSIGS's are being
-swapped.
+Rule 2 describes the dependency of the DS record on the DNSKEY and its RRSIG. The subequations represent the different scenarios that are valid, at least one of these scenarios must be true at all times. The only keys that need to be considered are the keys with the same algorithm as the input key $i$ \eqref{r2eAlg}.
 
-Again, all record must have the same algorithm.
+Subequation~\eqref{r2eTrivial} is the trivial case: If there is a key with the DS, DNSKEY and RRSIG DNSKEY fully propagated all other keys of this algorithm can be in any state. No further requirements.
 
-\begin{equation}
-B_{i} \geq C_{i}
-\end{equation}
+Similar subequation~\eqref{r2eMinds} requires two keys swapping DS records. Again, if this is the case, the zone is valid for the KSK and other keys can be in any state without consequences.
 
-The state of the RRSIG DNSKEY may not be greater than the state of the
-DNSKEY. In the normal case both records are published together. In case
-of 5011 we need to introduce a new DNSKEY for some time \emph{without}
-signing the DNSKEY RRset. We must however prevent the signature to be 
-introduced or outroduced before the actual DNSKEY.
+Subequation~\eqref{r2eMinkey} also requires two keys, but now they are swapping DNSKEYs. Notice the outroduction of the signature is omitted in this subequation ($\C{y}{\downarrow}$), this is not an error. Including it would block the DNSKEY $\C{y}{}$.
+
+Finally the unsigned case, subequation~\eqref{r2eUnsigned}. It applies to zones unsigned \emph{for this algorithm}, which includes unsigned for \emph{any} algorithm. In the unsigned/partially signed case no DS may be published. If however a DS of key $x$ is published anyway there must be a key $y$ with the DNSKEY set propagated and the DS in the same state as key $x$. Like everywhere else $x$ and $y$ may be the same key.
+
+Let us review an example (ignoring rule 1 and 2). Say we have two keys: $\A{x}{+}\B{x}{+}\C{x}{+}$ and $\A{y}{+}\B{y}{-}\C{y}{-}$. We want the zone to become unsigned. At time 0 the zone is valid because of \eqref{r2eTrivial} and we can therefore outroduce the DS of $y$. Now, because of \eqref{r2eUnsigned} me may do the same with the DS of $x$ at the same time. When both are hidden the last mentioned rule allows the remaining DNSKEY and RRSIG DNSKEY to do whatever they want.
+
+\begin{subequations}
+\label{eqn:rule3Expl}
+\begin{align}
+rule3(i)
+&:&		\forall x \cdot (\B{x}{-} \vee \exists y \cdot \D{y}{+} (\B{x}{}=\B{y}{}) ) \\
+&\vee&	\exists x\cdot \B{x}{+} \D{x}{+} \\
+&\vee&	\exists x,y\cdot \B{x}{\uparrow} \D{x}{+} \B{y}{\downarrow} \D{y}{+} \\
+&\vee&	\exists x,y\cdot \B{x}{+} \D{x}{\uparrow} \B{y}{+} \D{y}{\downarrow} \\
+&;&		alg(i)=alg(x)=alg(y)
+\end{align}
+\end{subequations}
+
+The third rule works exactly the same as rule 2 but reasons about the ZSK part. 
 
 \section{Examples}
 
