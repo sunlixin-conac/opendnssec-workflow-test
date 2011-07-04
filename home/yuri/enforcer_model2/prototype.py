@@ -22,14 +22,12 @@ class Key:
 		self.minkey = minkey
 		self.minsig = minsig
 
-	def isNcr(self, i): return self.state[i] == NOCARE
-	
 	def isOmn(self, i): return self.state[i] == OMN
 	def isHid(self, i): return self.state[i] == HID
-	def isRum(self, i): return self.state[i] == RUM or self.isOmn(i)
-	def isUnr(self, i): return self.state[i] == UNR or self.isHid(i)
+	def isRum(self, i): return self.state[i] == RUM
+	def isUnr(self, i): return self.state[i] == UNR
 
-	def isBetterOrEq(self, i, state):
+	def isEq(self, i, state):
 		return [self.isHid, self.isRum, self.isOmn, self.isUnr][state](i)
 
 	def __repr__(self):
@@ -46,29 +44,16 @@ def exist_key(states, keylist, alg):
 		match = True
 		for i, target, keystate in zip(range(4), states, key.state):
 			if target == NOCARE: continue #geen eis
-			if not key.isBetterOrEq(i, target):
+			if not key.isEq(i, target):
 				match = False
 				break
 		if match: return True
 	return False
-	#~ 
-#~ def special_ds(keylist, alg):
-	#~ states = [HID, NOCARE, NOCARE, NOCARE]
-	#~ for key in keylist:
-		#~ if not (alg == -1 or alg == key.alg): continue
-		#~ for i, target, keystate in zip(range(4), states, key.state):
-			#~ if target == NOCARE or keystate == NOCARE: continue #geen eis
-			#~ if not key.isBetterOrEq(i, target):
-				#~ # B and C must be +
-				#~ if not (key.isOmn(DK) and key.isOmn(RD)):
-					#~ return False
-	#~ return True
-	
+
 def special_ds2(keylist, alg):
 	for key in keylist:
 		if not (alg == -1 or alg == key.alg): continue
-		if key.isHid(DS): continue
-		if key.isNcr(DS): continue
+		if not (key.isRum(DS) or key.isOmn(DS) or key.isUnr(DS)): continue
 		#exist k?
 		e = False
 		for k in keylist:
@@ -78,18 +63,6 @@ def special_ds2(keylist, alg):
 				break
 		if not e: return False
 	return True
-		
-#~ def special_dk(keylist, alg):
-	#~ states = [NOCARE, HID, NOCARE, NOCARE]
-	#~ for key in keylist:
-		#~ if not (alg == -1 or alg == key.alg): continue
-		#~ for i, target, keystate in zip(range(4), states, key.state):
-			#~ if target == NOCARE or keystate == NOCARE: continue #geen eis
-			#~ if not key.isBetterOrEq(i, target):
-				#~ # B and C must be +
-				#~ if not (key.isOmn(RS)):
-					#~ return False
-	#~ return True
 
 def special_dk2(keylist, alg):
 	for key in keylist:
@@ -113,18 +86,16 @@ def forall_except(states, keylist, alg, k):
 		if alg != key.alg and alg != -1: continue
 		for i, target, keystate in zip(range(4), states, key.state):
 			if target == NOCARE or keystate == NOCARE: continue #geen eis
-			if not key.isBetterOrEq(i, target):
+			if not key.isEq(i, target):
 				#~ print key, keystate
 				return False
 		# this key is ok
 	return True
 
 def eval_rule0(keylist, key):
-	return exist_key([RUM, NOCARE, NOCARE, NOCARE], keylist, -1)
+	return exist_key([RUM, NOCARE, NOCARE, NOCARE], keylist, -1) or exist_key([OMN, NOCARE, NOCARE, NOCARE], keylist, -1)
 
 def eval_rule1(keylist, key):
-		#~ return \
-		#~ key.isHid(DS) and key.isHid(DK) and key.isHid(RD) or \
 		return \
 		special_ds2(keylist, key.alg) or \
 		\
@@ -133,12 +104,10 @@ def eval_rule1(keylist, key):
 		\
 		exist_key([OMN, OMN, OMN, NOCARE], keylist, key.alg) or \
 		\
-		exist_key([OMN, RUM, RUM, NOCARE], keylist, key.alg) and \
-		exist_key([OMN, UNR, NOCARE, NOCARE], keylist, key.alg)
+		(exist_key([OMN, RUM, RUM, NOCARE], keylist, key.alg) or exist_key([OMN, OMN, RUM, NOCARE], keylist, key.alg) ) and \
+		(exist_key([OMN, UNR, UNR, NOCARE], keylist, key.alg) or exist_key([OMN, UNR, OMN, NOCARE], keylist, key.alg) )
 
 def eval_rule2(keylist, key):
-	#~ return \
-		#~ key.isHid(DK) and key.isHid(RS) or \
 		return \
 		special_dk2(keylist, key.alg) or \
 		\
@@ -150,11 +119,6 @@ def eval_rule2(keylist, key):
 		exist_key([NOCARE, OMN, NOCARE, RUM], keylist, key.alg) and \
 		exist_key([NOCARE, OMN, NOCARE, UNR], keylist, key.alg)
 
-def eval_rule3(keylist, key):
-	#~ return not ((key.state[RD] == RUM and key.state[DK] == HID) or (key.state[RD] == UNR and key.state[DK] == OMN))
-	return not ((key.state[RD] == UNR and key.state[DK] == OMN))
-	#~ return key.state[1] >= key.state[2]
-
 #overwrites keylist[ki].state[ri] = st
 def evaluate(keylist, ki, ri, st):
 	print >> stderr, "want to move %s to %s"%(NAME[ri], STATE[st])
@@ -165,11 +129,8 @@ def evaluate(keylist, ki, ri, st):
 	rule0_pre = eval_rule0(keylist, key)
 	rule1_pre = eval_rule1(keylist, key)
 	rule2_pre = eval_rule2(keylist, key)
-	#~ rule3_pre = eval_rule3(keylist, key)
-	## This could be an error er we are introducing a new zone
-	#~ if not ((rule0_pre or ALLOW_UNSIGNED) and rule1_pre and rule2_pre and rule3_pre):
+	#~ if not ((rule0_pre or ALLOW_UNSIGNED) and rule1_pre and rule2_pre):
 		#~ print "ERRRRRRRRRRRRRRRR", NAME[ri], STATE[st]
-	#~ print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre, rule3_pre
 	print >> stderr, NAME[ri], rule0_pre, rule1_pre, rule2_pre
 	
 	key.state[ri] = st
@@ -177,13 +138,10 @@ def evaluate(keylist, ki, ri, st):
 	rule0 = not rule0_pre or eval_rule0(keylist, key) or ALLOW_UNSIGNED
 	rule1 = not rule1_pre or eval_rule1(keylist, key)
 	rule2 = not rule2_pre or eval_rule2(keylist, key)
-	#~ rule3 = not rule3_pre or eval_rule3(keylist, key)
-	#~ print >> stderr, NAME[ri], rule0, rule1, rule2, rule3
 	print >> stderr, NAME[ri], rule0, rule1, rule2
 	
 	key.state[ri] = oldstate
 	
-	#~ return rule0 and rule1 and rule2 and rule3
 	return rule0 and rule1 and rule2
 
 # next desired state given current and goal
@@ -221,9 +179,6 @@ def updaterecord(keylist, keyindex, recordindex, now):
 	if not policy(key, recordindex, next_state):
 		print >> stderr, "%11s\tskip: want to do swap"%name
 		return False, 0
-	#~ if recordindex == RS and key.state[recordindex] == HID and \
-			#~ key.state[DK] != OMN: # FAKE ATOMIC SIG
-		#~ return False
 	
 	DNSSEC_OK = evaluate(keylist, keyindex, recordindex, next_state)
 	if not DNSSEC_OK:

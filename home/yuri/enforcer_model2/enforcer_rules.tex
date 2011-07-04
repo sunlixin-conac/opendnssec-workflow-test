@@ -339,7 +339,7 @@ rule2(i)
 &:&		\forall x \cdot (\A{x}{-} \vee \exists y \cdot \B{y}{+}\C{y}{+} (\A{x}{}=\A{y}{}) ) \nonumber \\
 &\vee& 	\exists x\cdot\A{x}{+} \B{x}{+} \C{x}{+} \nonumber \\
 &\vee& 	\exists x,y\cdot\A{x}{\uparrow} \B{x}{+} \C{x}{+} \A{y}{\downarrow} \B{y}{+} \C{y}{+} \\
-&\vee&	\exists x,y\cdot \A{x}{+} \B{x}{\uparrow} \C{x}{\uparrow}	\A{y}{+} \B{y}{\downarrow} \nonumber \\
+&\vee&	\exists x,y\cdot \A{x}{+} \B{x}{\uparrow +} \C{x}{\uparrow}	\A{y}{+} \B{y}{\downarrow}\C{y}{\downarrow -} \nonumber \\
 &;&		alg(i)=alg(x)=alg(y) \nonumber \\
 \nonumber 
 \\
