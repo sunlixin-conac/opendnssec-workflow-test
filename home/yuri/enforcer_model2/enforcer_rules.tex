@@ -427,22 +427,48 @@ rule2(i)
 &:&		\forall x \cdot (\A{x}{-} \vee \exists y \cdot \B{y}{+}\C{y}{+} (\A{x}{}=\A{y}{}) ) \label{r2eUnsigned}\\
 &\vee& 	\exists x\cdot\A{x}{+} \B{x}{+} \C{x}{+} \label{r2eTrivial}\\
 &\vee& 	\exists x,y\cdot\A{x}{\uparrow} \B{x}{+} \C{x}{+} \A{y}{\downarrow} \B{y}{+} \C{y}{+} \label{r2eMinds}\\
-&\vee&	\exists x,y\cdot \A{x}{+} \B{x}{\uparrow} \C{x}{\uparrow}	\A{y}{+} \B{y}{\downarrow} \label{r2eMinkey}\\
+&\vee&	\exists x,y\cdot \A{x}{+} \B{x}{\uparrow +} \C{x}{\uparrow}	\A{y}{+} \B{y}{\downarrow}\C{y}{\downarrow -} \label{r2eMinkey}\\
 &;&		alg(i)=alg(x)=alg(y) \label{r2eAlg}
 \end{align}
 \end{subequations}
 
-Rule 2 describes the dependency of the DS record on the DNSKEY and its RRSIG. The subequations represent the different scenarios that are valid, at least one of these scenarios must be true at all times. The only keys that need to be considered are the keys with the same algorithm as the input key $i$ \eqref{r2eAlg}.
+Rule 2 describes the dependency of the DS record on the DNSKEY and 
+its RRSIG. The subequations represent the different scenarios that 
+are valid, at least one of these scenarios must be true at all 
+times. The only keys that need to be considered are the keys with 
+the same algorithm as the input key $i$ \eqref{r2eAlg}.
 
-Subequation~\eqref{r2eTrivial} is the trivial case: If there is a key with the DS, DNSKEY and RRSIG DNSKEY fully propagated all other keys of this algorithm can be in any state. No further requirements.
+Subequation~\eqref{r2eTrivial} is the trivial case: If there is a 
+key with the DS, DNSKEY and RRSIG DNSKEY fully propagated all other 
+keys of this algorithm can be in any state. No further requirements.
 
-Similar subequation~\eqref{r2eMinds} requires two keys swapping DS records. Again, if this is the case, the zone is valid for the KSK and other keys can be in any state without consequences.
+Similar subequation~\eqref{r2eMinds} requires two keys swapping DS 
+records. Again, if this is the case, the zone is valid for the KSK 
+and other keys can be in any state without consequences.
 
-Subequation~\eqref{r2eMinkey} also requires two keys, but now they are swapping DNSKEYs. Notice the outroduction of the signature is omitted in this subequation ($\C{y}{\downarrow}$), this is not an error. Including it would block the DNSKEY $\C{y}{}$.
+Subequation~\eqref{r2eMinkey} also requires two keys, but now they 
+are swapping DNSKEYs. Notice the DNSKEY of the introducing key and 
+the signatures of the outroducing key may be in one of 2 different 
+states. This is important since record are evaluated individually, 
+omitting these states might block the engine as neither record may 
+move on its own.
 
-Finally the unsigned case, subequation~\eqref{r2eUnsigned}. It applies to zones unsigned \emph{for this algorithm}, which includes unsigned for \emph{any} algorithm. In the unsigned/partially signed case no DS may be published. If however a DS of key $x$ is published anyway there must be a key $y$ with the DNSKEY set propagated and the DS in the same state as key $x$. Like everywhere else $x$ and $y$ may be the same key.
+Finally the unsigned case, subequation~\eqref{r2eUnsigned}. It 
+applies to zones unsigned \emph{for this algorithm}, which includes 
+unsigned for \emph{any} algorithm. In the unsigned/partially signed 
+case no DS may be published. If however a DS of key $x$ is published 
+anyway there must be a key $y$ with the DNSKEY set propagated and 
+the DS in the same state as key $x$. Like everywhere else $x$ and $y$
+may be the same key.
 
-Let us review an example (ignoring rule 1 and 2). Say we have two keys: $\A{x}{+}\B{x}{+}\C{x}{+}$ and $\A{y}{+}\B{y}{-}\C{y}{-}$. We want the zone to become unsigned. At time 0 the zone is valid because of \eqref{r2eTrivial} and we can therefore outroduce the DS of $y$. Now, because of \eqref{r2eUnsigned} me may do the same with the DS of $x$ at the same time. When both are hidden the last mentioned rule allows the remaining DNSKEY and RRSIG DNSKEY to do whatever they want.
+Let us review an example (ignoring rule 1 and 2). Say we have two 
+keys: $\A{x}{+}\B{x}{+}\C{x}{+}$ and $\A{y}{+}\B{y}{-}\C{y}{-}$. We 
+want the zone to become unsigned. At time 0 the zone is valid 
+because of \eqref{r2eTrivial} and we can therefore outroduce the DS 
+of $y$. Now, because of \eqref{r2eUnsigned} me may do the same with 
+the DS of $x$ at the same time. When both are hidden the last 
+mentioned rule allows the remaining DNSKEY and RRSIG DNSKEY to do 
+whatever they want.
 
 \begin{subequations}
 \label{eqn:rule3Expl}
@@ -456,7 +482,8 @@ rule3(i)
 \end{align}
 \end{subequations}
 
-The third rule works exactly the same as rule 2 but reasons about the ZSK part. 
+The third rule works exactly the same as rule 2 but reasons about 
+the ZSK part. 
 
 \section{Examples}
 
@@ -464,12 +491,13 @@ Names for rollovers are taken from ``DNSSEC Key Timing
 Considerations Follow-Up''. The tables in the following sections 
 contain different kind of roll overs. Each row in the table 
 represents a time step and the first row is the start situation. 
-When a key does not change during a time step the record cells are left 
-blank.
+When a key does not change during a time step the record cells are 
+left blank.
 
 \subsection{ZSK Double Signature}
-Without any policy directives a double signature rollover will be executed
-as this is the fastest way.
+
+Without any policy directives a 
+double signature rollover will be executed as this is the fastest way.
 
 \begin{table}[h]
 	\centering
@@ -525,9 +553,10 @@ over all records of all keys till no record changes anymore the
 order of evaluation does not matter for the effectivity of the 
 algorithm (it might affect the efficiency however).
 
-The last time step has no actions for ZSK2 as all its records are in a stable
-state. The records in ZSK1 can go to hidden ($-$). Their state has no effect
-on any of the rules as ZSK2 causes all rules to be true anyway.
+The last time step has no actions for ZSK2 as all its records are in 
+a stable state. The records in ZSK1 can go to hidden ($-$). Their 
+state has no effect on any of the rules as ZSK2 causes all rules to 
+be true anyway.
 
 \subsection{Other examples}
 
