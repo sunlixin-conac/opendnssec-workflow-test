@@ -377,7 +377,7 @@ done for a whole zone while also take timing into account.
 \STATE continue
 \ENDIF
 \STATE $t \gets transitionTime(type(record), state(record), nextState, lastChange(record))$
-\IF{$t \geq now()$}
+\IF{$t > now()$}
 \STATE \COMMENT{We are not allowed to make the transition at this time}
 \STATE $nextRun \gets minimum(t, nextRun)$
 \STATE continue
