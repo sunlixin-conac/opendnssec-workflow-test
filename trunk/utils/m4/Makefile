@@ -5,8 +5,7 @@ TARGETS = \
 	pkcs11-testing \
 	hsmbully \
 	OpenDNSSEC \
-	OpenDNSSEC/auditor \
-	OpenDNSSEC/plugins/eppclient
+	OpenDNSSEC/auditor
 
 all:
 
