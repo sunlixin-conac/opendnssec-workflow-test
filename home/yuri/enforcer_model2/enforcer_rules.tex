@@ -623,6 +623,80 @@ $A^{-}$  & $B^{-}$ & $C^{-}$ & $B^{-}$ &$D^{\downarrow}$ &    &   &   &         
 \label{tab:roll_doublerrsig}
 \end{table}
 
+\newcommand{\RRh}[1]{$#1^{-}$ &}
+\newcommand{\RRr}[1]{$#1^{\uparrow}$ &}
+\newcommand{\RRo}[1]{$#1^{+}$ &}
+\newcommand{\RRu}[1]{$#1^{\downarrow}$ &}
+\newcommand{\RRn}[1]{$ $ &}
+
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\begin{tabular}{ |ccc|ccc|cc|l| }
+\hline
+\multicolumn{3}{|c|}{KSK1 (out)} & \multicolumn{3}{c|}{KSK2 (in)} & \multicolumn{2}{c|}{ZSK1 (in)} & Time\\
+\hline
+\RRo{A}\RRo{B}\RRo{C}	\RRh{A}\RRh{B}\RRh{C}	\RRo{B}\RRo{D} \\
+\RRn{A}\RRn{B}\RRn{C}	\RRr{A}\RRr{B}\RRr{C}	\RRn{B}\RRn{D} 0 \\
+\RRu{A}\RRu{B}\RRu{C}	\RRn{A}\RRo{B}\RRo{C}	\RRn{B}\RRn{D} TTL(key) \\
+\RRn{A}\RRn{B}\RRn{C}	\RRo{A}\RRn{B}\RRn{C}	\RRn{B}\RRn{D} ? \\
+\RRn{A}\RRh{B}\RRh{C}	\RRn{A}\RRn{B}\RRn{C}	\RRn{B}\RRn{D} ? \\
+\RRh{A}\RRn{B}\RRn{C}	\RRn{A}\RRn{B}\RRn{C}	\RRn{B}\RRn{D} ? \\
+\hline
+\multicolumn{8}{|l|}{Total time} & $TTL(key) + TTL(ds)$\tnote{1}\\
+\hline
+\end{tabular}
+\begin{tablenotes}[para]
+\item[1] The order of operations depend on the TTL, total time however
+is constant.
+\end{tablenotes}
+\end{threeparttable}
+\caption{KskDoubleRRset}
+\label{tab:roll_KskDoubleRRset}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\begin{tabular}{ |ccc|ccc|cc|l| }
+\hline
+\multicolumn{3}{|c|}{KSK1 (out)} & \multicolumn{3}{c|}{KSK2 (in)} & \multicolumn{2}{c|}{ZSK1 (in)} & Time\\
+\hline
+\RRo{A}\RRo{B}\RRo{C}	\RRh{A}\RRh{B}\RRh{C}	\RRo{B}\RRo{D} \\
+\RRn{A}\RRn{B}\RRn{C}	\RRr{A}\RRn{B}\RRn{C}	\RRn{B}\RRn{D} 0 \\
+\RRn{A}\RRu{B}\RRu{C}	\RRo{A}\RRr{B}\RRr{C}	\RRn{B}\RRn{D} TTL(ds) \\
+\RRu{A}\RRh{B}\RRh{C}	\RRn{A}\RRo{B}\RRo{C}	\RRn{B}\RRn{D} TTL(key) \\
+\RRh{A}\RRn{B}\RRn{C}	\RRn{A}\RRn{B}\RRn{C}	\RRn{B}\RRn{D} TTL(ds) \\
+\hline
+\multicolumn{8}{|l|}{Total time} & $TTL(key) + 2 \times TTL(ds)$\\
+\hline
+\end{tabular}
+\end{threeparttable}
+\caption{KskDoubleDS}
+\label{tab:roll_KskDoubleDS}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\begin{tabular}{ |ccc|ccc|cc|l| }
+\hline
+\multicolumn{3}{|c|}{KSK1 (out)} & \multicolumn{3}{c|}{KSK2 (in)} & \multicolumn{2}{c|}{ZSK1 (in)} & Time\\
+\hline
+\RRo{A}\RRo{B}\RRo{C}	\RRh{A}\RRh{B}\RRh{C}	\RRo{B}\RRo{D} \\
+\RRn{A}\RRn{B}\RRn{C}	\RRn{A}\RRr{B}\RRr{C}	\RRn{B}\RRn{D} 0 \\
+\RRu{A}\RRn{B}\RRn{C}	\RRr{A}\RRo{B}\RRo{C}	\RRn{B}\RRn{D} TTL(key) \\
+\RRh{A}\RRu{B}\RRu{C}	\RRo{A}\RRn{B}\RRn{C}	\RRn{B}\RRn{D} TTL(ds) \\
+\RRn{A}\RRh{B}\RRh{C}	\RRn{A}\RRn{B}\RRn{C}	\RRn{B}\RRn{D} TTL(key) \\
+\hline
+\multicolumn{8}{|l|}{Total time} & $2 \times TTL(key) + TTL(ds)$\\
+\hline
+\end{tabular}
+\end{threeparttable}
+\caption{KskDoubleSignature}
+\label{tab:roll_KskDoubleSignature}
+\end{table}
+
 
 %~ \section{Rollover Scenarios}
 %~ 
