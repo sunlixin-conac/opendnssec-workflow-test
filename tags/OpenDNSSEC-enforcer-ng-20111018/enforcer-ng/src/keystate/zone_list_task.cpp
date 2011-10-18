@@ -1,0 +1,92 @@
+#include "shared/duration.h"
+#include "shared/file.h"
+#include "shared/str.h"
+#include "keystate/zone_list_task.h"
+
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/message.h>
+
+#include "keystate/keystate.pb.h"
+
+#include "xmlext-pb/xmlext-rd.h"
+
+#include <fcntl.h>
+
+static const char *module_str = "zone_list_task";
+
+void 
+perform_zone_list(int sockfd, engineconfig_type *config)
+{
+    char buf[ODS_SE_MAXLINE];
+	const char *zonelistfile = config->zonelist_filename;
+    const char *datastore = config->datastore;
+    
+	GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+    // Load the keystate from the doc file
+    ::ods::keystate::KeyStateDocument *keystateDoc =
+        new ::ods::keystate::KeyStateDocument;
+    {
+        std::string datapath(datastore);
+        datapath += ".keystate.pb";
+        int fd = open(datapath.c_str(),O_RDONLY);
+        if (keystateDoc->ParseFromFileDescriptor(fd)) {
+            ods_log_debug("[%s] keystate has been loaded",
+                          module_str);
+        } else {
+            ods_log_error("[%s] keystate could not be loaded from \"%s\"",
+                          module_str,datapath.c_str());
+        }
+        close(fd);
+    }
+
+    int nzones = keystateDoc->zones_size();
+    if (nzones == 0) {
+        (void)snprintf(buf, ODS_SE_MAXLINE,
+                       "Zonelist filename set to: %s\n"
+                       "Database set to: %s\n"
+                       "I have no zones configured\n"
+                       ,zonelistfile,datastore
+                       );
+        ods_writen(sockfd, buf, strlen(buf));
+    } else {
+        (void)snprintf(buf, ODS_SE_MAXLINE,
+                       "Zonelist filename set to: %s\n"
+                       "Database set to: %s\n"
+                       "I have %i zones configured\n"
+                       "Zones:\n"
+                       "Zone:                           "
+                       "Policy:       "
+                       "Next change:               "
+                       "Signer Configuration:"
+                       "\n"
+                       ,zonelistfile,datastore,nzones
+                       );
+        ods_writen(sockfd, buf, strlen(buf));
+        
+        for (int i=0; i<nzones; ++i) {
+            const ::ods::keystate::EnforcerZone &zl_zone = keystateDoc->zones(i);
+            
+            char nctime[32];
+            if (zl_zone.next_change()>0) {
+                if (!ods_ctime_r(nctime,sizeof(nctime),zl_zone.next_change())) {
+                    strncpy(nctime,"invalid date/time",sizeof(nctime));
+                    nctime[sizeof(nctime)-1] = '\0';
+                }
+            } else {
+                strncpy(nctime,"as soon as possible",sizeof(nctime));
+                nctime[sizeof(nctime)-1] = '\0';
+            }
+            (void)snprintf(buf, ODS_SE_MAXLINE,
+                           "%-31s %-13s %-26s %-34s\n",
+                           zl_zone.name().c_str(),
+                           zl_zone.policy().c_str(),
+                           nctime,
+                           zl_zone.signconf_path().c_str()
+                           );
+            ods_writen(sockfd, buf, strlen(buf));
+        }
+    }
+    delete keystateDoc;
+    ods_log_debug("[%s] zone list completed", module_str);
+}
