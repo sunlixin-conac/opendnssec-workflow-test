@@ -48,13 +48,13 @@ static const char* dname_str = "domain";
 
 #ifdef MM_MEMORY_ALLOC
 mm_alloc_t __domain_alloc = MM_ALLOC_T_STATIC_NEW(sizeof(domain_type));
-#endif
 
 #ifdef MM_MEMORY_TRACKING
 const struct mm_taginfo *domain_mm_info()
 {
 	return &(__domain_alloc.info);
 }
+#endif
 #endif
 
 /**

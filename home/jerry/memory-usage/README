@@ -11,6 +11,9 @@ in ldns-1.6.10/ldns/rdata.h .
 To enable rdf data size tracking #define __LDNS_RDF_SIZE_TRACKING in
 ldns-1.6.10/ldns/rdata.h .
 
+To enable new memory alloc #define LDNS_MM_MEMORY_ALLOC in
+ldns-1.6.10/ldns/mm.h .
+
 For opendnssec:
 
 To enable memory tracking #define MM_MEMORY_TRACKING in

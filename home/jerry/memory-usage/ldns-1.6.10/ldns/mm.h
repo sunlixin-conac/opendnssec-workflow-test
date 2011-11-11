@@ -39,4 +39,18 @@ void *__ldns_realloc(void *ptr, size_t size, volatile const char *file, volatile
 void __ldns_free(void *ptr, volatile const char *file, volatile int line);
 char *__ldns_strdup(const char *ptr, volatile const char *file, volatile int line);
 
+#undef LDNS_MM_MEMORY_ALLOC
+
+struct ldns_mm_alloc_struct
+{
+	void *next;
+	size_t size;
+};
+typedef struct ldns_mm_alloc_struct ldns_mm_alloc_t;
+
+#define LDNS_MM_ALLOC_T_STATIC_NEW(x) { 0L, x }
+
+void *ldns_mm_alloc_new(ldns_mm_alloc_t *alloc);
+void ldns_mm_alloc_delete(ldns_mm_alloc_t *alloc, void *);
+
 #endif

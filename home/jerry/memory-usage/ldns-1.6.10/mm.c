@@ -1,6 +1,8 @@
 #include <ldns/mm.h>
+#include <ldns/util.h>
 
 #include <string.h>
+#include <pthread.h>
 
 void *__ldns_malloc2(size_t size, volatile const char *file, volatile int line)
 {
@@ -109,4 +111,59 @@ void __ldns_free(void *ptr, volatile const char *file, volatile int line)
 char *__ldns_strdup(const char *ptr, volatile const char *file, volatile int line)
 {
 	return __ldns_mm_strdup2(ptr, file, line);
+}
+
+#define __ldns_mm_alloc_size 65536
+
+pthread_mutex_t __ldns_mm_memory_lock = PTHREAD_MUTEX_INITIALIZER;
+
+void *ldns_mm_alloc_new(ldns_mm_alloc_t *alloc)
+{
+	void *ptr = 0L;
+
+	if (alloc == 0L) {
+		return 0L;
+	}
+
+	if (pthread_mutex_lock(&__ldns_mm_memory_lock)) {
+		return 0L;
+	}
+
+	if (!alloc->next) {
+		unsigned int i;
+		void *batch;
+
+		if (!(batch = LDNS_MALLOC2(__ldns_mm_alloc_size))) {
+			exit(-1);
+		}
+
+		for (i=0; i<(__ldns_mm_alloc_size / alloc->size); i++) {
+			*(void **)batch = alloc->next;
+			alloc->next = batch;
+			batch = ((char *)batch + alloc->size);
+		}
+	}
+
+	ptr = alloc->next;
+	alloc->next = *(void **)ptr;
+	*(void **)ptr = 0L;
+
+	pthread_mutex_unlock(&__ldns_mm_memory_lock);
+	return ptr;
+}
+
+void ldns_mm_alloc_delete(ldns_mm_alloc_t *alloc, void *ptr)
+{
+	if (alloc == 0L || ptr == 0L) {
+		return;
+	}
+
+	if (pthread_mutex_lock(&__ldns_mm_memory_lock)) {
+		return;
+	}
+
+	*(void **)ptr = alloc->next;
+	alloc->next = ptr;
+
+	pthread_mutex_unlock(&__ldns_mm_memory_lock);
 }

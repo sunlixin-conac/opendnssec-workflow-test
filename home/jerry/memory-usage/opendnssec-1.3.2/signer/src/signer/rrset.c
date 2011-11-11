@@ -51,13 +51,13 @@ static const char* rrset_str = "rrset";
 
 #ifdef MM_MEMORY_ALLOC
 mm_alloc_t __rrset_alloc = MM_ALLOC_T_STATIC_NEW(sizeof(rrset_type));
-#endif
 
 #ifdef MM_MEMORY_TRACKING
 const struct mm_taginfo *rrset_mm_info()
 {
 	return &(__rrset_alloc.info);
 }
+#endif
 #endif
 
 /**

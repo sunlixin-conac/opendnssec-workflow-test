@@ -783,6 +783,7 @@ cmdhandler_handle_cmd_mem(int sockfd)
     ods_writen(sockfd, buf, strlen(buf));
     mm_get_detailed_info(cmdhandler_handle_cmd_mem_detailed_callback, (void *)&sockfd);
 
+#ifdef MM_MEMORY_ALLOC
     (void)snprintf(buf, ODS_SE_MAXLINE, "\n%30s %12s %12s %12s %12s %12s %12s %12s\n",
     		"DS", "AC", "A", "AM", "FC", "AFR", "AB", "ABM");
     ods_writen(sockfd, buf, strlen(buf));
@@ -798,6 +799,7 @@ cmdhandler_handle_cmd_mem(int sockfd)
     		taginfo->num_allocated_bytes_max
     		);
     ods_writen(sockfd, buf, strlen(buf));
+#endif
 
     return;
 }

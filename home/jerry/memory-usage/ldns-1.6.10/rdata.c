@@ -14,6 +14,10 @@
 
 #include <ldns/ldns.h>
 
+#ifdef LDNS_MM_MEMORY_ALLOC
+ldns_mm_alloc_t __ldns_rdf_alloc = LDNS_MM_ALLOC_T_STATIC_NEW(sizeof(ldns_rdf));
+#endif
+
 /*
  * Access functions 
  * do this as functions to get type checking
@@ -327,7 +331,12 @@ ldns_rdf *
 ldns_rdf_new(ldns_rdf_type type, size_t size, void *data)
 {
 	ldns_rdf *rd;
+#ifdef LDNS_MM_MEMORY_ALLOC
+	rd = (ldns_rdf *)ldns_mm_alloc_new(&__ldns_rdf_alloc);
+#else
 	rd = LDNS_MALLOC(ldns_rdf);
+#endif
+
 	if (!rd) {
 		return NULL;
 	}
@@ -361,7 +370,12 @@ ldns_rdf_new_frm_data(ldns_rdf_type type, size_t size, const void *data)
 	}
 
 	/* allocate space */
+#ifdef LDNS_MM_MEMORY_ALLOC
+	rdf = (ldns_rdf *)ldns_mm_alloc_new(&__ldns_rdf_alloc);
+#else
 	rdf = LDNS_MALLOC(ldns_rdf);
+#endif
+
 	if (!rdf) {
 		return NULL;
 	}
@@ -423,7 +437,11 @@ ldns_rdf_deep_free(ldns_rdf *rd)
 			LDNS_FREE(rd->_data);
 #endif
 		}
+#ifdef LDNS_MM_MEMORY_ALLOC
+		ldns_mm_alloc_delete(&__ldns_rdf_alloc, rd);
+#else
 		LDNS_FREE(rd);
+#endif
 	}
 }
 
@@ -441,7 +459,11 @@ ldns_rdf_free(ldns_rdf *rd)
 			}
 		}
 #endif
+#ifdef LDNS_MM_MEMORY_ALLOC
+		ldns_mm_alloc_delete(&__ldns_rdf_alloc, rd);
+#else
 		LDNS_FREE(rd);
+#endif
 	}
 }
 

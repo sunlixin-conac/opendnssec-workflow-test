@@ -46,13 +46,13 @@ static const char* rrsigs_str = "rrsig";
 
 #ifdef MM_MEMORY_ALLOC
 mm_alloc_t __rrsigs_alloc = MM_ALLOC_T_STATIC_NEW(sizeof(rrsigs_type));
-#endif
 
 #ifdef MM_MEMORY_TRACKING
 const struct mm_taginfo *rrsigs_mm_info()
 {
 	return &(__rrsigs_alloc.info);
 }
+#endif
 #endif
 
 /**
