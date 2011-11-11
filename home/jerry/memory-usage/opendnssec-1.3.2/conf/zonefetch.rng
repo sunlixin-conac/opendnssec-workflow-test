@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: zonefetch.rnc 1920 2009-09-30 07:49:39Z matthijs $
+  
+  Copyright (c) 2009 .SE (The Internet Infrastructure Foundation).
+  All rights reserved.
+  
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  
+-->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <element name="ZoneFetch">
+      <optional>
+        <!--
+          where to listen for notifies
+          DEFAULT: do not listen to notify
+        -->
+        <element name="NotifyListen">
+          <ref name="localAddress"/>
+        </element>
+      </optional>
+      <!--
+        default inbound AXFR settings
+        (per zone settings not yet implemented)
+      -->
+      <element name="Default">
+        <ref name="source"/>
+      </element>
+    </element>
+  </start>
+  <define name="source">
+    <optional>
+      <!--
+        TSIG secret for inbound AXFR
+        DEFAULT: do not use TSIG
+      -->
+      <element name="TSIG">
+        <element name="Name">
+          <data type="string"/>
+        </element>
+        <!-- http://www.iana.org/assignments/tsig-algorithm-names -->
+        <element name="Algorithm">
+          <data type="string"/>
+        </element>
+        <!-- base64 encoded secret -->
+        <element name="Secret">
+          <data type="base64Binary"/>
+        </element>
+      </element>
+    </optional>
+    <oneOrMore>
+      <!--
+        <address of host to request AXFR from
+        incoming NOTIFY has to match this address as well
+        DEFAULT: none
+      -->
+      <element name="RequestTransfer">
+        <ref name="remoteAddress"/>
+      </element>
+    </oneOrMore>
+  </define>
+  <define name="ipv4">
+    <element name="IPv4">
+      <data type="string"/>
+    </element>
+  </define>
+  <define name="ipv6">
+    <element name="IPv6">
+      <data type="string"/>
+    </element>
+  </define>
+  <define name="port">
+    <element name="Port">
+      <data type="positiveInteger">
+        <param name="maxInclusive">65535</param>
+      </data>
+    </element>
+  </define>
+  <define name="localAddress">
+    <optional>
+      <choice>
+        <ref name="ipv4"/>
+        <ref name="ipv6"/>
+      </choice>
+    </optional>
+    <optional>
+      <ref name="port"/>
+    </optional>
+  </define>
+  <define name="remoteAddress">
+    <choice>
+      <ref name="ipv4"/>
+      <ref name="ipv6"/>
+    </choice>
+    <optional>
+      <ref name="port"/>
+    </optional>
+  </define>
+</grammar>
