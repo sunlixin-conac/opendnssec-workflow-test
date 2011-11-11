@@ -27,7 +27,7 @@
  */
 
 #undef MM_MEMORY_TRACKING
-#define MM_MEMORY_ALLOC
+#undef MM_MEMORY_ALLOC
 
 #ifndef OPENDNSSEC_MM_H
 #define OPENDNSSEC_MM_H 1
