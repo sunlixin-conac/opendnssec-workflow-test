@@ -1,0 +1,78 @@
+\documentclass[twoside, a4paper]{article}
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath}
+\usepackage[english]{babel}
+\usepackage{multirow}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{threeparttable} %footnotes in tables
+\usepackage{color}
+
+\title{Signaling between Signer and Enforcer}
+\author{Yuri, Matthijs}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+Since the Signer is smart about rollovers (i.e. provide gradual 
+transition between two keys) and the Enforcer supports ludicrous 
+rollovers, we must take extra care in how the two communicate.
+
+The Enforcer has the following directives in the signconf:
+
+\begin{description}
+\item[Key Section] The key is mentioned in the configuration. 
+Signatures with this key may be reused.
+\item[Publish Flag] If set, a key must have its DNSKEY record
+published.
+\item[KSK Flag] If set, DNSKEY set must be signed using this key.
+\item[ZSK Flag] If set, records must be signed using this key
+\end{description}
+
+\section{ZSK Flag}
+
+This flag is problematic. In order to spread load, the signer keeps 
+using signatures of old keys which are not yet expired before generating
+signatures with the new key. 
+The Enforcer does not necessary performs a roll between 2 keys but
+rather $N$ keys. Additionally a zone might be signed with multiple key
+of the same algorithm.
+
+The challenge is for the signer to find out when new signatures must be 
+generated and with which keys. Figure~\ref{fig:tree} shows the 
+decision tree Matthijs and I figured out.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=8cm]{tree.pdf}
+\caption{Active:}
+\label{fig:tree}
+\end{figure}
+
+The signer first of all loops through all RR sets, then over all keys.
+Each iteration the tree is consulted. We can define 4 different checks:
+
+\begin{description}
+\item[Active?] The key has ZSK Flag.
+\item[Signature?] This RR set already has a signature for this key.
+\item[Valid?] Said signature is still valid.
+\item[Inactive key with valid Signature?] There is a still valid 
+signature, for an old key.
+\end{description}
+
+\section{Behavior}
+
+This specification leads to the following behavior:
+
+\begin{itemize}
+\item Smooth rolling of ZSKs is still supported.
+\item When rolling from 1 ZSK to $N$, Any of those $N$ will be used only
+after the old signatures expire.
+\item When signing with key A and then also signal to use key B. B's
+signatures will be introduced immediately.
+\item When signing with $N$ keys, we can replace one of those in a 
+smooth way. 
+\end{itemize}
+
+\end{document}
