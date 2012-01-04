@@ -4,6 +4,7 @@ TARGETS = \
 	softHSM \
 	pkcs11-testing \
 	hsmbully \
+	auditor \
 	OpenDNSSEC
 
 all:
