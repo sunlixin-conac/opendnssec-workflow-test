@@ -9,7 +9,6 @@ CONFIGURE_ARGS = \
 	--with-libxml2=/usr \
 	--with-libcurl=/usr/local \
 	--with-botan=/usr/local \
-	--disable-auditor \
 	--enable-timeshift \
 	--enable-eppclient
 

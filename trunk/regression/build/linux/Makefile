@@ -10,8 +10,7 @@ CONFIGURE_ARGS = \
 	--with-ldns=/usr \
 	--with-libxml2=/usr \
 	--with-botan=/usr \
-	--with-pkcs11-softhsm=$(PREFIX)/lib/libsofthsm.so \
-	--disable-auditor
+	--with-pkcs11-softhsm=$(PREFIX)/lib/libsofthsm.so
 
 SUDO = sudo
 MAKE = make

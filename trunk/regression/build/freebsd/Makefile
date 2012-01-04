@@ -10,8 +10,7 @@ CONFIGURE_ARGS = \
 	--with-ldns=/usr/local \
 	--with-libxml2=/usr/local \
 	--with-botan=/usr/local \
-	--with-pkcs11-softhsm=$(PREFIX)/lib/libsofthsm.so \
-	--disable-auditor
+	--with-pkcs11-softhsm=$(PREFIX)/lib/libsofthsm.so
 
 MAKE = make
 SUDO = sudo
