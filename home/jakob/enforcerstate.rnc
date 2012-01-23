@@ -44,6 +44,7 @@ start = element EnforcerState {
 % );
 
 zone = element Zone {
+	element Keys { keys+ },
 }
 
 
@@ -67,7 +68,6 @@ zone = element Zone {
 key = element Key {
 	attribute id { xsd:string },
 
-	element Zone { xsd:string },
 	element KeyPair { xsd:string },
 	element Type { "KSK" | "ZSK" | "CSK" },
 
@@ -102,10 +102,23 @@ keypair = element KeyPair {
 
 	element Algorithm { xsd:nonNegativeInteger },
 	element Size { xsd:nonNegativeInteger },
-	
-	element SecurityModuleRepository { xsd:string },
-	element SecurityModuleIdentifier { xsd:string },
-	
+
+	% where to locate the key; HSM and CKA_ID
+	element Repository { xsd:string },
+	element Identifier { xsd:string },
+
+	% under what policy was the key pair generated (if applicable)
+	element Policy { xsd:string | empty },
+
+	% when was the key originally generated
 	element Generated { xsd:dateTime },
+	
+	% when was the key last backed up
+	element LastBackup { xsd:dateTime },
+
+	% base64 encoded public key
 	element PublicKey { xsd:string | empty },
+
+	% is the key compromised?
+	element Compromised { empty }?
 }
