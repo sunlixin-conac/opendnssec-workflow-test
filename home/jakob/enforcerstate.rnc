@@ -27,6 +27,8 @@
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
 
 start = element EnforcerState {
+	element Zones { zone+ },
+	element KeyPairs { keypair+ }
 }
 
 
@@ -44,7 +46,13 @@ start = element EnforcerState {
 % );
 
 zone = element Zone {
-	element Keys { keys+ },
+	element Keys { key+ },
+	element NSEC3 {
+		element Salt { xsd:string },
+
+		% when was the Salt generated
+		element Generated { xsd:dateTime }?
+	}?
 }
 
 
@@ -68,7 +76,9 @@ zone = element Zone {
 key = element Key {
 	attribute id { xsd:string },
 
+	% reference to KeyPair@id
 	element KeyPair { xsd:string },
+
 	element Type { "KSK" | "ZSK" | "CSK" },
 
 	element Publish { xsd:dateTime | empty },
@@ -108,16 +118,16 @@ keypair = element KeyPair {
 	element Identifier { xsd:string },
 
 	% under what policy was the key pair generated (if applicable)
-	element Policy { xsd:string | empty },
+	element Policy { xsd:string }?,
 
 	% when was the key originally generated
-	element Generated { xsd:dateTime },
+	element Generated { xsd:dateTime }?,
 	
 	% when was the key last backed up
-	element LastBackup { xsd:dateTime },
+	element LastBackup { xsd:dateTime }?,
 
-	% base64 encoded public key
-	element PublicKey { xsd:string | empty },
+	% PEM encoded public key
+	element PublicKey { xsd:string }?,
 
 	% is the key compromised?
 	element Compromised { empty }?
