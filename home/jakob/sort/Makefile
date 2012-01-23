@@ -1,6 +1,6 @@
 # $Id$
 
-SORT=	sort -d
+SORT=	env LC_ALL=C sort -d
 
 sort:
 	$(SORT) < unsorted.txt >sorted.txt.tmp
