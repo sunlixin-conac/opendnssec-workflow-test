@@ -126,9 +126,6 @@ keypair = element KeyPair {
 	% when was the key last backed up
 	element LastBackup { xsd:dateTime }?,
 
-	% PEM encoded public key
-	element PublicKey { xsd:string }?,
-
 	% is the key compromised?
 	element Compromised { empty }?
 }
