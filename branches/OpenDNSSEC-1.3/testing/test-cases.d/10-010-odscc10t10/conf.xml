@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- conf.xml template for test purposes [07-01-2011] -->
 
 <Configuration>
 	<RepositoryList>
@@ -22,6 +21,6 @@
 	</Enforcer>
 	<Signer>
 		<WorkingDirectory>@INSTALL_ROOT@/var/opendnssec/tmp</WorkingDirectory>
-		<WorkerThreads>8</WorkerThreads>
+		<WorkerThreads>4</WorkerThreads>
 	</Signer>
 </Configuration>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- conf.xml template for test purposes [07-01-2011] -->
 
 <Configuration>
 	<RepositoryList>
@@ -8,6 +7,21 @@
 			<TokenLabel>OpenDNSSEC</TokenLabel>
 			<PIN>1234</PIN>
 		</Repository>
+		<Repository name="SoftHSM2">
+		   <Module>@SOFTHSM_MODULE@</Module>
+		   <TokenLabel>OpenDNSSEC2</TokenLabel>
+		   <PIN>1111</PIN>
+		</Repository>       
+		<Repository name="SoftHSM3">
+		   <Module>@SOFTHSM_MODULE@</Module>
+		   <TokenLabel>OpenDNSSEC3</TokenLabel>
+		   <PIN>2222</PIN>
+		</Repository>       
+		<Repository name="SoftHSM4">
+		   <Module>@SOFTHSM_MODULE@</Module>
+		   <TokenLabel>OpenDNSSEC4</TokenLabel>
+		   <PIN>3333</PIN>
+		</Repository>       
 	</RepositoryList>
 	<Common>
 		<Logging>
