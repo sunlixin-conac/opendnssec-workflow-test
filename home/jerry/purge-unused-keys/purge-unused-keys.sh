@@ -119,7 +119,7 @@ KEYS_USED_CNT=`wc -l -- "$KEYS_USED" | awk '{print $1}'`
 echo "found $KEYS_USED_CNT keys used."
 
 echo -n "Fetching keys in SoftHSM ... "
-if ! "$PKCS11TOOL" --module /usr/local/lib/softhsm/libsofthsm.so --slot "$SLOT" --pin "$PIN" -O >"$KEYS_RAW" 2>/dev/null; then
+if ! "$PKCS11TOOL" --module "$SOFTHSM_MODULE" --slot "$SLOT" --pin "$PIN" -O >"$KEYS_RAW" 2>/dev/null; then
 	echo "Unable to get keys from SoftHSM" >&2
 	exit 1
 fi
@@ -158,7 +158,7 @@ echo "$KEYS_RM_CNT keys."
 echo -n "Removing keys ... "
 
 while read KEY; do
-	if ! "$PKCS11TOOL" --module /usr/local/lib/softhsm/libsofthsm.so --slot "$SLOT" --pin "$PIN" -b --type privkey --id "$KEY"; then
+	if ! "$PKCS11TOOL" --module "$SOFTHSM_MODULE" --slot "$SLOT" --pin "$PIN" -b --type privkey --id "$KEY"; then
 		echo "Unable to delete key $KEY" >&2
 		exit 1
 	fi
