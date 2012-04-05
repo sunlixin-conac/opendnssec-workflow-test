@@ -3,11 +3,11 @@
 from sys import stdin
 from collections import namedtuple
 from string import strip
-from time import time, localtime, strftime
+from time import time, localtime, strftime, sleep
 
 Key = namedtuple("Key", "id goal ds dk rd rs")
 
-TIMEDISP = 2 #0: notime, 1:reltime, 2:prettytime, 3:unixtime
+TIMEDISP = 1 #0: notime, 1:reltime, 2:prettytime, 3:unixtime
 
 class Key:
 	state2str = {"N":" ", "H":" ", "R":"+", "O":"|", "U":"-"}
@@ -86,6 +86,7 @@ ids = []
 ptime = 0
 #~ print (" Time |\t%% %ds |\tReason"%(5*maxkeycount-2))%"Keys"
 for keys, curtime, reason in timeline:
+	#~ sleep(.05)
 	print "\033[97m%s\033[90m"%offset2timestr(ptime, now),
 	ptime = curtime
 	old = []

@@ -1,0 +1,169 @@
+_enforcer() 
+{
+	local cur prev opts
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	prev="${COMP_WORDS[COMP_CWORD-1]}"
+	
+	local enfcmd=ods-enforcer
+
+	## option args
+	case "${prev}" in
+		--signconf|--infile|--outfile|--inconf|--outconf)
+			COMPREPLY=( $(compgen -W "<filename>" -- ${cur}) )
+			return 0;;
+		--keytype)
+			COMPREPLY=( $(compgen -W "KSK ZSK CSK" -- ${cur}) )
+			return 0;;
+		--zone)
+			r=`$enfcmd zone list 2>/dev/null |tail -n+5|head -n-1|awk '{print $1}'`
+			COMPREPLY=( $(compgen -W "$r" -- ${cur}) )
+			return 0;;
+		--policy)
+			r=`$enfcmd policy list 2>/dev/null |tail -n+4|head -n-1|awk '{print $1}'`
+			COMPREPLY=( $(compgen -W "$r" -- ${cur}) )
+			return 0;;
+		--id)
+			r=`$enfcmd key list 2>/dev/null |tail -n+4|head -n-1|awk '{print $9}'`
+			COMPREPLY=( $(compgen -W "$r" -- ${cur}) )
+			return 0;;
+		--keytag)
+			r=`$enfcmd key ds-seen 2>/dev/null |tail -n+4|head -n-1|awk '{print $3}'`
+			COMPREPLY=( $(compgen -W "$r" -- ${cur}) )
+			return 0;;
+		--duration)
+			COMPREPLY=( $(compgen -W "<duration>" -- ${cur}) )
+			return 0;;
+		--intype|--outtype)
+			COMPREPLY=( $(compgen -W "<adapter_type>" -- ${cur}) )
+			return 0;;
+	esac
+
+	## commands
+	if [ ${#COMP_WORDS[@]} -eq 2 ]
+	then
+		commands="enforce flush help hsm key policy queue reload \
+				running setup signconf stop time update verbosity zone"
+		COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
+		return 0
+	fi
+
+	## subcommands
+	if [ ${#COMP_WORDS[@]} -eq 3 ]
+	then
+		local SECONDLEVEL_KEY="ds-gone ds-retract ds-seen ds-submit \
+								export list rollover"
+		local SECONDLEVEL_HSM="key"
+		local SECONDLEVEL_POLICY="list resalt"
+		local SECONDLEVEL_TIME="leap"
+		local SECONDLEVEL_UPDATE="hsmkeys kasp zonelist"
+		local SECONDLEVEL_ZONE="add del export list"
+		
+		case "${prev}" in
+			time)	
+				COMPREPLY=( $(compgen -W "${SECONDLEVEL_TIME}" -- ${cur}) )
+				return 0;;
+			zone)
+				COMPREPLY=( $(compgen -W "${SECONDLEVEL_ZONE}" -- ${cur}) )
+				return 0;;
+			key)
+				COMPREPLY=( $(compgen -W "${SECONDLEVEL_KEY}" -- ${cur}) )
+				return 0;;
+			hsm)
+				COMPREPLY=( $(compgen -W "${SECONDLEVEL_HSM}" -- ${cur}) )
+				return 0;;
+			update)
+				COMPREPLY=( $(compgen -W "${SECONDLEVEL_UPDATE}" -- ${cur}) )
+				return 0;;
+			policy)
+				COMPREPLY=( $(compgen -W "${SECONDLEVEL_POLICY}" -- ${cur}) )
+				return 0;;
+		esac
+	fi
+
+	## subsubcommands
+	if [ ${#COMP_WORDS[@]} -eq 4 ]
+	then
+		local SECONDLEVEL_HSM_KEY="gen list"
+		
+		case "${prev}" in
+			key)	
+				COMPREPLY=( $(compgen -W "${SECONDLEVEL_HSM_KEY}" -- ${cur}) )
+				return 0;;
+		esac
+	fi
+
+		
+	## options
+	case "${COMP_WORDS[@]}" in
+		*"zone add"*)
+			COMPREPLY=( $(compgen -W "--zone --policy --signconf \
+				--infile --outfile --intype --outtype --inconf \
+				--outconf" -- ${cur}) )
+			return 0;;
+		*"zone del"*)
+			COMPREPLY=( $(compgen -W "--zone --force" -- ${cur}) )
+			return 0;;
+		*"zone export"*)
+			COMPREPLY=( $(compgen -W "--zone" -- ${cur}) )
+			return 0;;
+		*"key ds-gone"*)
+			COMPREPLY=( $(compgen -W "--zone --id --keytag" -- ${cur}) )
+			return 0;;
+		*"key ds-retract"*)
+			COMPREPLY=( $(compgen -W "--zone --id --auto" -- ${cur}) )
+			return 0;;
+		*"key ds-seen"*)
+			COMPREPLY=( $(compgen -W "--zone --id --keytag" -- ${cur}) )
+			return 0;;
+		*"key ds-submit"*)
+			COMPREPLY=( $(compgen -W "--zone --id --auto" -- ${cur}) )
+			return 0;;
+		*"key export"*)
+			COMPREPLY=( $(compgen -W "--zone --dnskey --ds" -- ${cur}) )
+			return 0;;
+		*"key rollover"*)
+			COMPREPLY=( $(compgen -W "--zone --keytype" -- ${cur}) )
+			return 0;;
+		*"hsm key gen"*)
+			COMPREPLY=( $(compgen -W "--duration" -- ${cur}) )
+			return 0;;
+		*"hsm key list"*)
+			COMPREPLY=( $(compgen -W "--verbose" -- ${cur}) )
+			return 0;;
+	esac
+
+	return 0
+}
+
+complete -F _enforcer ods-enforcer
+
+### enforce
+### flush
+### help
+### hsm key gen --duration <duration>
+### hsm key list --verbose
+### key ds-gone --zone <zone> --id <id> --keytag <keytag>
+### key ds-retract --zone <zone> --id <id> --auto
+### key ds-seen --zone <zone> --id <id> --keytag <keytag>
+### key ds-submit --zone <zone> --id <id> --auto
+### key export --zone <zone> [--dnskey] [--ds]
+### key list
+### key rollover --zone <zone> [--keytype <keytype>]
+### policy list
+### policy resalt
+### queue
+### reload
+### running
+### setup
+### signconf
+### stop
+### time leap
+### update hsmkeys
+### update kasp
+### update zonelist
+### verbosity <nr>
+### zone add --zone <zone> --policy <policy> --signconf <path> --infile <path> --outfile <path> --intype <type> --outtype <type> --inconf <path> --outconf <path>
+### zone del --zone <zone> --force
+### zone export --zone <zone>
+### zone list

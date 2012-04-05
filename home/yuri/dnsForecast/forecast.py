@@ -76,17 +76,29 @@ class KeyConfig:
 
 class Policy:
 	def __init__(self):
-		self.zone_propdelay = 1800
-		self.zone_ttl = 900
-		self.parent_propdelay = 1800
-		self.parent_regdelay = 1800
-		self.parent_ttl = 3600
-		self.sig_validity = 3600*24
-		self.sig_jitter = 3600
-		self.key_ttl = 7200
-		self.key_retsafety = 1800
-		self.key_pubsafety = 1800
-		self.key_purgedelay = 1800
+		#~ self.zone_propdelay = 1800
+		#~ self.zone_ttl = 900
+		#~ self.parent_propdelay = 1800
+		#~ self.parent_regdelay = 1800
+		#~ self.parent_ttl = 3600
+		#~ self.sig_validity = 3600*24
+		#~ self.sig_jitter = 3600
+		#~ self.key_ttl = 7200
+		#~ self.key_retsafety = 1800
+		#~ self.key_pubsafety = 1800
+		#~ self.key_purgedelay = 1800
+		#~ self.keys = []
+		self.zone_propdelay = 0
+		self.zone_ttl = 20
+		self.parent_propdelay = 0
+		self.parent_regdelay = 0
+		self.parent_ttl = 20
+		self.sig_validity = 0
+		self.sig_jitter = 0
+		self.key_ttl = 20
+		self.key_retsafety = 0
+		self.key_pubsafety = 0
+		self.key_purgedelay = 0
 		self.keys = []
 
 	def allow_unsigned(self):
@@ -246,7 +258,8 @@ def policyApproval(keys, key, record, next_state):
 	elif record.type == DK:
 		if not record.minimize: return True
 		if key.rs().state != O and key.rs().state != N: return False
-		if key.ds().state == O: return True
+		if key.ds().state == O or key.ds().state == N: return True ## ERR
+		#~ if key.ds().state == O: return True
 		return not exists(keys, key, record, N, True, False, mask_dnskey)
 	elif record.type == RD:
 		return key.dk().state != H
@@ -281,21 +294,71 @@ keys = []
 	#~ Record(O, 10, -10, False, DK), 
 	#~ Record(N, 10, -10, False, RD), 
 	#~ Record(O, 10, -10, False, RS)]) )
-keys.append( Key(2, 1024, O, -90, [
-	Record(O, 10, -10, False, DS), 
-	Record(O, 10, -10, False, DK), 
-	Record(O, 10, -10, False, RD), 
-	Record(O, 10, -10, False, RS)]) )
-
-
+#~ keys.append( Key(2, 1024, O, -90, [
+	#~ Record(O, 10, -10, False, DS), 
+	#~ Record(O, 10, -10, False, DK), 
+	#~ Record(O, 10, -10, False, RD), 
+	#~ Record(O, 10, -10, False, RS)]) )
 
 
 ## begin parse 
-policy = Policy()
-policy.keys.append( KeyConfig( 1, 1024, ZSK, 3600*24*7, None) )
-policy.keys.append( KeyConfig( 1, 1024, KSK, 3600*24*20, None) )
+#~ policy = Policy()
+#~ policy.keys.append( KeyConfig( 1, 1024, ZSK, 3600*24*7, None) )
+#~ policy.keys.append( KeyConfig( 1, 1024, KSK, 3600*24*20, None) )
 #~ policy.keys.append( KeyConfig( 1, 1024, CSK, 200, None) )
 ## end parse
+
+# problem situation
+#~ keys.append( Key(1, 1024, O, -90, [
+	#~ Record(O, 10, -10, False, DS), 
+	#~ Record(O, 10, -10, False, DK), 
+	#~ Record(O, 10, -10, False, RD), 
+	#~ Record(N, 10, -10, False, RS)]) )
+#~ #A
+#~ keys.append( Key(1, 1024, H, -90, [
+	#~ Record(N, 10, 0, False, DS), 
+	#~ Record(O, 1000, -1000, False, DK), 
+	#~ Record(N, 10, 0, False, RD), 
+	#~ Record(O, 10, -10, False, RS)]) )
+#B
+#~ keys.append( Key(1, 1024, H, -80, [
+	#~ Record(N, 10, 0, False, DS), 
+	#~ Record(R, 1000, 0, True, DK), 
+	#~ Record(N, 10, 0, False, RD), 
+	#~ Record(O, 10, -10, False, RS)]) )
+#C
+#~ keys.append( Key(1, 1024, O, -70, [
+	#~ Record(N, 10, 0, False, DS), 
+	#~ Record(H, 1000, -1000, True, DK), 
+	#~ Record(N, 10, 0, False, RD), 
+	#~ Record(H, 20, 0, False, RS)]) )
+# problem situation
+#~ def __init__(self, alg, size, goal, inception, records):
+	#~ def __init__(self, state, ttl, timestamp, minimize, type):
+
+#~ 2*CSK to SPLIT, ALG, ZSK every day, KSK every 4 days.
+keys.append( Key(1, 1024, O, -100, [
+	Record(O, 20, 0, False, DS), 
+	Record(O, 20, 0, False, DK), 
+	Record(O, 20, 0, False, RD), 
+	Record(O, 20, 0, False, RS)]) )
+keys.append( Key(1, 1024, O, -100, [
+	Record(O, 20, 0, False, DS), 
+	Record(O, 20, 0, False, DK), 
+	Record(O, 20, 0, False, RD), 
+	Record(O, 20, 0, False, RS)]) )
+keys.append( Key(3, 1024, O, -100, [
+	Record(O, 20, 0, False, DS), 
+	Record(O, 20, 0, False, DK), 
+	Record(O, 20, 0, False, RD), 
+	Record(O, 20, 0, False, RS)]) )
+
+#~ def __init__(self, algorithm, size, keyrole, lifetime, rolltype):
+
+policy = Policy()
+#~ policy.keys.append( KeyConfig( 1, 1024, KSK, 3600*24*20, None) )
+policy.keys.append( KeyConfig( 2, 1024, ZSK, 24*3600, None) )
+policy.keys.append( KeyConfig( 2, 1024, KSK, 2*24*3600, None) )
 
 zone = Zone()
 now = 0
@@ -309,6 +372,7 @@ maxiters = 30
 while times and maxiters:
 	maxiters -= 1
 	now, reason = min(times)
+	#~ print times
 	times = []
 	print "\nTime:%d\t%s"%(now, reason)
 	
@@ -334,7 +398,7 @@ while times and maxiters:
 		 # if we got to here, we need a new key for this configuration!
 		k = Key(config.algorithm, config.size, O, now, [
 			Record([N, H][bool(config.keyrole&KSK)], policy.parent_ttl, now, False, DS), 
-			Record(H, policy.key_ttl, now, False, DK), 
+			Record(H, policy.key_ttl, now, True, DK), 
 			Record([N, H][bool(config.keyrole&KSK)], policy.key_ttl, now, False, RD), 
 			Record([N, H][bool(config.keyrole&ZSK)], policy.zone_ttl, now, False, RS)])
 		keys.append( k )
