@@ -33,11 +33,17 @@
  * The bit that makes the daemon do something useful
  */
 
+#define ENFORCER_WORKERS 5
+#define ENFORCER_USE_WORKERS
+
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
 #include <syslog.h>
+#ifdef ENFORCER_USE_WORKERS
+#include <pthread.h>
+#endif
 
 #include <libxml/xmlreader.h>
 #include <libxml/xpath.h>
@@ -51,6 +57,7 @@
 
 #include "ksm/ksm.h"
 #include "ksm/memory.h"
+#include "ksm/database.h"
 #include "ksm/string_util.h"
 #include "ksm/string_util2.h"
 #include "ksm/datetime.h"
@@ -59,7 +66,54 @@
 #include "libhsm.h"
 #include "libhsmdns.h"
 
-    int
+#ifndef KSM_DB_USE_THREADS
+#undef ENFORCER_USE_WORKERS
+#endif
+
+#ifdef ENFORCER_USE_WORKERS
+static int _enforcer_worker_exit = 0;
+static pthread_t _enforcer_worker[ENFORCER_WORKERS];
+
+static void *
+enforcer_worker(void *arg)
+{
+	while (!_enforcer_worker_exit) {
+		sleep(1);
+	}
+
+	return NULL;
+}
+
+int
+enforcer_start_workers(DAEMONCONFIG *config)
+{
+	int i;
+
+	for (i=0; i<ENFORCER_WORKERS; i++) {
+		if (pthread_create(&_enforcer_worker[i], NULL, enforcer_worker, NULL)) {
+			return -1;
+		}
+	}
+	return 0;
+}
+
+int
+enforcer_stop_workers(DAEMONCONFIG *config)
+{
+	int i;
+
+	_enforcer_worker_exit = 1;
+
+	for (i=0; i<ENFORCER_WORKERS; i++) {
+		if (pthread_join(_enforcer_worker[i], NULL)) {
+			return -1;
+		}
+	}
+	return 0;
+}
+#endif // ENFORCER_USE_WORKERS
+
+int
 server_init(DAEMONCONFIG *config)
 {
     if (config == NULL) {
@@ -72,13 +126,18 @@ server_init(DAEMONCONFIG *config)
         config->pidfile = OPENDNSSEC_ENFORCER_PIDFILE;
     }
 
+#ifdef ENFORCER_USE_WORKERS
+    /* set up ksm db for threads support */
+    DbThreadSetup();
+#endif
+
     return 0;
 }
 
 /*
  * Main loop of enforcerd server
  */
-    void
+void
 server_main(DAEMONCONFIG *config)
 {
     DB_RESULT handle;
@@ -167,6 +226,13 @@ server_main(DAEMONCONFIG *config)
 			config->pidfile, strerror(errno));
 		exit(1);
 	}
+
+#ifdef ENFORCER_USE_WORKERS
+	if (enforcer_start_workers(config)) {
+		log_msg(config, LOG_ERR, "could not start workers");
+		exit(1);
+	}
+#endif
 
     while (1) {
 
@@ -303,6 +369,12 @@ server_main(DAEMONCONFIG *config)
 		check_hsm_connection(&ctx, config);
 
     }
+
+#ifdef ENFORCER_USE_WORKERS
+	if (enforcer_stop_workers(config)) {
+		log_msg(config, LOG_ERR, "could not stop workers?");
+	}
+#endif
 
     /*
      * Destroy HSM context
