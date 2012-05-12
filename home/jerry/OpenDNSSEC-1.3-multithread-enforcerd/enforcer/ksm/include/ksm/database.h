@@ -29,6 +29,8 @@
 #ifndef KSM_DATABASE_H
 #define KSM_DATABASE_H
 
+#include "config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,7 +45,6 @@ extern "C" {
 #include <stdlib.h>
 
 #define KSM_DB_VERSION 2    /* This needs to match that given in the dbadmin table */
-#define KSM_DB_USE_THREADS
 
 #define MYSQL_DB 1
 #define SQLITE_DB 2
@@ -103,18 +104,11 @@ typedef	struct db_row*	DB_ROW;
 #endif
 
 #ifdef KSM_DB_USE_THREADS
-struct db_handle;
-struct db_handle {
-	struct db_handle*	next;
-	DB_HANDLE			handle;
-	pthread_t			thread;
-};
-
 int DbThreadSetup(void);
 DB_HANDLE DbThreadGetHandle(void);
 int DbThreadSetHandle(DB_HANDLE handle);
 int DbThreadRemoveHandle(void);
-#endif // KSM_DB_USE_THREADS
+#endif /* KSM_DB_USE_THREADS */
 
 /* Initialization and rundown */
 

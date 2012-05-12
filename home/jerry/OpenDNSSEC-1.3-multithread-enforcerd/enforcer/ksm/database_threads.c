@@ -26,6 +26,8 @@
  *
  */
 
+#include "config.h"
+
 #include "ksm/database.h"
 #include "ksm/memory.h"
 
@@ -58,7 +60,7 @@ DbThreadSetHandle(DB_HANDLE handle)
 {
 	DB_HANDLE* ptr;
 
-	if ((ptr = MemMalloc(sizeof DB_HANDLE)) == NULL) {
+	if ((ptr = MemMalloc(sizeof(DB_HANDLE))) == NULL) {
 		return -1;
 	}
 

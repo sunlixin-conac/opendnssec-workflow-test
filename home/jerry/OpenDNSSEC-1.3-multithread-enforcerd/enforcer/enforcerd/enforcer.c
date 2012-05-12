@@ -33,8 +33,11 @@
  * The bit that makes the daemon do something useful
  */
 
-#define ENFORCER_WORKERS 5
-#define ENFORCER_USE_WORKERS
+#include "config.h"
+
+#ifndef KSM_DB_USE_THREADS
+#undef ENFORCER_USE_WORKERS
+#endif
 
 #include <stdlib.h>
 #include <errno.h>
@@ -47,8 +50,6 @@
 
 #include <libxml/xmlreader.h>
 #include <libxml/xpath.h>
-
-#include "config.h"
 
 #include "daemon.h"
 #include "daemon_util.h"
@@ -66,20 +67,27 @@
 #include "libhsm.h"
 #include "libhsmdns.h"
 
-#ifndef KSM_DB_USE_THREADS
-#undef ENFORCER_USE_WORKERS
-#endif
-
 #ifdef ENFORCER_USE_WORKERS
 static int _enforcer_worker_exit = 0;
-static pthread_t _enforcer_worker[ENFORCER_WORKERS];
+struct _enforcer_worker {
+	int id;
+	pthread_t thread;
+	DAEMONCONFIG *config;
+};
+static struct _enforcer_worker _enforcer_worker[ENFORCER_WORKERS];
 
 static void *
 enforcer_worker(void *arg)
 {
+	struct _enforcer_worker *worker = (struct _enforcer_worker *)arg;
+
+	log_msg(worker->config, LOG_INFO, "enforcer worker %d started", worker->id);
+
 	while (!_enforcer_worker_exit) {
 		sleep(1);
 	}
+
+	log_msg(worker->config, LOG_INFO, "enforcer worker %d stopped", worker->id);
 
 	return NULL;
 }
@@ -89,8 +97,12 @@ enforcer_start_workers(DAEMONCONFIG *config)
 {
 	int i;
 
+	log_msg(config, LOG_INFO, "starting enforcer workers");
+
 	for (i=0; i<ENFORCER_WORKERS; i++) {
-		if (pthread_create(&_enforcer_worker[i], NULL, enforcer_worker, NULL)) {
+		_enforcer_worker[i].id = i + 1;
+		_enforcer_worker[i].config = config;
+		if (pthread_create(&(_enforcer_worker[i].thread), NULL, enforcer_worker, (void*)&(_enforcer_worker[i]))) {
 			return -1;
 		}
 	}
@@ -104,14 +116,16 @@ enforcer_stop_workers(DAEMONCONFIG *config)
 
 	_enforcer_worker_exit = 1;
 
+	log_msg(config, LOG_INFO, "stopping enforcer workers");
+
 	for (i=0; i<ENFORCER_WORKERS; i++) {
-		if (pthread_join(_enforcer_worker[i], NULL)) {
+		if (pthread_join(_enforcer_worker[i].thread, NULL)) {
 			return -1;
 		}
 	}
 	return 0;
 }
-#endif // ENFORCER_USE_WORKERS
+#endif /* ENFORCER_USE_WORKERS */
 
 int
 server_init(DAEMONCONFIG *config)
