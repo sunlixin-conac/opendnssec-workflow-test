@@ -35,18 +35,30 @@
 
 #include <pthread.h>
 
+static int _setup = 0;
 static pthread_key_t _key;
 
 int
 DbThreadSetup(void)
 {
-	return pthread_key_create(&_key, NULL);
+	if (!_setup) {
+		if (pthread_key_create(&_key, NULL)) {
+			return -1;
+		}
+		_setup = 1;
+	}
+
+	return 0;
 }
 
 DB_HANDLE
 DbThreadGetHandle(void)
 {
 	DB_HANDLE* ptr;
+
+	if (DbThreadSetup()) {
+		return NULL;
+	}
 
 	if ((ptr = pthread_getspecific(_key)) == NULL) {
 		return NULL;
@@ -60,16 +72,22 @@ DbThreadSetHandle(DB_HANDLE handle)
 {
 	DB_HANDLE* ptr;
 
-	if ((ptr = MemMalloc(sizeof(DB_HANDLE))) == NULL) {
+	if (DbThreadSetup()) {
 		return -1;
 	}
 
-	*ptr = handle;
+	if ((ptr = pthread_getspecific(_key)) == NULL) {
+		if ((ptr = MemMalloc(sizeof(DB_HANDLE))) == NULL) {
+			return -2;
+		}
 
-	if (pthread_setspecific(_key, ptr)) {
-		MemFree(ptr);
-		return -2;
+		if (pthread_setspecific(_key, ptr)) {
+			MemFree(ptr);
+			return -3;
+		}
 	}
+
+	*ptr = handle;
 
 	return 0;
 }
@@ -77,13 +95,15 @@ DbThreadSetHandle(DB_HANDLE handle)
 int
 DbThreadRemoveHandle(void)
 {
-	DB_HANDLE *ptr = DbThreadGetHandle();
+	DB_HANDLE* ptr;
 
-	if (ptr == NULL) {
+	if (DbThreadSetup()) {
 		return -1;
 	}
 
-	MemFree(ptr);
+	if ((ptr = DbThreadGetHandle())) {
+		*ptr = NULL;
+	}
 
 	return 0;
 }

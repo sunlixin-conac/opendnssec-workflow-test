@@ -140,11 +140,6 @@ server_init(DAEMONCONFIG *config)
         config->pidfile = OPENDNSSEC_ENFORCER_PIDFILE;
     }
 
-#ifdef ENFORCER_USE_WORKERS
-    /* set up ksm db for threads support */
-    DbThreadSetup();
-#endif
-
     return 0;
 }
 
