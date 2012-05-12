@@ -70,9 +70,14 @@
 #ifdef ENFORCER_USE_WORKERS
 static int _enforcer_worker_exit = 0;
 struct _enforcer_worker {
-	int id;
-	pthread_t thread;
-	DAEMONCONFIG *config;
+	int				id;
+	pthread_t		thread;
+	DAEMONCONFIG*	config;
+};
+struct _enforcer_worker_work {
+	char*			policy_name;
+	int				zone_id;
+	char*			zone_name;
 };
 static struct _enforcer_worker _enforcer_worker[ENFORCER_WORKERS];
 
@@ -80,12 +85,56 @@ static void *
 enforcer_worker(void *arg)
 {
 	struct _enforcer_worker *worker = (struct _enforcer_worker *)arg;
+    KSM_POLICY *policy;
+    int status;
+
+    policy = KsmPolicyAlloc();
+    if (policy == NULL) {
+        log_msg(worker->config, LOG_ERR, "enforcer worker %d: Malloc for policy struct failed", worker->id);
+        return NULL;
+    }
+    kaspSetPolicyDefaults(policy, NULL);
 
 	log_msg(worker->config, LOG_INFO, "enforcer worker %d started", worker->id);
 
 	while (!_enforcer_worker_exit) {
 		sleep(1);
+
+		if (0) {
+			struct _enforcer_worker_work work;
+
+            if (strcmp(work.policy_name, policy->name) != 0) {
+
+                /* Read new Policy */
+                kaspSetPolicyDefaults(policy, work.policy_name);
+
+                status = KsmPolicyRead(policy);
+                if (status != 0) {
+                    /* Don't return? try to parse the rest of the zones? */
+                    log_msg(worker->config, LOG_ERR, "Error reading policy");
+                    continue;
+                }
+                log_msg(worker->config, LOG_INFO, "Policy %s found in DB.", policy->name);
+
+            } /* else */
+              /* Policy is same as previous zone, do not re-read */
+
+            status = allocateKeysToZone(policy, KSM_TYPE_ZSK, work.zone_id, worker->config->interval, work.zone_name, worker->config->manualKeyGeneration, 0);
+            if (status != 0) {
+                log_msg(worker->config, LOG_ERR, "Error allocating zsks to zone %s", work.zone_name);
+                /* Don't return? try to parse the rest of the zones? */
+                continue;
+            }
+            status = allocateKeysToZone(policy, KSM_TYPE_KSK, work.zone_id, worker->config->interval, work.zone_name, worker->config->manualKeyGeneration, policy->ksk->rollover_scheme);
+            if (status != 0) {
+                log_msg(worker->config, LOG_ERR, "Error allocating ksks to zone %s", work.zone_name);
+                /* Don't return? try to parse the rest of the zones? */
+                continue;
+            }
+		}
 	}
+
+    KsmPolicyFree(policy);
 
 	log_msg(worker->config, LOG_INFO, "enforcer worker %d stopped", worker->id);
 

@@ -101,7 +101,9 @@ DbThreadRemoveHandle(void)
 		return -1;
 	}
 
-	if ((ptr = DbThreadGetHandle())) {
+	ptr = pthread_getspecific(_key);
+
+	if (ptr) {
 		*ptr = NULL;
 	}
 
