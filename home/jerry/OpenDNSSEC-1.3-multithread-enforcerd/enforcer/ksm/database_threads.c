@@ -36,16 +36,27 @@
 #include <pthread.h>
 
 static int _setup = 0;
+pthread_mutex_t _setup_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_key_t _key;
 
 int
 DbThreadSetup(void)
 {
 	if (!_setup) {
-		if (pthread_key_create(&_key, NULL)) {
+		if (pthread_mutex_lock(&_setup_mutex)) {
 			return -1;
 		}
-		_setup = 1;
+
+		if (!_setup) {
+			if (pthread_key_create(&_key, NULL)) {
+				return -2;
+			}
+			_setup = 1;
+		}
+
+		if (pthread_mutex_unlock(&_setup_mutex)) {
+			return -3;
+		}
 	}
 
 	return 0;

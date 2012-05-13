@@ -69,6 +69,7 @@
 
 #ifdef ENFORCER_USE_WORKERS
 static int _enforcer_worker_exit = 0;
+static int _enforcer_workers_online = 0;
 struct _enforcer_worker {
 	int				id;
 	pthread_t		thread;
@@ -78,8 +79,16 @@ struct _enforcer_worker_work {
 	char*			policy_name;
 	int				zone_id;
 	char*			zone_name;
+	int				status;
+	int				NewDS;
+	char*			filename;
+	int				signer_flag;
 };
 static struct _enforcer_worker _enforcer_worker[ENFORCER_WORKERS];
+pthread_mutex_t _enforcer_worker_work_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t _enforcer_worker_havework_cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t _enforcer_worker_workdone_cond = PTHREAD_COND_INITIALIZER;
+static struct _enforcer_worker_work _enforcer_worker_work;
 
 static void *
 enforcer_worker(void *arg)
@@ -87,57 +96,99 @@ enforcer_worker(void *arg)
 	struct _enforcer_worker *worker = (struct _enforcer_worker *)arg;
     KSM_POLICY *policy;
     int status;
+    int havework = 0;
+    DB_HANDLE handle;
+
+    if (DbConnect(&handle, (char *)worker->config->schema, (char *)worker->config->host, (char *)worker->config->password, (char *)worker->config->user, (char *)worker->config->port) != 0) {
+    	log_msg(worker->config, LOG_ERR, "enforcer worker %d: Unable to connect to database", worker->id);
+    	return NULL;
+    }
 
     policy = KsmPolicyAlloc();
     if (policy == NULL) {
         log_msg(worker->config, LOG_ERR, "enforcer worker %d: Malloc for policy struct failed", worker->id);
+        DbDisconnect(handle);
         return NULL;
     }
     kaspSetPolicyDefaults(policy, NULL);
 
 	log_msg(worker->config, LOG_INFO, "enforcer worker %d started", worker->id);
 
+	pthread_mutex_lock(&_enforcer_worker_work_mutex);
+	_enforcer_workers_online++;
 	while (!_enforcer_worker_exit) {
-		sleep(1);
-
-		if (0) {
-			struct _enforcer_worker_work work;
-
-            if (strcmp(work.policy_name, policy->name) != 0) {
-
-                /* Read new Policy */
-                kaspSetPolicyDefaults(policy, work.policy_name);
-
-                status = KsmPolicyRead(policy);
-                if (status != 0) {
-                    /* Don't return? try to parse the rest of the zones? */
-                    log_msg(worker->config, LOG_ERR, "Error reading policy");
-                    continue;
-                }
-                log_msg(worker->config, LOG_INFO, "Policy %s found in DB.", policy->name);
-
-            } /* else */
-              /* Policy is same as previous zone, do not re-read */
-
-            status = allocateKeysToZone(policy, KSM_TYPE_ZSK, work.zone_id, worker->config->interval, work.zone_name, worker->config->manualKeyGeneration, 0);
-            if (status != 0) {
-                log_msg(worker->config, LOG_ERR, "Error allocating zsks to zone %s", work.zone_name);
-                /* Don't return? try to parse the rest of the zones? */
-                continue;
-            }
-            status = allocateKeysToZone(policy, KSM_TYPE_KSK, work.zone_id, worker->config->interval, work.zone_name, worker->config->manualKeyGeneration, policy->ksk->rollover_scheme);
-            if (status != 0) {
-                log_msg(worker->config, LOG_ERR, "Error allocating ksks to zone %s", work.zone_name);
-                /* Don't return? try to parse the rest of the zones? */
-                continue;
-            }
+		if (havework) {
+			pthread_cond_signal(&_enforcer_worker_workdone_cond);
 		}
+		pthread_cond_wait(&_enforcer_worker_havework_cond, &_enforcer_worker_work_mutex);
+		if (_enforcer_worker_exit) {
+			break;
+		}
+		havework = 1;
+
+		if (strcmp(_enforcer_worker_work.policy_name, policy->name) != 0) {
+
+			/* Read new Policy */
+			kaspSetPolicyDefaults(policy, _enforcer_worker_work.policy_name);
+
+			status = KsmPolicyRead(policy);
+			if (status != 0) {
+				/* Don't return? try to parse the rest of the zones? */
+				log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error reading policy", worker->id);
+				_enforcer_worker_work.status = status;
+				continue;
+			}
+			log_msg(worker->config, LOG_INFO, "enforcer worker %d: Policy %s found in DB.", worker->id, policy->name);
+
+		} /* else */
+		  /* Policy is same as previous zone, do not re-read */
+
+		/* Get zone ID from name (or skip if it doesn't exist) */
+		status = KsmZoneIdFromName(_enforcer_worker_work.zone_name, &_enforcer_worker_work.zone_id);
+		if (status != 0 || _enforcer_worker_work.zone_id == -1)
+		{
+			/* error */
+			log_msg(NULL, LOG_ERR, "enforcer worker %d: Error looking up zone \"%s\" in database (please make sure that the zonelist file is up to date)", worker->id, _enforcer_worker_work.zone_name);
+			_enforcer_worker_work.status = status;
+			continue;
+		}
+
+		status = allocateKeysToZone(policy, KSM_TYPE_ZSK, _enforcer_worker_work.zone_id, worker->config->interval, _enforcer_worker_work.zone_name, worker->config->manualKeyGeneration, 0);
+		if (status != 0) {
+			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating zsks to zone %s", worker->id, _enforcer_worker_work.zone_name);
+			_enforcer_worker_work.status = status;
+			continue;
+		}
+		status = allocateKeysToZone(policy, KSM_TYPE_KSK, _enforcer_worker_work.zone_id, worker->config->interval, _enforcer_worker_work.zone_name, worker->config->manualKeyGeneration, policy->ksk->rollover_scheme);
+		if (status != 0) {
+			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating ksks to zone %s", worker->id, _enforcer_worker_work.zone_name);
+			_enforcer_worker_work.status = status;
+			continue;
+		}
+
+        /* turn this zone and policy into a file */
+        status = commGenSignConf(_enforcer_worker_work.zone_name, _enforcer_worker_work.zone_id, _enforcer_worker_work.filename, policy, &_enforcer_worker_work.signer_flag, worker->config->interval, worker->config->manualKeyGeneration, worker->config->DSSubmitCmd, &_enforcer_worker_work.NewDS);
+        if (status == -2) {
+            log_msg(worker->config, LOG_ERR, "enforcer worker %d: Signconf not written for %s", worker->id, _enforcer_worker_work.zone_name);
+			_enforcer_worker_work.status = status;
+            continue;
+        }
+        else if (status != 0) {
+            log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error writing signconf for %s", worker->id, _enforcer_worker_work.zone_name);
+			_enforcer_worker_work.status = status;
+            continue;
+        }
+
+		/*log_msg(worker->config, LOG_INFO, "work done for %s", _enforcer_worker_work.zone_name);*/
 	}
+	_enforcer_workers_online--;
+	pthread_mutex_unlock(&_enforcer_worker_work_mutex);
 
     KsmPolicyFree(policy);
 
 	log_msg(worker->config, LOG_INFO, "enforcer worker %d stopped", worker->id);
 
+    DbDisconnect(handle);
 	return NULL;
 }
 
@@ -163,7 +214,10 @@ enforcer_stop_workers(DAEMONCONFIG *config)
 {
 	int i;
 
+	pthread_mutex_lock(&_enforcer_worker_work_mutex);
 	_enforcer_worker_exit = 1;
+	pthread_cond_broadcast(&_enforcer_worker_havework_cond);
+	pthread_mutex_unlock(&_enforcer_worker_work_mutex);
 
 	log_msg(config, LOG_INFO, "stopping enforcer workers");
 
@@ -705,8 +759,14 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
     char* current_filename;
     char *tag_name;
     int zone_id = -1;
+#ifndef ENFORCER_USE_WORKERS
     int signer_flag = 1; /* Is the signer responding? (1 == yes) */
+#endif
     char* ksk_expected = NULL;  /* When is the next ksk rollover expected? */
+#ifdef ENFORCER_USE_WORKERS
+    int NewDS;
+    char* signer_command;
+#endif
 
     xmlChar *name_expr = (unsigned char*) "name";
     xmlChar *policy_expr = (unsigned char*) "//Zone/Policy";
@@ -759,6 +819,7 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
 
                 log_msg(config, LOG_INFO, "Zone %s found.", zone_name);
 
+#ifndef ENFORCER_USE_WORKERS
                 /* Get zone ID from name (or skip if it doesn't exist) */
                 status = KsmZoneIdFromName(zone_name, &zone_id);
                 if (status != 0 || zone_id == -1)
@@ -771,6 +832,7 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
                     StrFree(zone_name);
                     continue;
                 }
+#endif
 
                 /* Expand this node and get the rest of the info with XPath */
                 xmlTextReaderExpand(reader);
@@ -814,6 +876,7 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
                 log_msg(config, LOG_INFO, "Policy for %s set to %s.", zone_name, current_policy);
                 xmlXPathFreeObject(xpathObj);
 
+#ifndef ENFORCER_USE_WORKERS
                 if (strcmp(current_policy, policy->name) != 0) {
 
                     /* Read new Policy */ 
@@ -834,6 +897,7 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
                   /* Policy is same as previous zone, do not re-read */
 
                 StrFree(current_policy);
+#endif
 
                 /* Evaluate xpath expression for signer configuration filename */
                 xpathObj = xmlXPathEvalExpression(filename_expr, xpathCtx);
@@ -855,6 +919,51 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
                 xmlXPathFreeObject(xpathObj);
                 /* TODO should we check that we have not written to this file in this run?*/
                 /* Make sure that enough keys are allocated to this zone */
+
+#ifdef ENFORCER_USE_WORKERS
+                if (!_enforcer_workers_online) {
+                	log_msg(config, LOG_ERR, "No enforcer workers online to process %s", zone_name);
+                    ret = xmlTextReaderRead(reader);
+                    StrFree(tag_name);
+                    StrFree(zone_name);
+                    StrFree(current_policy);
+                    continue;
+                }
+
+                pthread_mutex_lock(&_enforcer_worker_work_mutex);
+                _enforcer_worker_work.policy_name = current_policy;
+                _enforcer_worker_work.zone_name = zone_name;
+                _enforcer_worker_work.status = 0;
+                _enforcer_worker_work.NewDS = 0;
+                _enforcer_worker_work.filename = current_filename;
+                _enforcer_worker_work.signer_flag = 0;
+                pthread_cond_signal(&_enforcer_worker_havework_cond);
+                pthread_cond_wait(&_enforcer_worker_workdone_cond, &_enforcer_worker_work_mutex);
+                _enforcer_worker_work.policy_name = NULL;
+                _enforcer_worker_work.zone_name = NULL;
+                if (_enforcer_worker_work.status) {
+                    _enforcer_worker_work.zone_id = 0;
+                    pthread_mutex_unlock(&_enforcer_worker_work_mutex);
+
+                    ret = xmlTextReaderRead(reader);
+                    StrFree(tag_name);
+                    StrFree(zone_name);
+                    StrFree(current_filename);
+                    StrFree(current_policy);
+                    continue;
+                }
+                zone_id = _enforcer_worker_work.zone_id;
+                NewDS = _enforcer_worker_work.NewDS;
+                pthread_mutex_unlock(&_enforcer_worker_work_mutex);
+
+                StrFree(current_policy);
+
+                /* If the DS set changed then log/do something about it */
+                if (NewDS == 1) {
+                    log_msg(config, LOG_INFO, "DSChanged");
+                    NewDSSet(zone_id, zone_name, config->DSSubmitCmd);
+                }
+#else
                 status2 = allocateKeysToZone(policy, KSM_TYPE_ZSK, zone_id, config->interval, zone_name, config->manualKeyGeneration, 0);
                 if (status2 != 0) {
                     log_msg(config, LOG_ERR, "Error allocating zsks to zone %s", zone_name);
@@ -896,6 +1005,7 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
                     StrFree(current_filename);
                     continue;
                 }
+#endif
 
                 /* See if we need to send a warning about an impending rollover */
                 if (config->rolloverNotify != -1) {
@@ -942,6 +1052,20 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
         if (ret != 0) {
             log_msg(config, LOG_ERR, "%s : failed to parse", zonelist_filename);
         }
+
+#ifdef ENFORCER_USE_WORKERS
+        signer_command = NULL;
+        StrAppend(&signer_command, SIGNER_CLI_UPDATE);
+        StrAppend(&signer_command, " --all");
+
+        if (system(signer_command))
+        {
+            log_msg(NULL, LOG_ERR, "Could not call signer engine");
+            log_msg(NULL, LOG_INFO, "Will continue: call 'ods-signer update --all' to manually update all zones");
+        }
+
+        StrFree(signer_command);
+#endif
     } else {
         log_msg(config, LOG_ERR, "Unable to open %s", zonelist_filename);
     }
@@ -958,7 +1082,11 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
  *  returns 0 on success and -1 if something went wrong
  *                           -2 if the RequestKeys call failed
  */
+#ifdef ENFORCER_USE_WORKERS
+int commGenSignConf(char* zone_name, int zone_id, char* current_filename, KSM_POLICY *policy, int* signer_flag, int run_interval, int man_key_gen, const char* DSSubmitCmd, int* NewDS)
+#else
 int commGenSignConf(char* zone_name, int zone_id, char* current_filename, KSM_POLICY *policy, int* signer_flag, int run_interval, int man_key_gen, const char* DSSubmitCmd)
+#endif
 {
     int status = 0;
     int status2 = 0;
@@ -972,13 +1100,15 @@ int commGenSignConf(char* zone_name, int zone_id, char* current_filename, KSM_PO
                                file.) */
     char *signer_command;   /* how we will call the signer */
     int     gencnt;         /* Number of keys in generate state */
+#ifndef ENFORCER_USE_WORKERS
     int     NewDS = 0;      /* Did we change the DS Set in any way? */
+#endif
     char*   datetime = DtParseDateTimeString("now");
 
     /* Check datetime in case it came back NULL */
     if (datetime == NULL) {
         log_msg(NULL, LOG_DEBUG, "Couldn't turn \"now\" into a date, quitting...");
-        exit(1);
+        return -1;
     }
 
     if (zone_name == NULL || current_filename == NULL || policy == NULL)
@@ -1056,7 +1186,11 @@ int commGenSignConf(char* zone_name, int zone_id, char* current_filename, KSM_PO
     fprintf(file, "\t\t\t<TTL>PT%dS</TTL>\n", policy->ksk->ttl);
 
     /* get new keys _only_ if we don't have them from before */
+#ifdef ENFORCER_USE_WORKERS
+    status = KsmRequestKeys(0, 0, datetime, commKeyConfig, file, policy->id, zone_id, run_interval, NewDS);
+#else
     status = KsmRequestKeys(0, 0, datetime, commKeyConfig, file, policy->id, zone_id, run_interval, &NewDS);
+#endif
     if (status != 0) {
         /* 
          * Something went wrong (it should have been logged) stop this zone.
@@ -1264,11 +1398,13 @@ int commGenSignConf(char* zone_name, int zone_id, char* current_filename, KSM_PO
         }
     }
 
+#ifndef ENFORCER_USE_WORKERS
     /* If the DS set changed then log/do something about it */
     if (NewDS == 1) {
         log_msg(NULL, LOG_INFO, "DSChanged");
         status = NewDSSet(zone_id, zone_name, DSSubmitCmd);
     }
+#endif
 
     StrFree(old_filename);
     StrFree(temp_filename);
@@ -1353,7 +1489,7 @@ int allocateKeysToZone(KSM_POLICY *policy, int key_type, int zone_id, uint16_t i
     /* Check datetime in case it came back NULL */
     if (datetime == NULL) {
         log_msg(NULL, LOG_DEBUG, "Couldn't turn \"now\" into a date, quitting...");
-        exit(1);
+        return -1;
     }
 
     if (policy == NULL) {
@@ -1449,7 +1585,7 @@ int allocateKeysToZone(KSM_POLICY *policy, int key_type, int zone_id, uint16_t i
         } else {
             /* This shouldn't happen */
             log_msg(NULL, LOG_ERR, "KsmKeyGetUnallocated returned bad key_id %d for zone: %s; exiting...", key_pair_id, zone_name);
-            exit(1);
+            return -1;
         }
 
     }
