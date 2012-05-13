@@ -75,7 +75,9 @@ struct _enforcer_worker {
 	pthread_t		thread;
 	DAEMONCONFIG*	config;
 };
+struct _enforcer_worker_work;
 struct _enforcer_worker_work {
+	struct _enforcer_worker_work* next;
 	char*			policy_name;
 	int				zone_id;
 	char*			zone_name;
@@ -84,11 +86,87 @@ struct _enforcer_worker_work {
 	char*			filename;
 	int				signer_flag;
 };
+struct _enforcer_worker_queue {
+	struct _enforcer_worker_work* work;
+	pthread_mutex_t mutex;
+	pthread_cond_t cond;
+	int closed;
+};
 static struct _enforcer_worker _enforcer_worker[ENFORCER_WORKERS];
-pthread_mutex_t _enforcer_worker_work_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t _enforcer_worker_havework_cond = PTHREAD_COND_INITIALIZER;
-pthread_cond_t _enforcer_worker_workdone_cond = PTHREAD_COND_INITIALIZER;
-static struct _enforcer_worker_work _enforcer_worker_work;
+
+static struct _enforcer_worker_queue _enforcer_worker_havework_queue = { NULL, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER, 0 };
+static struct _enforcer_worker_queue _enforcer_worker_workdone_queue = { NULL, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER, 0 };
+
+int
+enforcer_worker_work_enqueue(struct _enforcer_worker_queue *queue, struct _enforcer_worker_work *work)
+{
+	if (pthread_mutex_lock(&(queue->mutex))) {
+		return -1;
+	}
+
+	if (pthread_cond_signal(&(queue->cond))) {
+		pthread_mutex_unlock(&(queue->mutex));
+		return -2;
+	}
+
+	work->next = queue->work;
+	queue->work = work;
+
+	if (pthread_mutex_unlock(&(queue->mutex))) {
+		return -3;
+	}
+
+	return 0;
+}
+
+int
+enforcer_worker_work_dequeue(struct _enforcer_worker_queue *queue, struct _enforcer_worker_work **work)
+{
+	if (pthread_mutex_lock(&(queue->mutex))) {
+		return -1;
+	}
+
+	while (!queue->work) {
+		if (pthread_cond_wait(&(queue->cond), &(queue->mutex))) {
+			pthread_mutex_unlock(&(queue->mutex));
+			return -2;
+		}
+		if (queue->closed) {
+			*work = NULL;
+			return 0;
+		}
+	}
+
+	*work = queue->work;
+	queue->work = (*work)->next;
+
+	if (pthread_mutex_unlock(&(queue->mutex))) {
+		return -3;
+	}
+
+	return 0;
+}
+
+int
+enforcer_worker_work_closequeue(struct _enforcer_worker_queue *queue)
+{
+	if (pthread_mutex_lock(&(queue->mutex))) {
+		return -1;
+	}
+
+	queue->closed = 1;
+
+	if (pthread_cond_broadcast(&(queue->cond))) {
+		pthread_mutex_unlock(&(queue->mutex));
+		return -2;
+	}
+
+	if (pthread_mutex_unlock(&(queue->mutex))) {
+		return -3;
+	}
+
+	return 0;
+}
 
 static void *
 enforcer_worker(void *arg)
@@ -96,8 +174,8 @@ enforcer_worker(void *arg)
 	struct _enforcer_worker *worker = (struct _enforcer_worker *)arg;
     KSM_POLICY *policy;
     int status;
-    int havework = 0;
     DB_HANDLE handle;
+    struct _enforcer_worker_work *work = NULL;
 
     if (DbConnect(&handle, (char *)worker->config->schema, (char *)worker->config->host, (char *)worker->config->password, (char *)worker->config->user, (char *)worker->config->port) != 0) {
     	log_msg(worker->config, LOG_ERR, "enforcer worker %d: Unable to connect to database", worker->id);
@@ -114,28 +192,35 @@ enforcer_worker(void *arg)
 
 	log_msg(worker->config, LOG_INFO, "enforcer worker %d started", worker->id);
 
-	pthread_mutex_lock(&_enforcer_worker_work_mutex);
 	_enforcer_workers_online++;
 	while (!_enforcer_worker_exit) {
-		if (havework) {
-			pthread_cond_signal(&_enforcer_worker_workdone_cond);
+		if (work) {
+			if (enforcer_worker_work_enqueue(&_enforcer_worker_workdone_queue, work)) {
+				log_msg(worker->config, LOG_ERR, "enforcer worker %d: failed to enqueue work", worker->id);
+				break;
+			}
+			work = NULL;
 		}
-		pthread_cond_wait(&_enforcer_worker_havework_cond, &_enforcer_worker_work_mutex);
-		if (_enforcer_worker_exit) {
+
+		if (enforcer_worker_work_dequeue(&_enforcer_worker_havework_queue, &work)) {
+			log_msg(worker->config, LOG_ERR, "enforcer worker %d: failed to dequeue work", worker->id);
 			break;
 		}
-		havework = 1;
+		if (!work) {
+			log_msg(worker->config, LOG_INFO, "enforcer worker %d: no more work, exiting", worker->id);
+			break;
+		}
 
-		if (strcmp(_enforcer_worker_work.policy_name, policy->name) != 0) {
+		if (strcmp(work->policy_name, policy->name) != 0) {
 
 			/* Read new Policy */
-			kaspSetPolicyDefaults(policy, _enforcer_worker_work.policy_name);
+			kaspSetPolicyDefaults(policy, work->policy_name);
 
 			status = KsmPolicyRead(policy);
 			if (status != 0) {
 				/* Don't return? try to parse the rest of the zones? */
 				log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error reading policy", worker->id);
-				_enforcer_worker_work.status = status;
+				work->status = status;
 				continue;
 			}
 			log_msg(worker->config, LOG_INFO, "enforcer worker %d: Policy %s found in DB.", worker->id, policy->name);
@@ -144,45 +229,44 @@ enforcer_worker(void *arg)
 		  /* Policy is same as previous zone, do not re-read */
 
 		/* Get zone ID from name (or skip if it doesn't exist) */
-		status = KsmZoneIdFromName(_enforcer_worker_work.zone_name, &_enforcer_worker_work.zone_id);
-		if (status != 0 || _enforcer_worker_work.zone_id == -1)
+		status = KsmZoneIdFromName(work->zone_name, &work->zone_id);
+		if (status != 0 || work->zone_id == -1)
 		{
 			/* error */
-			log_msg(NULL, LOG_ERR, "enforcer worker %d: Error looking up zone \"%s\" in database (please make sure that the zonelist file is up to date)", worker->id, _enforcer_worker_work.zone_name);
-			_enforcer_worker_work.status = status;
+			log_msg(NULL, LOG_ERR, "enforcer worker %d: Error looking up zone \"%s\" in database (please make sure that the zonelist file is up to date)", worker->id, work->zone_name);
+			work->status = status;
 			continue;
 		}
 
-		status = allocateKeysToZone(policy, KSM_TYPE_ZSK, _enforcer_worker_work.zone_id, worker->config->interval, _enforcer_worker_work.zone_name, worker->config->manualKeyGeneration, 0);
+		status = allocateKeysToZone(policy, KSM_TYPE_ZSK, work->zone_id, worker->config->interval, work->zone_name, worker->config->manualKeyGeneration, 0);
 		if (status != 0) {
-			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating zsks to zone %s", worker->id, _enforcer_worker_work.zone_name);
-			_enforcer_worker_work.status = status;
+			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating zsks to zone %s", worker->id, work->zone_name);
+			work->status = status;
 			continue;
 		}
-		status = allocateKeysToZone(policy, KSM_TYPE_KSK, _enforcer_worker_work.zone_id, worker->config->interval, _enforcer_worker_work.zone_name, worker->config->manualKeyGeneration, policy->ksk->rollover_scheme);
+		status = allocateKeysToZone(policy, KSM_TYPE_KSK, work->zone_id, worker->config->interval, work->zone_name, worker->config->manualKeyGeneration, policy->ksk->rollover_scheme);
 		if (status != 0) {
-			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating ksks to zone %s", worker->id, _enforcer_worker_work.zone_name);
-			_enforcer_worker_work.status = status;
+			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating ksks to zone %s", worker->id, work->zone_name);
+			work->status = status;
 			continue;
 		}
 
         /* turn this zone and policy into a file */
-        status = commGenSignConf(_enforcer_worker_work.zone_name, _enforcer_worker_work.zone_id, _enforcer_worker_work.filename, policy, &_enforcer_worker_work.signer_flag, worker->config->interval, worker->config->manualKeyGeneration, worker->config->DSSubmitCmd, &_enforcer_worker_work.NewDS);
+        status = commGenSignConf(work->zone_name, work->zone_id, work->filename, policy, &work->signer_flag, worker->config->interval, worker->config->manualKeyGeneration, worker->config->DSSubmitCmd, &work->NewDS);
         if (status == -2) {
-            log_msg(worker->config, LOG_ERR, "enforcer worker %d: Signconf not written for %s", worker->id, _enforcer_worker_work.zone_name);
-			_enforcer_worker_work.status = status;
+            log_msg(worker->config, LOG_ERR, "enforcer worker %d: Signconf not written for %s", worker->id, work->zone_name);
+			work->status = status;
             continue;
         }
         else if (status != 0) {
-            log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error writing signconf for %s", worker->id, _enforcer_worker_work.zone_name);
-			_enforcer_worker_work.status = status;
+            log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error writing signconf for %s", worker->id, work->zone_name);
+			work->status = status;
             continue;
         }
 
-		/*log_msg(worker->config, LOG_INFO, "work done for %s", _enforcer_worker_work.zone_name);*/
+		/*log_msg(worker->config, LOG_INFO, "work done for %s", work->zone_name);*/
 	}
 	_enforcer_workers_online--;
-	pthread_mutex_unlock(&_enforcer_worker_work_mutex);
 
     KsmPolicyFree(policy);
 
@@ -214,10 +298,9 @@ enforcer_stop_workers(DAEMONCONFIG *config)
 {
 	int i;
 
-	pthread_mutex_lock(&_enforcer_worker_work_mutex);
 	_enforcer_worker_exit = 1;
-	pthread_cond_broadcast(&_enforcer_worker_havework_cond);
-	pthread_mutex_unlock(&_enforcer_worker_work_mutex);
+	enforcer_worker_work_closequeue(&_enforcer_worker_havework_queue);
+	enforcer_worker_work_closequeue(&_enforcer_worker_workdone_queue);
 
 	log_msg(config, LOG_INFO, "stopping enforcer workers");
 
@@ -766,6 +849,7 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
 #ifdef ENFORCER_USE_WORKERS
     int NewDS;
     char* signer_command;
+    struct _enforcer_worker_work *work;
 #endif
 
     xmlChar *name_expr = (unsigned char*) "name";
@@ -927,42 +1011,74 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
                     StrFree(tag_name);
                     StrFree(zone_name);
                     StrFree(current_policy);
+                    StrFree(current_filename);
                     continue;
                 }
 
-                pthread_mutex_lock(&_enforcer_worker_work_mutex);
-                _enforcer_worker_work.policy_name = current_policy;
-                _enforcer_worker_work.zone_name = zone_name;
-                _enforcer_worker_work.status = 0;
-                _enforcer_worker_work.NewDS = 0;
-                _enforcer_worker_work.filename = current_filename;
-                _enforcer_worker_work.signer_flag = 0;
-                pthread_cond_signal(&_enforcer_worker_havework_cond);
-                pthread_cond_wait(&_enforcer_worker_workdone_cond, &_enforcer_worker_work_mutex);
-                _enforcer_worker_work.policy_name = NULL;
-                _enforcer_worker_work.zone_name = NULL;
-                if (_enforcer_worker_work.status) {
-                    _enforcer_worker_work.zone_id = 0;
-                    pthread_mutex_unlock(&_enforcer_worker_work_mutex);
-
+                if ((work = MemMalloc(sizeof(struct _enforcer_worker_work))) == NULL) {
+                	log_msg(config, LOG_ERR, "Unable to allocate enforcer worker work");
                     ret = xmlTextReaderRead(reader);
                     StrFree(tag_name);
                     StrFree(zone_name);
-                    StrFree(current_filename);
                     StrFree(current_policy);
+                    StrFree(current_filename);
                     continue;
                 }
-                zone_id = _enforcer_worker_work.zone_id;
-                NewDS = _enforcer_worker_work.NewDS;
-                pthread_mutex_unlock(&_enforcer_worker_work_mutex);
 
-                StrFree(current_policy);
+                work->policy_name = current_policy;
+                work->zone_name = zone_name;
+                work->status = 0;
+                work->NewDS = 0;
+                work->filename = current_filename;
+                work->signer_flag = 0;
+
+                if (enforcer_worker_work_enqueue(&_enforcer_worker_havework_queue, work)) {
+                	log_msg(config, LOG_ERR, "Unable to enqueue enforcer worker work");
+                    ret = xmlTextReaderRead(reader);
+                    StrFree(tag_name);
+                    StrFree(work->zone_name);
+                    StrFree(work->policy_name);
+                    StrFree(work->filename);
+                    MemFree(work);
+                    continue;
+                }
+
+                work = NULL;
+
+                if (enforcer_worker_work_dequeue(&_enforcer_worker_workdone_queue, &work)) {
+                	log_msg(config, LOG_ERR, "Unable to dequeue enforcer worker work");
+                    ret = xmlTextReaderRead(reader);
+                    StrFree(tag_name);
+                    continue;
+                }
+                if (!work) {
+                	log_msg(config, LOG_ERR, "No work dequeue?");
+                    ret = xmlTextReaderRead(reader);
+                    StrFree(tag_name);
+                    continue;
+                }
+
+                if (work->status) {
+                    ret = xmlTextReaderRead(reader);
+                    StrFree(tag_name);
+                    StrFree(work->zone_name);
+                    StrFree(work->policy_name);
+                    StrFree(work->filename);
+                    MemFree(work);
+                    continue;
+                }
 
                 /* If the DS set changed then log/do something about it */
-                if (NewDS == 1) {
+                if (work->NewDS == 1) {
                     log_msg(config, LOG_INFO, "DSChanged");
-                    NewDSSet(zone_id, zone_name, config->DSSubmitCmd);
+                    NewDSSet(work->zone_id, work->zone_name, config->DSSubmitCmd);
                 }
+
+                StrFree(work->zone_name);
+                StrFree(work->policy_name);
+                StrFree(work->filename);
+                MemFree(work);
+                work = NULL;
 #else
                 status2 = allocateKeysToZone(policy, KSM_TYPE_ZSK, zone_id, config->interval, zone_name, config->manualKeyGeneration, 0);
                 if (status2 != 0) {
@@ -1041,8 +1157,10 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
                     StrFree(datetime);
                 }
 
+#ifndef ENFORCER_USE_WORKERS
                 StrFree(current_filename);
                 StrFree(zone_name);
+#endif
             }
             /* Read the next line */
             ret = xmlTextReaderRead(reader);
