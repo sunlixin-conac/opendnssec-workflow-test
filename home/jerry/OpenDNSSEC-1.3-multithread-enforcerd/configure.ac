@@ -152,7 +152,7 @@ AC_MSG_CHECKING(if we should enable enforcer workers)
 if test "x${enable_enforcer_workers}" = "xyes"; then
 	AC_MSG_RESULT(yes)
 	AC_DEFINE_UNQUOTED(ENFORCER_USE_WORKERS, 1, [use enforcer workers])
-	AC_DEFINE_UNQUOTED(ENFORCER_WORKERS, 5, [number of enforcer workers])
+	AC_DEFINE_UNQUOTED(ENFORCER_WORKER_THREADS, [4], [Default number of worker threads for the OpenDNSSEC enforcer engine])
 	AC_DEFINE_UNQUOTED(KSM_DB_USE_THREADS, 1, [use per thread ksm db connection])
 else
 	AC_MSG_RESULT(no)

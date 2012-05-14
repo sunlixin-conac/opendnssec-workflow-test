@@ -117,6 +117,9 @@ typedef struct
 
     int log_user; /* log facility (or default of LOG_DAEMON) */
 
+#ifdef ENFORCER_USE_WORKERS
+    int enforcer_workers;
+#endif
 } DAEMONCONFIG;
 
 

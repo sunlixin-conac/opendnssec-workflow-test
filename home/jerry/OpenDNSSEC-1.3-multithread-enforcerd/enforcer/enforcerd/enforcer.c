@@ -92,7 +92,7 @@ struct _enforcer_worker_queue {
 	pthread_cond_t cond;
 	int closed;
 };
-static struct _enforcer_worker _enforcer_worker[ENFORCER_WORKERS];
+static struct _enforcer_worker *_enforcer_worker = NULL;
 
 static struct _enforcer_worker_queue _enforcer_worker_havework_queue = { NULL, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER, 0 };
 static struct _enforcer_worker_queue _enforcer_worker_workdone_queue = { NULL, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER, 0 };
@@ -133,6 +133,50 @@ enforcer_worker_work_dequeue(struct _enforcer_worker_queue *queue, struct _enfor
 		}
 		if (queue->closed) {
 			*work = NULL;
+			pthread_mutex_unlock(&(queue->mutex));
+			return 0;
+		}
+	}
+
+	*work = queue->work;
+	queue->work = (*work)->next;
+
+	if (pthread_mutex_unlock(&(queue->mutex))) {
+		return -3;
+	}
+
+	return 0;
+}
+
+int
+enforcer_worker_work_timed_dequeue(struct _enforcer_worker_queue *queue, struct _enforcer_worker_work **work, time_t seconds)
+{
+	struct timespec ts;
+	int err;
+
+	if (clock_gettime(CLOCK_REALTIME, &ts)) {
+		return -4;
+	}
+
+	ts.tv_sec += seconds;
+
+	if (pthread_mutex_lock(&(queue->mutex))) {
+		return -1;
+	}
+
+	while (!queue->work) {
+		if ((err = pthread_cond_timedwait(&(queue->cond), &(queue->mutex), &ts))) {
+			if (err == ETIMEDOUT) {
+				*work = NULL;
+				pthread_mutex_unlock(&(queue->mutex));
+				return 0;
+			}
+			pthread_mutex_unlock(&(queue->mutex));
+			return -2;
+		}
+		if (queue->closed) {
+			*work = NULL;
+			pthread_mutex_unlock(&(queue->mutex));
 			return 0;
 		}
 	}
@@ -281,13 +325,23 @@ enforcer_start_workers(DAEMONCONFIG *config)
 {
 	int i;
 
+	if (_enforcer_worker) {
+		log_msg(config, LOG_ERR, "enforcer workers already started?");
+		return -1;
+	}
+
+	if ((_enforcer_worker = MemCalloc(config->enforcer_workers, sizeof(struct _enforcer_worker))) == NULL) {
+		log_msg(config, LOG_ERR, "unable to allocate memory for enforcer workers");
+		return -2;
+	}
+
 	log_msg(config, LOG_INFO, "starting enforcer workers");
 
-	for (i=0; i<ENFORCER_WORKERS; i++) {
+	for (i=0; i<config->enforcer_workers; i++) {
 		_enforcer_worker[i].id = i + 1;
 		_enforcer_worker[i].config = config;
 		if (pthread_create(&(_enforcer_worker[i].thread), NULL, enforcer_worker, (void*)&(_enforcer_worker[i]))) {
-			return -1;
+			return -3;
 		}
 	}
 	return 0;
@@ -298,17 +352,24 @@ enforcer_stop_workers(DAEMONCONFIG *config)
 {
 	int i;
 
+	if (!_enforcer_worker) {
+		log_msg(config, LOG_ERR, "enforcer workers not started?");
+		return -1;
+	}
+
 	_enforcer_worker_exit = 1;
 	enforcer_worker_work_closequeue(&_enforcer_worker_havework_queue);
 	enforcer_worker_work_closequeue(&_enforcer_worker_workdone_queue);
 
 	log_msg(config, LOG_INFO, "stopping enforcer workers");
 
-	for (i=0; i<ENFORCER_WORKERS; i++) {
+	for (i=0; i<config->enforcer_workers; i++) {
 		if (pthread_join(_enforcer_worker[i].thread, NULL)) {
 			return -1;
 		}
 	}
+
+	MemFree(_enforcer_worker);
 	return 0;
 }
 #endif /* ENFORCER_USE_WORKERS */
@@ -840,16 +901,16 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
     char* zone_name;
     char* current_policy;
     char* current_filename;
-    char *tag_name;
+    char *tag_name = NULL;
     int zone_id = -1;
 #ifndef ENFORCER_USE_WORKERS
     int signer_flag = 1; /* Is the signer responding? (1 == yes) */
 #endif
     char* ksk_expected = NULL;  /* When is the next ksk rollover expected? */
 #ifdef ENFORCER_USE_WORKERS
-    int NewDS;
     char* signer_command;
-    struct _enforcer_worker_work *work;
+    struct _enforcer_worker_work *work = NULL;
+    int num_work = 0;
 #endif
 
     xmlChar *name_expr = (unsigned char*) "name";
@@ -1044,41 +1105,52 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
                 }
 
                 work = NULL;
+                num_work++;
+            }
+            /* Read the next line */
+            ret = xmlTextReaderRead(reader);
+            StrFree(tag_name);
+        }
+        xmlFreeTextReader(reader);
+        if (ret != 0) {
+            log_msg(config, LOG_ERR, "%s : failed to parse", zonelist_filename);
+        }
 
-                if (enforcer_worker_work_dequeue(&_enforcer_worker_workdone_queue, &work)) {
-                	log_msg(config, LOG_ERR, "Unable to dequeue enforcer worker work");
-                    ret = xmlTextReaderRead(reader);
-                    StrFree(tag_name);
-                    continue;
-                }
-                if (!work) {
-                	log_msg(config, LOG_ERR, "No work dequeue?");
-                    ret = xmlTextReaderRead(reader);
-                    StrFree(tag_name);
-                    continue;
-                }
+        status2 = 0;
+        while (num_work) {
+			if (enforcer_worker_work_timed_dequeue(&_enforcer_worker_workdone_queue, &work, 30)) {
+				log_msg(config, LOG_ERR, "Unable to dequeue enforcer worker work");
+				status2 = 1;
+				break;
+			}
+			if (!work) {
+				log_msg(config, LOG_ERR, "No work returned by enforcer workers?");
+				status2 = 1;
+				break;
+			}
+			num_work--;
 
-                if (work->status) {
-                    ret = xmlTextReaderRead(reader);
-                    StrFree(tag_name);
-                    StrFree(work->zone_name);
-                    StrFree(work->policy_name);
-                    StrFree(work->filename);
-                    MemFree(work);
-                    continue;
-                }
+			if (work->status) {
+				ret = xmlTextReaderRead(reader);
+				StrFree(tag_name);
+				StrFree(work->zone_name);
+				StrFree(work->policy_name);
+				StrFree(work->filename);
+				MemFree(work);
+				continue;
+			}
 
-                /* If the DS set changed then log/do something about it */
-                if (work->NewDS == 1) {
-                    log_msg(config, LOG_INFO, "DSChanged");
-                    NewDSSet(work->zone_id, work->zone_name, config->DSSubmitCmd);
-                }
+			/* If the DS set changed then log/do something about it */
+			if (work->NewDS == 1) {
+				log_msg(config, LOG_INFO, "DSChanged");
+				NewDSSet(work->zone_id, work->zone_name, config->DSSubmitCmd);
+			}
 
-                StrFree(work->zone_name);
-                StrFree(work->policy_name);
-                StrFree(work->filename);
-                MemFree(work);
-                work = NULL;
+			zone_id = work->zone_id;
+			zone_name = work->zone_name;
+			StrFree(work->policy_name);
+			StrFree(work->filename);
+			MemFree(work);
 #else
                 status2 = allocateKeysToZone(policy, KSM_TYPE_ZSK, zone_id, config->interval, zone_name, config->manualKeyGeneration, 0);
                 if (status2 != 0) {
@@ -1129,9 +1201,14 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
 
                     /* Check datetime in case it came back NULL */
                     if (datetime == NULL) {
-                        log_msg(config, LOG_DEBUG, "Couldn't turn \"now\" into a date, quitting...");
+                        log_msg(config, LOG_DEBUG, "Couldn't turn \"now\" into a date");
+#ifdef ENFORCER_USE_WORKERS
+                        StrFree(zone_name);
+                        continue;
+#else
                         unlink(config->pidfile);
                         exit(1);
+#endif
                     }
 
                     /* First the KSK */
@@ -1160,7 +1237,6 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
 #ifndef ENFORCER_USE_WORKERS
                 StrFree(current_filename);
                 StrFree(zone_name);
-#endif
             }
             /* Read the next line */
             ret = xmlTextReaderRead(reader);
@@ -1170,8 +1246,10 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
         if (ret != 0) {
             log_msg(config, LOG_ERR, "%s : failed to parse", zonelist_filename);
         }
+#else
+        	StrFree(zone_name);
+		}
 
-#ifdef ENFORCER_USE_WORKERS
         signer_command = NULL;
         StrAppend(&signer_command, SIGNER_CLI_UPDATE);
         StrAppend(&signer_command, " --all");

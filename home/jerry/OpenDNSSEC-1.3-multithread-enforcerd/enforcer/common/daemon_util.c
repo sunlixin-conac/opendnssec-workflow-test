@@ -650,6 +650,9 @@ ReadConfig(DAEMONCONFIG *config, int verbose)
     xmlChar *mysql_user = (unsigned char*) "//Configuration/Enforcer/Datastore/MySQL/Username";
     xmlChar *mysql_pass = (unsigned char*) "//Configuration/Enforcer/Datastore/MySQL/Password";
     xmlChar *log_user_expr = (unsigned char*) "//Configuration/Common/Logging/Syslog/Facility";
+#ifdef ENFORCER_USE_WORKERS
+    xmlChar *ew_expr = (unsigned char*) "//Configuration/Enforcer/WorkerThreads";
+#endif
 
     int mysec = 0;
     char *logFacilityName;
@@ -750,6 +753,24 @@ ReadConfig(DAEMONCONFIG *config, int verbose)
         xmlFreeDoc(doc);
         return(-1);
     }
+
+#ifdef ENFORCER_USE_WORKERS
+    xpathObj = xmlXPathEvalExpression(ew_expr, xpathCtx);
+    if(xpathObj == NULL) {
+        log_msg(config, LOG_ERR, "Error: unable to evaluate xpath expression: %s", ew_expr);
+        xmlXPathFreeContext(xpathCtx);
+        xmlFreeDoc(doc);
+        return(-1);
+    }
+    config->enforcer_workers = ENFORCER_WORKER_THREADS;
+    if(xpathObj->nodesetval != NULL && xpathObj->nodesetval->nodeNr > 0) {
+        config->enforcer_workers = (int)xmlXPathCastToNumber(xpathObj);
+    }
+    if (verbose) {
+        log_msg(config, LOG_INFO, "Using %d enforcer workers", config->enforcer_workers);
+    }
+    xmlXPathFreeObject(xpathObj);
+#endif
 
     /* Evaluate xpath expression for interval */
     xpathObj = xmlXPathEvalExpression(iv_expr, xpathCtx);
