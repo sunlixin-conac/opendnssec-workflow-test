@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 source `dirname "$0"`/lib.sh && init || exit 1
 
-LDNS="ldns-1.6.12"
+LDNS="ldns-1.6.13"
 LDNS_URL="http://nlnetlabs.nl/downloads/ldns/$LDNS.tar.gz"
 LDNS_FILENAME="$LDNS.tar.gz"
 LDNS_HASH_TYPE="sha1"
-LDNS_HASH="1d61df0f666908551d5a62768f77d63e727810aa"
+LDNS_HASH="859f633d10b763f06b602e2113828cbbd964c7eb"
 
 check_if_built ldns && exit 0
 start_build ldns
@@ -24,24 +24,14 @@ case "$DISTRIBUTION" in
 	suse | \
 	freebsd | \
 	sunos | \
-	openbsd )
-		(
-			gunzip -c "$LDNS_SRC" | tar xf - &&
-			cd "$LDNS" &&
-			./configure --prefix="$INSTALL_ROOT" \
-				--disable-gost &&
-			$MAKE &&
-			$MAKE install
-		) &&
-		build_ok=1
-		;;
+	openbsd | \
 	netbsd )
 		(
 			gunzip -c "$LDNS_SRC" | tar xf - &&
 			cd "$LDNS" &&
-			patch -p1 < ../ldns-1.6.12-doxyparse.pl-netbsd.patch &&
 			./configure --prefix="$INSTALL_ROOT" \
-				--disable-gost &&
+				--disable-gost \
+				--disable-ecdsa &&
 			$MAKE &&
 			$MAKE install
 		) &&

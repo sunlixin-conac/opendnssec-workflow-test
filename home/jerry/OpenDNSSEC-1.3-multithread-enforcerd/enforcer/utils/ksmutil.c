@@ -121,6 +121,19 @@ static int td_flag = 0;
 
 static int restart_enforcerd(void);
 
+/**
+ * Use _r() functions on platforms that have. They are thread safe versions of
+ * the normal syslog functions. Platforms without _r() usually have thread safe
+ * normal functions.
+ */
+#if defined(HAVE_SYSLOG_R) && defined(HAVE_OPENLOG_R) && defined(HAVE_CLOSELOG_R)
+struct syslog_data sdata = SYSLOG_DATA_INIT;
+#else
+#undef HAVE_SYSLOG_R
+#undef HAVE_OPENLOG_R
+#undef HAVE_CLOSELOG_R
+#endif
+
     void
 usage_general ()
 {
@@ -1083,11 +1096,6 @@ cmd_delzone ()
     /* The settings that we need for the zone */
     int zone_id = -1;
     int policy_id = -1;
-    int zone_count = -1;
-
-    DB_RESULT	result;         /* Result of parameter query */
-    DB_RESULT	result2;        /* Result of zone count query */
-    KSM_PARAMETER shared;       /* Parameter information */
 
     xmlDocPtr doc = NULL;
 
@@ -1198,38 +1206,17 @@ cmd_delzone ()
             return(1);
         }
 
-        /* Get the shared_keys parameter */
-        status = KsmParameterInit(&result, "zones_share_keys", "keys", policy_id);
-        if (status != 0) {
-            db_disconnect(lock_fd);
-            return(status);
-        }
-        status = KsmParameter(result, &shared);
-        if (status != 0) {
-            db_disconnect(lock_fd);
-            return(status);
-        }
-        KsmParameterEnd(result);
-    
-        /* how many zones on this policy (needed to unlink keys) */ 
-        status = KsmZoneCountInit(&result2, policy_id); 
-        if (status == 0) { 
-            status = KsmZoneCount(result2, &zone_count); 
-        } 
-        DbFreeResult(result2);
     }
 
-    /* Mark keys as dead if appropriate */
-    if (all_flag == 1 || (shared.value == 1 && zone_count == 1) || shared.value == 0) {
-        status = KsmMarkKeysAsDead(zone_id);
-        if (status != 0) {
-            printf("Error: failed to mark keys as dead in database\n");
-            db_disconnect(lock_fd);
-            return(status);
-        }
-    }
+    /* Mark keys as dead */
+	status = KsmMarkKeysAsDead(zone_id);
+	if (status != 0) {
+		printf("Error: failed to mark keys as dead in database\n");
+		db_disconnect(lock_fd);
+		return(status);
+	}
 
-    /* Finally, we can delete the zone (and any dnsseckeys entries) */
+    /* Finally, we can delete the zone */
     status = KsmDeleteZone(zone_id);
 
     if (status != 0) {
@@ -1239,7 +1226,6 @@ cmd_delzone ()
     }
     
     /* Call the signer_engine_cli to tell it that the zonelist has changed */
-    /* TODO Should we do this when we remove a zone? */
     if (all_flag == 0) {
         if (system(SIGNER_CLI_UPDATE) != 0)
         {
@@ -2747,9 +2733,21 @@ cmd_dsseen()
         printf("%s\n", logmsg);
         
         /* send the msg to syslog */
+#ifdef HAVE_OPENLOG_R
+        openlog_r("ods-ksmutil", 0, DEFAULT_LOG_FACILITY, &sdata);
+#else
         openlog("ods-ksmutil", 0, DEFAULT_LOG_FACILITY);
+#endif
+#ifdef HAVE_SYSLOG_R
+        syslog_r(LOG_INFO, &sdata, "%s", logmsg);
+#else
         syslog(LOG_INFO, "%s", logmsg);
+#endif
+#ifdef HAVE_CLOSELOG_R
+        closelog_r(&sdata);
+#else
         closelog();
+#endif
         
     }
 
