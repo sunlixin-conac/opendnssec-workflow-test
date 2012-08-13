@@ -98,6 +98,8 @@ static struct _enforcer_worker *_enforcer_worker = NULL;
 static struct _enforcer_worker_queue _enforcer_worker_havework_queue = { NULL, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER, 0 };
 static struct _enforcer_worker_queue _enforcer_worker_workdone_queue = { NULL, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER, 0 };
 
+pthread_mutex_t _enforcer_worker_shared_keys_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 int
 enforcer_worker_work_enqueue(struct _enforcer_worker_queue *queue, struct _enforcer_worker_work *work)
 {
@@ -283,6 +285,14 @@ enforcer_worker(void *arg)
 			continue;
 		}
 
+		if (policy->shared_keys) {
+			if (pthread_mutex_lock(&_enforcer_worker_shared_keys_mutex))) {
+				log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error getting shared keys lock for zone %s", worker->id, work->zone_name);
+				work->status = -1;
+				continue;
+			}
+		}
+
 		status = allocateKeysToZone(policy, KSM_TYPE_ZSK, work->zone_id, worker->config->interval, work->zone_name, worker->config->manualKeyGeneration, 0);
 		if (status != 0) {
 			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating zsks to zone %s", worker->id, work->zone_name);
@@ -294,6 +304,14 @@ enforcer_worker(void *arg)
 			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating ksks to zone %s", worker->id, work->zone_name);
 			work->status = status;
 			continue;
+		}
+
+		if (policy->shared_keys) {
+			if (pthread_mutex_unlock(&_enforcer_worker_shared_keys_mutex)) {
+				log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error releasing shared keys lock for zone %s", worker->id, work->zone_name);
+				work->status = -1;
+				continue;
+			}
 		}
 
         /* turn this zone and policy into a file */
