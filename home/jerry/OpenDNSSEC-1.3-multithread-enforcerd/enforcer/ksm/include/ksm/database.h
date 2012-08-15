@@ -105,9 +105,14 @@ typedef	struct db_row*	DB_ROW;
 
 #ifdef KSM_DB_USE_THREADS
 int DbThreadSetup(void);
+
 DB_HANDLE DbThreadGetHandle(void);
 int DbThreadSetHandle(DB_HANDLE handle);
 int DbThreadRemoveHandle(void);
+
+int DbThreadGetInTransaction(void);
+int DbThreadSetInTransaction(int in_transaction);
+int DbThreadRemoveInTransaction(void);
 #endif /* KSM_DB_USE_THREADS */
 
 /* Initialization and rundown */

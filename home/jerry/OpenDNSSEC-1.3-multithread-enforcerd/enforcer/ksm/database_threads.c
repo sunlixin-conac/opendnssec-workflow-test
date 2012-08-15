@@ -37,7 +37,8 @@
 
 static int _setup = 0;
 pthread_mutex_t _setup_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_key_t _key;
+static pthread_key_t _key_db_handle;
+static pthread_key_t _key_db_in_transaction;
 
 int
 DbThreadSetup(void)
@@ -48,9 +49,12 @@ DbThreadSetup(void)
 		}
 
 		if (!_setup) {
-			if (pthread_key_create(&_key, NULL)) {
+			if (pthread_key_create(&_key_db_handle, NULL)) {
 				return -2;
 			}
+            if (pthread_key_create(&_key_db_in_transaction, NULL)) {
+                return -2;
+            }
 			_setup = 1;
 		}
 
@@ -71,7 +75,7 @@ DbThreadGetHandle(void)
 		return NULL;
 	}
 
-	if ((ptr = pthread_getspecific(_key)) == NULL) {
+	if ((ptr = pthread_getspecific(_key_db_handle)) == NULL) {
 		return NULL;
 	}
 
@@ -87,12 +91,12 @@ DbThreadSetHandle(DB_HANDLE handle)
 		return -1;
 	}
 
-	if ((ptr = pthread_getspecific(_key)) == NULL) {
+	if ((ptr = pthread_getspecific(_key_db_handle)) == NULL) {
 		if ((ptr = MemMalloc(sizeof(DB_HANDLE))) == NULL) {
 			return -2;
 		}
 
-		if (pthread_setspecific(_key, ptr)) {
+		if (pthread_setspecific(_key_db_handle, ptr)) {
 			MemFree(ptr);
 			return -3;
 		}
@@ -112,13 +116,72 @@ DbThreadRemoveHandle(void)
 		return -1;
 	}
 
-	ptr = pthread_getspecific(_key);
+	ptr = pthread_getspecific(_key_db_handle);
 
 	if (ptr) {
 		*ptr = NULL;
 	}
 
 	return 0;
+}
+
+int
+DbThreadGetInTransaction(void)
+{
+    int* ptr;
+
+    if (DbThreadSetup()) {
+        return NULL;
+    }
+
+    if ((ptr = pthread_getspecific(_key_db_in_transaction)) == NULL) {
+        return NULL;
+    }
+
+    return *ptr;
+}
+
+int
+DbThreadSetInTransaction(int in_transaction)
+{
+    int* ptr;
+
+    if (DbThreadSetup()) {
+        return -1;
+    }
+
+    if ((ptr = pthread_getspecific(_key_db_in_transaction)) == NULL) {
+        if ((ptr = MemMalloc(sizeof(int))) == NULL) {
+            return -2;
+        }
+
+        if (pthread_setspecific(_key_db_in_transaction, ptr)) {
+            MemFree(ptr);
+            return -3;
+        }
+    }
+
+    *ptr = in_transaction;
+
+    return 0;
+}
+
+int
+DbThreadRemoveInTransaction(void)
+{
+    int* ptr;
+
+    if (DbThreadSetup()) {
+        return -1;
+    }
+
+    ptr = pthread_getspecific(_key_db_in_transaction);
+
+    if (ptr) {
+        *ptr = 0;
+    }
+
+    return 0;
 }
 
 #endif

@@ -285,23 +285,32 @@ enforcer_worker(void *arg)
 		}
 
 		if (policy->shared_keys) {
-			if (pthread_mutex_lock(&_enforcer_worker_shared_keys_mutex))) {
+			if (pthread_mutex_lock(&_enforcer_worker_shared_keys_mutex)) {
 				log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error getting shared keys lock for zone %s", worker->id, work->zone_name);
 				work->status = -1;
 				continue;
 			}
 		}
 
+	    status = DbBeginTransaction();
+	    if (status != 0) {
+            log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error starting transaction for zone %s", worker->id, work->zone_name);
+	        work->status = status;
+	        continue;
+	    }
+
 		status = allocateKeysToZone(policy, KSM_TYPE_ZSK, work->zone_id, worker->config->interval, work->zone_name, worker->config->manualKeyGeneration, 0);
 		if (status != 0) {
 			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating zsks to zone %s", worker->id, work->zone_name);
 			work->status = status;
+			DbRollback();
 			continue;
 		}
 		status = allocateKeysToZone(policy, KSM_TYPE_KSK, work->zone_id, worker->config->interval, work->zone_name, worker->config->manualKeyGeneration, policy->ksk->rollover_scheme);
 		if (status != 0) {
 			log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error allocating ksks to zone %s", worker->id, work->zone_name);
 			work->status = status;
+            DbRollback();
 			continue;
 		}
 
@@ -309,6 +318,7 @@ enforcer_worker(void *arg)
 			if (pthread_mutex_unlock(&_enforcer_worker_shared_keys_mutex)) {
 				log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error releasing shared keys lock for zone %s", worker->id, work->zone_name);
 				work->status = -1;
+	            DbRollback();
 				continue;
 			}
 		}
@@ -318,13 +328,16 @@ enforcer_worker(void *arg)
         if (status == -2) {
             log_msg(worker->config, LOG_ERR, "enforcer worker %d: Signconf not written for %s", worker->id, work->zone_name);
 			work->status = status;
+            DbRollback();
             continue;
         }
         else if (status != 0) {
             log_msg(worker->config, LOG_ERR, "enforcer worker %d: Error writing signconf for %s", worker->id, work->zone_name);
 			work->status = status;
+            DbRollback();
             continue;
         }
+        DbCommit();
 
 		/*log_msg(worker->config, LOG_INFO, "work done for %s", work->zone_name);*/
 	}
