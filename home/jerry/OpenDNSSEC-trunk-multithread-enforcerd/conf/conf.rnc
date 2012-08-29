@@ -81,7 +81,7 @@ start = element Configuration {
 		privs?,
 
 		# Number of Worker Threads
-		# DEFAULT: 4
+		# DEFAULT: 1
 		element WorkerThreads { xsd:positiveInteger }?,
 		
 		# Where to store internal Enforcer state
