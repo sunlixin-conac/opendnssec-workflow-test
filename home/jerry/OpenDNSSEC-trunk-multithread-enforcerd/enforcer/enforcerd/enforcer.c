@@ -384,7 +384,8 @@ enforcer_worker(void *arg)
 int
 enforcer_start_workers(DAEMONCONFIG *config)
 {
-	int i;
+#ifdef USE_MYSQL
+    int i;
 
 	if (_enforcer_worker) {
 		log_msg(config, LOG_ERR, "enforcer workers already started?");
@@ -410,6 +411,7 @@ enforcer_start_workers(DAEMONCONFIG *config)
 			return -3;
 		}
 	}
+#endif
 	return 0;
 }
 
