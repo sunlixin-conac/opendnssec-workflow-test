@@ -35,30 +35,30 @@
 
 #include <pthread.h>
 
-static int _setup = 0;
-pthread_mutex_t _setup_mutex = PTHREAD_MUTEX_INITIALIZER;
+static int _db_setup = 0;
+pthread_mutex_t _db_setup_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_key_t _key_db_handle;
 static pthread_key_t _key_db_in_transaction;
 
 int
 DbThreadSetup(void)
 {
-	if (!_setup) {
-		if (pthread_mutex_lock(&_setup_mutex)) {
+	if (!_db_setup) {
+		if (pthread_mutex_lock(&_db_setup_mutex)) {
 			return -1;
 		}
 
-		if (!_setup) {
+		if (!_db_setup) {
 			if (pthread_key_create(&_key_db_handle, NULL)) {
 				return -2;
 			}
             if (pthread_key_create(&_key_db_in_transaction, NULL)) {
                 return -2;
             }
-			_setup = 1;
+			_db_setup = 1;
 		}
 
-		if (pthread_mutex_unlock(&_setup_mutex)) {
+		if (pthread_mutex_unlock(&_db_setup_mutex)) {
 			return -3;
 		}
 	}
