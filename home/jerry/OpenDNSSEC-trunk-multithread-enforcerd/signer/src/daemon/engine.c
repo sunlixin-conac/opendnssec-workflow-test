@@ -697,6 +697,7 @@ set_notify_ns(zone_type* zone, const char* cmd)
             str = NULL;
         }
     }
+    zone->notify_command = (char*) str2;
     zone->notify_ns = zone->notify_args[0];
     return;
 }
@@ -1041,6 +1042,7 @@ engine_start(const char* cfgfile, int cmdline_verbosity, int daemonize,
     /* shutdown */
     ods_log_info("[%s] signer shutdown", engine_str);
     if (close_hsm) {
+        ods_log_verbose("[%s] close hsm", engine_str);
         hsm_close();
     }
     engine_stop_xfrhandler(engine);
