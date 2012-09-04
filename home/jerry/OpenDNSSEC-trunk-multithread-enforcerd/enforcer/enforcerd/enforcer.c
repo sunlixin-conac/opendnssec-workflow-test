@@ -772,7 +772,7 @@ int do_keygen(DAEMONCONFIG *config, KSM_POLICY* policy, hsm_ctx_t *ctx)
 
     /* Check datetime in case it came back NULL */
     if (rightnow == NULL) {
-        log_msg(config, LOG_DEBUG, "Couldn't turn \"now\" into a date, quitting...");
+        log_msg(config, LOG_ERR, "Couldn't turn \"now\" into a date, quitting...");
         exit(1);
     }
 
@@ -1202,7 +1202,7 @@ int do_communication(DAEMONCONFIG *config, KSM_POLICY* policy)
 
                     /* Check datetime in case it came back NULL */
                     if (datetime == NULL) {
-                        log_msg(config, LOG_DEBUG, "Couldn't turn \"now\" into a date");
+                        log_msg(config, LOG_ERR, "Couldn't turn \"now\" into a date, quiting...");
                         unlink(config->pidfile);
                         exit(1);
                     }
@@ -1489,7 +1489,7 @@ int do_communication_workers(DAEMONCONFIG *config, KSM_POLICY* policy)
 
                 /* Check datetime in case it came back NULL */
                 if (datetime == NULL) {
-                    log_msg(config, LOG_DEBUG, "Couldn't turn \"now\" into a date");
+                    log_msg(config, LOG_ERR, "Couldn't turn \"now\" into a date, skipping zone %s", zone_name);
                     StrFree(zone_name);
                     continue;
                 }
@@ -2183,7 +2183,7 @@ int do_purge(int interval, int policy_id)
 
     /* Check datetime in case it came back NULL */
     if (rightnow == NULL) {
-        log_msg(NULL, LOG_DEBUG, "Couldn't turn \"now\" into a date, quitting...");
+        log_msg(NULL, LOG_ERR, "Couldn't turn \"now\" into a date, quitting...");
         exit(1);
     }
 
