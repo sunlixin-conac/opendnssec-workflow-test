@@ -706,6 +706,7 @@ check_if_tested ()
 				local build_svn_rev=`cat "$INSTALL_ROOT/.$name_tag.test" 2>/dev/null`
 				
 				if [ "$SVN_REVISION" = "$build_svn_rev" ]; then
+					rm -f junit.xml
 					return 0
 				fi
 			fi
