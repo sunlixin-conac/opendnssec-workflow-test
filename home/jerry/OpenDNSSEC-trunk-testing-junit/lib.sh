@@ -706,7 +706,9 @@ check_if_tested ()
 				local build_svn_rev=`cat "$INSTALL_ROOT/.$name_tag.test" 2>/dev/null`
 				
 				if [ "$SVN_REVISION" = "$build_svn_rev" ]; then
-					rm -f junit.xml
+				    if [ -f junit.xml ]; then
+				        touch junit.xml
+				    fi
 					return 0
 				fi
 			fi
@@ -1404,6 +1406,8 @@ run_tests ()
     local junit_test="$WORKSPACE/junit.xml.test"
     local junit_foot="$WORKSPACE/junit.xml.foot"
     local tail_pid
+    local test_name
+    local test_classname
 
 	if [ -n "$PRE_TEST" ]; then
 		if ! declare -F "$PRE_TEST" >/dev/null 2>/dev/null; then
@@ -1474,6 +1478,8 @@ run_tests ()
 		test_path="${test[test_iter]}"
 		test_iter=$(( test_iter + 1 ))
 		test_start=`date +%s`
+        test_name=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $3}'`
+        test_classname=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%g'`
 		echo "##### `date` $test_iter/$test_num $test_path ... "
 		pwd2=`pwd`
 		cd "$test_path" 2>/dev/null &&
@@ -1530,7 +1536,11 @@ run_tests ()
 			syslog_cleanup
 
             echo '<testsuite name="'"$test_path"'" tests="1" time="'"$test_time"'">' >> "$junit_test"
-    		echo '<testcase name="test" time="'"$test_time"'"></testcase>' >> "$junit_test"
+    		echo '<testcase name="'"$test_name"'" classname="'"$test_classname"'" time="'"$test_time"'">' >> "$junit_test"
+            echo '</testcase>' >> "$junit_test"
+            echo '<system-out>' >> "$junit_test"
+            cat "_test.$BUILD_TAG" | sed 's%&%\&amp;%g' | sed 's%<%\&lt;%g' | sed 's%>%\&gt;%g' >> "$junit_test"
+            echo '</system-out>' >> "$junit_test"
             echo '</testsuite>' >> "$junit_test"
 		else
 			test_failed=$(( test_failed + 1 ))
@@ -1538,9 +1548,12 @@ run_tests ()
 			echo "##### `date` $test_iter/$test_num $test_path ... FAILED!"
 			
             echo '<testsuite name="'"$test_path"'" tests="1" time="'"$test_time"'">' >> "$junit_test"
-            echo '<testcase name="'"$test_path"' time="'"$test_time"'"><failure message="Failed">' >> "$junit_test"
-            cat "_test.$BUILD_TAG" >> "$junit_test"
-            echo '</failure></testcase>' >> "$junit_test"
+            echo '<testcase name="'"$test_name"'" classname="'"$test_classname"'" time="'"$test_time"'">' >> "$junit_test"
+            echo '<failure message="Failed">Test failed, exit code '"$test_status"'</failure>' >> "$junit_test"
+            echo '</testcase>' >> "$junit_test"
+            echo '<system-out>' >> "$junit_test"
+            cat "_test.$BUILD_TAG" | sed 's%&%\&amp;%g' | sed 's%<%\&lt;%g' | sed 's%>%\&gt;%g' >> "$junit_test"
+            echo '</system-out>' >> "$junit_test"
             echo '</testsuite>' >> "$junit_test"
 		fi
 		rm -f "_test.$BUILD_TAG"
