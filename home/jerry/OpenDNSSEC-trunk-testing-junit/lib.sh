@@ -1479,7 +1479,7 @@ run_tests ()
 		test_iter=$(( test_iter + 1 ))
 		test_start=`date +%s`
         test_name=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $3}'`
-        test_classname=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%g'`
+        test_classname=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%'`
 		echo "##### `date` $test_iter/$test_num $test_path ... "
 		pwd2=`pwd`
 		cd "$test_path" 2>/dev/null &&
