@@ -1448,18 +1448,41 @@ run_tests ()
 		return 1
 	fi
 		
+    rm -f "$junit" "$junit_test"
+    echo '<?xml version="1.0" encoding="UTF-8"?>' > "$junit_head"
+    echo '<testsuites>' > "$junit_head"
+
 	ls -1 2>/dev/null | $GREP '^[0-9]*' | $GREP -v '\.off$' 2>/dev/null >"_tests.$BUILD_TAG"
 	while read entry; do
-		if [ -d "$entry" -a -f "$entry/test.sh" -a ! -f "$entry/off" ]; then
-			test[test_num]="$entry"
-			test_num=$(( test_num + 1 ))
+		if [ -d "$entry" -a -f "$entry/test.sh" ]; then
+		    if [ -f "$entry/off" ]; then
+		        test_name=`grep '#CATEGORY:' "$entry/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $3}'`
+		        if [ -z "$test_name" ]; then
+		            test_name='unknown'
+		        fi
+		        test_classname=`grep '#CATEGORY:' "$entry/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%'`
+		        if [ -z "$test_classname" ]; then
+		            test_classname='unknown'
+		        fi
+	            echo '<testsuite name="'"$entry"'" tests="1" skip="1">' >> "$junit_test"
+	            echo '<testcase name="'"$test_name"'" classname="'"$test_classname"'">' >> "$junit_test"
+                echo '<skipped message="Skipped">Test skipped, disabled with off file</skipped>' >> "$junit_test"
+	            echo '</testcase>' >> "$junit_test"
+	            echo '</testsuite>' >> "$junit_test"
+	        else
+				test[test_num]="$entry"
+				test_num=$(( test_num + 1 ))
+			fi
 		fi
 	done <"_tests.$BUILD_TAG"
 	rm -f "_tests.$BUILD_TAG" 2>/dev/null
 	
 	if [ "$test_num" -le 0 ] 2>/dev/null; then
-		echo "run_tests: no tests found!" >&2
+		echo "run_tests: no active tests found!" >&2
 		cd "$pwd"
+		# Do not generate JUnit if there is no tests or all tests skipped because
+        # Jenkins might mark it failed otherwise
+	    rm -f "$junit_head" "$junit_test" "$junit_foot"
 		return 1
 	fi
 	
@@ -1468,10 +1491,6 @@ run_tests ()
 		trap "STOP_TEST=1" SIGINT
 	fi
 	
-	rm -f "$junit" "$junit_test"
-	echo '<?xml version="1.0" encoding="UTF-8"?>' > "$junit_head"
-    echo '<testsuites>' > "$junit_head"
-
 	echo "Running tests ..."	
 	while [ "$test_iter" -lt "$test_num" ] 2>/dev/null; do
 		retry=0
@@ -1479,7 +1498,13 @@ run_tests ()
 		test_iter=$(( test_iter + 1 ))
 		test_start=`date +%s`
         test_name=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $3}'`
+        if [ -z "$test_name" ]; then
+            test_name='unknown'
+        fi
         test_classname=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%'`
+        if [ -z "$test_classname" ]; then
+            test_classname='unknown'
+        fi
 		echo "##### `date` $test_iter/$test_num $test_path ... "
 		pwd2=`pwd`
 		cd "$test_path" 2>/dev/null &&
@@ -1539,7 +1564,7 @@ run_tests ()
     		echo '<testcase name="'"$test_name"'" classname="'"$test_classname"'" time="'"$test_time"'">' >> "$junit_test"
             echo '</testcase>' >> "$junit_test"
             echo '<system-out>' >> "$junit_test"
-            cat "_test.$BUILD_TAG" | sed 's%&%\&amp;%g' | sed 's%<%\&lt;%g' | sed 's%>%\&gt;%g' >> "$junit_test"
+            cat "_test.$BUILD_TAG" | sed 's%&%\&amp;%g' | sed 's%<%\&lt;%g' | sed 's%>%\&gt;%g' >> "$junit_test" 2>/dev/null
             echo '</system-out>' >> "$junit_test"
             echo '</testsuite>' >> "$junit_test"
 		else
@@ -1552,7 +1577,7 @@ run_tests ()
             echo '<failure message="Failed">Test failed, exit code '"$test_status"'</failure>' >> "$junit_test"
             echo '</testcase>' >> "$junit_test"
             echo '<system-out>' >> "$junit_test"
-            cat "_test.$BUILD_TAG" | sed 's%&%\&amp;%g' | sed 's%<%\&lt;%g' | sed 's%>%\&gt;%g' >> "$junit_test"
+            cat "_test.$BUILD_TAG" | sed 's%&%\&amp;%g' | sed 's%<%\&lt;%g' | sed 's%>%\&gt;%g' >> "$junit_test" 2>/dev/null
             echo '</system-out>' >> "$junit_test"
             echo '</testsuite>' >> "$junit_test"
 		fi
@@ -1570,7 +1595,7 @@ run_tests ()
     fi
 
     echo '</testsuites>' > "$junit_foot"
-    cat "$junit_head" "$junit_test" "$junit_foot" > "$junit"
+    cat "$junit_head" "$junit_test" "$junit_foot" > "$junit" 2>/dev/null
     rm -f "$junit_head" "$junit_test" "$junit_foot"
 
 	if ! cd "$pwd" 2>/dev/null; then
