@@ -31,7 +31,7 @@ syslog_waitfor 60 'ods-signerd: .*\[engine\] signer shutdown' &&
 rm -rf "$INSTALL_ROOT/var/opendnssec/temp" &&
 mkdir "$INSTALL_ROOT/var/opendnssec/tmp" &&
 
-return 1
+return 0
 
 ods_kill
 rm -rf "$INSTALL_ROOT/var/opendnssec/temp"
