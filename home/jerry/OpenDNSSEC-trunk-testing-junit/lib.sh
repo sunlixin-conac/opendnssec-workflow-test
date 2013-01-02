@@ -1576,9 +1576,9 @@ run_tests ()
             echo '<testcase name="'"$test_name"'" classname="'"$test_classname"'" time="'"$test_time"'">' >> "$junit_test"
             echo '<failure message="Failed">Test failed, exit code '"$test_status"'</failure>' >> "$junit_test"
             echo '</testcase>' >> "$junit_test"
-            echo '<system-out>' >> "$junit_test"
+            echo '<system-err>' >> "$junit_test"
             cat "_test.$BUILD_TAG" | sed 's%&%\&amp;%g' | sed 's%<%\&lt;%g' | sed 's%>%\&gt;%g' >> "$junit_test" 2>/dev/null
-            echo '</system-out>' >> "$junit_test"
+            echo '</system-err>' >> "$junit_test"
             echo '</testsuite>' >> "$junit_test"
 		fi
 		rm -f "_test.$BUILD_TAG"
