@@ -65,7 +65,7 @@ test -f "$INSTALL_ROOT/var/opendnssec/signconf/ods2.xml" &&
 
 log_this_timeout ods-control-enforcer-stop 60 ods-control enforcer stop &&
 syslog_waitfor 60 'ods-enforcerd: .*all done' &&
-return 1
+return 0
 
 ods_kill
 return 1
