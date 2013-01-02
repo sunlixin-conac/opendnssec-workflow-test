@@ -1462,7 +1462,7 @@ run_tests ()
 		        fi
 		        test_classname=`grep '#CATEGORY:' "$entry/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%'`
 		        if [ -z "$test_classname" ]; then
-		            test_classname='unknown'
+		            test_classname='unknown.unknown'
 		        fi
 	            echo '<testsuite name="'"$entry"'" tests="1" skip="1">' >> "$junit_test"
 	            echo '<testcase name="'"$test_name"'" classname="'"$test_classname"'">' >> "$junit_test"
@@ -1503,7 +1503,7 @@ run_tests ()
         fi
         test_classname=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%'`
         if [ -z "$test_classname" ]; then
-            test_classname='unknown'
+            test_classname='unknown.unknown'
         fi
 		echo "##### `date` $test_iter/$test_num $test_path ... "
 		pwd2=`pwd`
