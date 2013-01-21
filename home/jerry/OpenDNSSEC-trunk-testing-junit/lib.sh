@@ -1456,11 +1456,11 @@ run_tests ()
 	while read entry; do
 		if [ -d "$entry" -a -f "$entry/test.sh" ]; then
 		    if [ -f "$entry/off" ]; then
-		        test_name=`grep '#CATEGORY:' "$entry/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $3}'`
+		        test_name=`echo "$entry"|sed 's%\.% %g'|awk '{print $3}'`
 		        if [ -z "$test_name" ]; then
 		            test_name='unknown'
 		        fi
-		        test_classname=`grep '#CATEGORY:' "$entry/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%'`
+		        test_classname=`echo "$entry"|sed 's%\.% %g'|awk '{print $1 "." $2}'`
 		        if [ -z "$test_classname" ]; then
 		            test_classname='unknown.unknown'
 		        fi
@@ -1497,11 +1497,11 @@ run_tests ()
 		test_path="${test[test_iter]}"
 		test_iter=$(( test_iter + 1 ))
 		test_start=`date +%s`
-        test_name=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $3}'`
+        test_name=`echo "$test_path"|sed 's%\.% %g'|awk '{print $3}'`
         if [ -z "$test_name" ]; then
             test_name='unknown'
         fi
-        test_classname=`grep '#CATEGORY:' "$test_path/test.sh"|sed 's%-\([^-]*\)$% \1%'|awk '{print $2}'|sed 's%-%.%'`
+        test_classname=`echo "$test_path"|sed 's%\.% %g'|awk '{print $1 "." $2}'`
         if [ -z "$test_classname" ]; then
             test_classname='unknown.unknown'
         fi
