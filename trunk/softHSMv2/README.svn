@@ -1,5 +1,19 @@
 $Id$
 
+**************************** NOTE **************************************
+
+Active development of SoftHSM v2 is not currently being done on this subversion repository. 
+
+To browse the most recent source code for SoftHSM v2 please see: 
+
+http://fisheye.opendnssec.org/browse/SoftHSMv2
+
+The latest code for SoftHSM v 2 is also available from:
+
+https://github.com/opendnssec/SoftHSMv2
+
+**************************** NOTE **************************************
+
 If the code is downloaded directly from the SVN, then you have to prepare the
 configuration scripts before continuing with the real README.
 

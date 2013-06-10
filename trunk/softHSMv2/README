@@ -3,6 +3,21 @@ $Id$
   SoftHSM is part of the OpenDNSSEC project.
   Read more at www.opendnssec.org
 
+**************************** NOTE **************************************
+
+Active development of SoftHSM v2 is not currently being done on this subversion repository. 
+
+To browse the most recent source code for SoftHSM v2 please see: 
+
+http://fisheye.opendnssec.org/browse/SoftHSMv2
+
+The latest code for SoftHSM v 2 is also available from:
+
+https://github.com/opendnssec/SoftHSMv2
+
+**************************** NOTE **************************************
+
+
 INTRODUCTION
 
   OpenDNSSEC handles and stores its cryptographic keys via the PKCS#11 
