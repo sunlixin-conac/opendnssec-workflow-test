@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config>
+    <keypath>key/</keypath>
+    <keysize>1200</keysize>
+    <algorithm>0</algorithm>
+    <iidalgorithm>0</iidalgorithm>
+     <parameterspath>params/</parameterspath>
+     <networkInterface>eth0</networkInterface>
+</config>
+
+
+

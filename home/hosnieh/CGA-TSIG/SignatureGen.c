@@ -1,11 +1,12 @@
 #include <stdio.h>
+#include "openssl/rsa.h"
+#include <openssl/pem.h>
 #include "public_variable.h"
 int rsasigngen(char * data, char * digest){
 
-        char *data = NULL;
+        char *data1 = NULL;
         int data_len;
         unsigned int sig_len;
-        unsigned char *sig;
         int err = -1;
 
         OpenSSL_add_all_digests();
@@ -60,7 +61,7 @@ int rsasigngen(char * data, char * digest){
                 return 3;
             }
         printf( "now to sign update..\n");
-        data = readFile(in_file);
+       // data1 = readFile();
         data_len = strlen(data);
         printf("data len = %d\n", data_len);
 
@@ -72,19 +73,20 @@ int rsasigngen(char * data, char * digest){
         }
         printf( "now to sign final..\n");
 
-sig = malloc(EVP_PKEY_size(privkey)); //!!!!! SEGMENTATION FAULT HERE !!!!!
+digest = malloc(EVP_PKEY_size(privkey)); 
 
 
-        if (!EVP_SignFinal(ctx, &sig, &sig_len, priv_key))
+        if (!EVP_SignFinal(ctx, &digest, &sig_len, priv_key))
         {
             fprintf(stderr, "EVP_SignFinal: failed.\n");
-            free(sig);
+            free(digest);
             EVP_PKEY_free(priv_key);
             return 3;
         }
 
         free(data);
-        free(sig);
+        
+       // free(digest);
         EVP_PKEY_free(priv_key);
         return EXIT_SUCCESS;
 

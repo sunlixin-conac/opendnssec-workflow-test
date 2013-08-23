@@ -3,33 +3,33 @@
 #include "IOAccess.h"
 #include "public_variable.h"
 
-enum flag 
+typedef enum _flag
 {
-    rsa=0,
-    ecc=1
-};
+     rsa=0,
+     ecc=1
+}flag;
 
-struct KeyGen
+typedef struct _KeyGen
 {
     int keysize;
     flag type;
 
-};
+}KeyGen;
  
-extern void keygeneration(struct KeyGen *key)
+extern void keygeneration(KeyGen *key)
 {
-    
-    switch (key->type)
+  
+    switch(key->type)
     {
-        case flag.ecc:
-            
-            
-            
+        case 0://ecc
+   
             break;
-            
-        case flag.rsa:
-                 const int exp = 3;
-            RSA *rsa = RSA_generate_key(key->keysize,exp , 0, 0);
+      
+        case 1://rsa
+        { //  error message without this : a label can only be a part of statement
+         int exp = 3;  
+    
+            RSA* rsa = RSA_generate_key(key->keysize,exp , 0, 0);
             
          /* To get the C-string PEM form: */
            BIO *bio = BIO_new(BIO_s_mem());
@@ -48,7 +48,8 @@ prikey = pem_key;
 BIO_free_all(bio);
 RSA_free(rsa);
 free(pem_key);
-         break;
+break;
+        }
     }
        
 }
