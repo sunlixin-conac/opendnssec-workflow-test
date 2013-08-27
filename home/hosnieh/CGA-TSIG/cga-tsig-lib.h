@@ -8,7 +8,7 @@
 #include "vector.h"
 #include "public_variable.h"
 //#include "SignatureGen.h"
-//#include "xml_parser.h"
+#include "xml_parser.h"
 
 
 

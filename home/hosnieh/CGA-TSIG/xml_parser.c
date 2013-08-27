@@ -1,10 +1,10 @@
-#include <libxml2/libxml/parser.h>
+#include "xml_parser.h"
 #include <stdio.h>
 
-xmlNode readxml(char * filepath)
+int readxml(char * filepath)
 {
-    xmlDoc         *document;
-    xmlNode        *root, *first_child, *node;
+  /*  xmlDoc         *document;
+    xmlNode        *first_child, *node;
 
     if (filepath== NULL) {
   
@@ -22,5 +22,75 @@ xmlNode readxml(char * filepath)
     	fprintf(stdout, "\t Child is <%s> (%i)\n", node->name, node->type);
     }
  */
+    
+     
+    xmlTextReaderPtr reader;
+ 
+ 
+    reader = xmlReaderForFile(filepath, NULL, 0);
+ 
+ 
+    const char *temp;
+ 
+ 
+    int i;
+ 
+ 
+    while(xmlTextReaderRead(reader)) {
+        switch(xmlTextReaderNodeType(reader)) {
+            case XML_READER_TYPE_ELEMENT:
+ 
+ 
+            for(i = 0 ; i < xmlTextReaderDepth(reader) ; i++)
+                printf("\t");
+ 
+ 
+            temp = (char *)xmlTextReaderConstName(reader);
+ 
+ 
+            printf("Element: %s", temp);
+ 
+ 
+            while(xmlTextReaderMoveToNextAttribute(reader)) {
+                temp = (char *)xmlTextReaderConstName(reader);
+                printf("  %s", temp);
+ 
+ 
+                temp = (char *)xmlTextReaderConstValue(reader);
+                printf("=\"%s\"", temp);
+            }
+ 
+ 
+            xmlTextReaderMoveToElement(reader);
+ 
+ 
+            printf("\n");
+ 
+ 
+            continue;
+ 
+ 
+        case XML_READER_TYPE_TEXT:
+            temp = (char *)xmlTextReaderConstValue(reader);
+ 
+ 
+            for(i = 0 ; i < xmlTextReaderDepth(reader) ; i++)
+                printf("\t");
+ 
+ 
+            printf("\t%s", temp);
+ 
+ 
+            printf("\n");
+ 
+ 
+            continue;
+        }
+    }
+ 
+ 
+    xmlFreeTextReader(reader);
+    xmlCleanupParser();
+    
     return 0;
 }

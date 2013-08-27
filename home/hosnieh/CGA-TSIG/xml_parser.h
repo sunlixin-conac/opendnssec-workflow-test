@@ -2,10 +2,10 @@
 #ifndef XML_PARSER_H
 #define	XML_PARSER_H
 
-#include <libxml2/libxml/parser.h>
+#include <libxml/parser.h>
+#include <libxml/xmlreader.h>
 
-
-    xmlNode readxml(char *);
+   int readxml(char * );
             
     
 
