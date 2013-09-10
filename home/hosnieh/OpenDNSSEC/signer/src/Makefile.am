@@ -15,7 +15,7 @@ AM_CPPFLAGS = \
 
 signerdir =     @libdir@/opendnssec/signer
 
-sbin_PROGRAMS = ods-signerd ods-signer # Matthijs: You can rename the binary
+sbin_PROGRAMS = ods-signerd ods-signer # add a test-cgatsig binary here
 # man8_MANS =     man/ods-signer.8 man/ods-signerd.8
 
 ods_signerd_SOURCES=		ods-signerd.c \
@@ -75,9 +75,14 @@ ods_signerd_SOURCES=		ods-signerd.c \
 				wire/xfrd.c wire/xfrd.h \
 				# Matthijs: add cga-tsig/example.c cga-tsig/example.h and all other files here
 
+# copy ods-signerd_SOURCES and rename to test-cgatsig
+
 ods_signerd_LDADD=		$(LIBHSM)
 ods_signerd_LDADD+=		$(LIBCOMPAT)
 ods_signerd_LDADD+=		@LDNS_LIBS@ @XML2_LIBS@ @PTHREAD_LIBS@ @RT_LIBS@ @SSL_LIBS@ @C_LIBS@
+
+# copy ods-signerd_LDADD and rename to test-cgatsig
+
 
 ods_signer_SOURCES=		ods-signer.c \
 				shared/allocator.c shared/allocator.h \
