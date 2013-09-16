@@ -1,0 +1,64 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<link href="img/style.css" type="text/css" rel="stylesheet"/>
+<title>Description of Source Code</title>
+<base target="_self">
+</head>
+
+<body>
+
+<ul>
+	<li><a target="_self" href="#Configuration_Files">Configuration Files</a></li>
+	<li><a href="#XML_Parser">XML Parser</a></li>
+	<li><a target="_self" href="#Key_Generation">Key Generation</a></li>
+	<li><a target="_self" href="#Signature_Generation">Signature Generation</a></li>
+</ul>
+<p>&nbsp;</p>
+<h1><a name="Configuration_Files">Configuration Files</a></h1>
+<p>CGA-TSIG configuration files can be found in OpenDNSSEC/Conf/ . addyn.xml.in 
+and addyn.rnc are two files that contain the required parameters for CGA-TSIG</p>
+<h1><a name="XML_Parser">XML Parser</a></h1>
+<p>In order to parse the xml configuration file, there are two other files that 
+are needed to accomplish this task</p>
+<ul>
+	<li>OpenDNSSEC/signer/src/adapter/addyn.(c,h)</li>
+	<li>OpenDNSSEC/signer/src/parser/addynparser.(c,h)</li>
+</ul>
+<h1><a name="Key_Generation">Key Generation</a></h1>
+<p>CGA-TSIG uses the cache value stored by the Secure Neighbor Discovery Protocol (SeND) 
+service, but it can also generate the key pair itself. This scenario is 
+applicable with FQDN and other related DNS updates. It is not recommended for 
+use in the authentication of resolver to client or the authentication of root DNS servers in 
+recursive DNS servers. </p>
+<ul>
+	<li>OpenDNSSEC/signer/src/cga-tsig/readfile.(c,h) <br>
+	<b>unsigned char * readfile(char * filepath) : </b>This function obtains the 
+	path to the PEM file. The default path will be ~/key/prikey.pem&nbsp;&nbsp;&nbsp; 
+	~/key/pubkey.pem&nbsp;&nbsp; where prikey is the node's private key and 
+	pubkey is the node's public key. <br>
+	<b>void writefile(char * filepath, unsigned char * content) : </b>This 
+	function stores the key pair contents to the hard disk. It is recommended 
+	that&nbsp; 
+	the default file name and path be used as explained in <i>readfile</i> function.</li>
+	<li>OpenDNSSEC/signer/src/cga-tsig/keygen.(c,h) <br>
+	<b>keygeneration(KeyGen *key) : </b>This function generates the key pairs 
+	and stores them in a PEM file.</li>
+</ul>
+<h1><a name="Signature_Generation">Signature Generation</a></h1>
+<p>The assumption made in this step is that the value that should be signed is available 
+and that it receives this value as an input.</p>
+<ul>
+	<li>OpenDNSSEC/signer/src/cga-tsig/signgen.(c,h) <br>
+	<b>char * rsasigngen(char * data) </b>: This function signs the data using 
+	the RSA private key. the return value from this function is a digest (signed 
+	data). </li>
+</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>
