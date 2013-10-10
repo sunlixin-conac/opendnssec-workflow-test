@@ -15,6 +15,8 @@
 	<li><a href="#XML_Parser">XML Parser</a></li>
 	<li><a target="_self" href="#Key_Generation">Key Generation</a></li>
 	<li><a target="_self" href="#Signature_Generation">Signature Generation</a></li>
+	<li><a href="#CGA_Generation">CGA Generation</a></li>
+	<li><a href="#General_Variables">General Variables and Functions</a></li>
 </ul>
 <p>&nbsp;</p>
 <h1><a name="Configuration_Files">Configuration Files</a></h1>
@@ -34,6 +36,47 @@ applicable with FQDN and other related DNS updates. It is not recommended for
 use in the authentication of resolver to client or the authentication of root DNS servers in 
 recursive DNS servers. </p>
 <ul>
+	<li>OpenDNSSEC/signer/src/cga-tsig/keygen.(c,h) <br>
+	<b>keygeneration(KeyGen *key) : </b>This function generates the key pairs 
+	and stores them in a PEM file.<br>
+	<b>der2pem(RSA *key) : </b>This function converts der to PEM format<br>
+	<b>pem2der(RSA *key) : </b>This function converts PEM to der format<br>
+	<b>der2base64(const unsigned char * dercode, int length) : </b>This function 
+	converts der to base64 encoding format. It allows to store the der format in 
+	a file</li>
+</ul>
+<h1><a name="Signature_Generation">Signature Generation</a></h1>
+<p>The assumption made in this step is that the value that should be signed is available 
+and that it receives this value as an input.</p>
+<ul>
+	<li>OpenDNSSEC/signer/src/cga-tsig/signgen.(c,h) <br>
+	<b>char * rsasigngen(char * data, char * keypath) </b>: This function signs the data using 
+	the RSA private key. the return value from this function is a digest (signed 
+	data). The input value is the plain text data and the key location. </li>
+</ul>
+<h1><a name="CGA_Generation">CGA Generation</a></h1>
+<p>CGA Generation is a series of functions that can be used to generate CGA in 
+case the node does not support Secure Neighbor Discovery (SeND) and CGA.</p>
+<ul>
+	<li>OpenDNSSEC/signer/src/cga-tsig/cgagen.(c,h) <br>
+	<b>unsigned char * sha1GenU(unsigned char * data) </b>: This function 
+	generates the SHA1 digest of the data. It gets the data as an input<br>
+	<b>unsigned char * randGen(int number_of_bytes) </b>: This function generates the a random 
+	number. The output of this function is array of bytes. The number of bytes 
+	is the input to this function. This function generates the 16 bytes random 
+	modifier for CGA algorithm.</li>
+	<li></li>
+</ul>
+<h1><a name="General_Variables">General Variables and Functions</a></h1>
+<p>Some general functions and variables used in other part of the code.</p>
+<ul>
+	<li>OpenDNSSEC/signer/src/cga-tsig/public_variable.(c,h)<br>
+	<b>char * ObtainIP6(char * networkInterface) </b>: This function obtains the 
+	IPv6 address of the node. The output of this function is the IPv6 array of 
+	bytes<br>
+	<b>char * ObtainIP(char * networkInterface) </b>: This function obtains the 
+	IPv4 address of the node. The output of this function is the IPv4 array of 
+	bytes</li>
 	<li>OpenDNSSEC/signer/src/cga-tsig/readfile.(c,h) <br>
 	<b>unsigned char * readfile(char * filepath) : </b>This function obtains the 
 	path to the PEM file. The default path will be ~/key/prikey.pem&nbsp;&nbsp;&nbsp; 
@@ -42,20 +85,11 @@ recursive DNS servers. </p>
 	<b>void writefile(char * filepath, unsigned char * content) : </b>This 
 	function stores the key pair contents to the hard disk. It is recommended 
 	that&nbsp; 
-	the default file name and path be used as explained in <i>readfile</i> function.</li>
-	<li>OpenDNSSEC/signer/src/cga-tsig/keygen.(c,h) <br>
-	<b>keygeneration(KeyGen *key) : </b>This function generates the key pairs 
-	and stores them in a PEM file.</li>
+	the default file name and path be used as explained in <i>readfile</i> function. 
+	</li>
 </ul>
-<h1><a name="Signature_Generation">Signature Generation</a></h1>
-<p>The assumption made in this step is that the value that should be signed is available 
-and that it receives this value as an input.</p>
-<ul>
-	<li>OpenDNSSEC/signer/src/cga-tsig/signgen.(c,h) <br>
-	<b>char * rsasigngen(char * data) </b>: This function signs the data using 
-	the RSA private key. the return value from this function is a digest (signed 
-	data). </li>
-</ul>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 
