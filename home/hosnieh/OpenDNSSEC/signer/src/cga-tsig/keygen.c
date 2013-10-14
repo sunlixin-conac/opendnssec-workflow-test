@@ -1,5 +1,3 @@
-#include "openssl/rsa.h"
-#include <openssl/pem.h>
 #include "readfile.h"
 #include "keygen.h"
 
@@ -16,10 +14,16 @@ void keygeneration(KeyGen *key)
       
         case 1://rsa
         { //  error message without this : a label can only be a part of statement
-                int exp = 3;  
-    
+                int exp = 3;
+               
                 RSA* rsa = RSA_generate_key(key->keysize,exp , 0, 0);
-            
+                 // Check whether or not the key is good. If it is not good regenerate a new key
+                //RSA_check_key(rsa)==1 : key is good
+                while (!RSA_check_key(rsa))
+                {
+                rsa = RSA_generate_key(key->keysize,exp , 0, 0);
+                }
+                
          /* To get the C-string PEM form: */
                 BIO *prikey = BIO_new(BIO_s_mem());
                 BIO *pubkey = BIO_new(BIO_s_mem());
@@ -43,9 +47,10 @@ void keygeneration(KeyGen *key)
                 pub_key[pub_len] = '\0';
                 
                 WriteFile("key/prikey.pem",pri_key);
-                WriteFile("key/pubkey.pem",pub_key)
+                WriteFile("key/pubkey.pem",pub_key);
                 prikey = pem_key;
-
+                pem2der(rsa);
+                
                 BIO_free_all(prikey);
                 BIO_free_all(pubkey);
                 RSA_free(rsa);
@@ -74,7 +79,7 @@ void pem2der(RSA *key)
   return b64;
        
 }
-RSA der2pem(const unsigned char *der_key, int pubkey_size)
+RSA * der2pem(const unsigned char *der_key, int pubkey_size)
 {
   RSA *decoded_key = d2i_RSAPublicKey(NULL,&der_key,pubkey_size);
   return decoded_key;
@@ -118,7 +123,6 @@ int DecodeLength(const char* in_b64)
 char *base64toder( char *in_b64)
 {
  BIO *bio,*b64, *bio_out;
- char inbuf[512];
  int inlen;
 
  b64 = BIO_new(BIO_f_base64());

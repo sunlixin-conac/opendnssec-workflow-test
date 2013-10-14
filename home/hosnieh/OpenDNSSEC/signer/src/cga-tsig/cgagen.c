@@ -44,17 +44,32 @@ unsigned char * randGen(int number_of_bytes)
     
 }
 
-unsigned char * cgaGen(unsigned char * ra, short keygen, char * keypath)
+unsigned char * cgaGen(unsigned char * ra, short keygen, char * keypath, int key_size, short algorithm_type)
 {
     switch(keygen)
     {
         case 0:
-            char * prikey=ReadFile(keypath);
+        {
+            // path to der file
+            char * prikey = ReadFile(keypath);
+            //strcpy(prikey,ReadFile(keypath));
+           // memcpy(prikey, ReadFile(keypath), strlen(ReadFile(keypath)) + 1);
+          
+            base64toder(prikey);
+           
             
             break;
+        }
         case 1:
+        {
+            KeyGen param;
+            param.keysize = key_size;
+            param.type = algorithm_type; //RSA
+            
+            keygeneration(param);
             
             break;
+        }
      
         
     }
