@@ -1,0 +1,9 @@
+The following software components has been
+moved to http://github.com/opendnssec:
+
+- auditor
+- hsmbully
+- ods4bind
+- pkcs15-dnssec
+- softHSMv2
+- contrib/eppclient
