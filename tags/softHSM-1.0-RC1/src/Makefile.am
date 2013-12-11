@@ -1,3 +1,0 @@
-# $Id$
-
-SUBDIRS = bin lib

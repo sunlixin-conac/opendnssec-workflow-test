@@ -1,3 +1,0 @@
-# $Id: softhsm.conf.in 3333 2010-04-23 13:18:48Z jakob $
-#
-0:@OPENDNSSEC_LOCALSTATE_DIR@/softhsm.db
