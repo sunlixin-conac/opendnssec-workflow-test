@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: kaspaccess.c 6301 2012-05-03 12:27:11Z jerry $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

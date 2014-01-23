@@ -1,4 +1,4 @@
-# $Id$
+# $Id: acx_dlopen.m4 5294 2011-07-06 09:55:57Z rb $
 
 AC_DEFUN([ACX_DLOPEN],[
 	tmp_SUCCESS="no"

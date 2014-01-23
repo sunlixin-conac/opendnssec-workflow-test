@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: confparser.h 7065 2013-03-12 13:13:55Z matthijs $
  *
  * Copyright (c) 2009 NLNet Labs. All rights reserved.
  *

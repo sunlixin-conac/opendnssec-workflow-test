@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: adfile.c 7157 2013-06-17 09:54:25Z matthijs $
  *
  * Copyright (c) 2009 NLNet Labs. All rights reserved.
  *

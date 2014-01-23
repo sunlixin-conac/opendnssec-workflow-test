@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ksmutil.c 7416 2013-11-21 08:34:02Z matthijs $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

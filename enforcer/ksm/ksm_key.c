@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ksm_key.c 7221 2013-08-19 14:37:53Z sara $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

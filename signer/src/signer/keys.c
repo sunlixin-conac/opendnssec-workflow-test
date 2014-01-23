@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: keys.c 6376 2012-06-04 14:16:48Z matthijs $
  *
  * Copyright (c) 2009 NLNet Labs. All rights reserved.
  *

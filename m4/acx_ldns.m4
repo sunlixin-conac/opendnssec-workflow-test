@@ -1,4 +1,4 @@
-# $Id$
+# $Id: acx_ldns.m4 6847 2012-11-20 10:12:59Z sara $
 
 AC_DEFUN([ACX_LDNS],[
 	AC_ARG_WITH(ldns, 

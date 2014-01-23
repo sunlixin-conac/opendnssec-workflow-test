@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ksm_zone.c 6394 2012-06-08 09:51:50Z sion $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

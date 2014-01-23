@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: duration.c 7352 2013-10-09 12:33:09Z matthijs $
  *
  * Copyright (c) 2009 NLNet Labs. All rights reserved.
  *

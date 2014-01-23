@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: pin.c 6704 2012-09-20 10:43:19Z rb $ */
 
 /*
  * Copyright (c) 2011 .SE (The Internet Infrastructure Foundation).

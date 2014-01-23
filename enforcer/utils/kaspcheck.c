@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: kaspcheck.c 7028 2013-02-13 11:41:17Z sion $
  *
  * Copyright (c) 2012 Nominet UK. All rights reserved.
  *

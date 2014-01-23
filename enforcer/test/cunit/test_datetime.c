@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: test_datetime.c 3893 2010-09-03 14:10:16Z sion $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: acx_libsqlite3.m4 5803 2011-10-20 12:33:31Z rb $
 
 AC_DEFUN([ACX_LIBSQLITE3],[
 	

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: version.m4 7463 2013-12-04 09:03:51Z jakob $
 #
 # this file contains the current OpenDNSSEC version
 

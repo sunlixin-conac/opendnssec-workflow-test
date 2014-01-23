@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: datetime.c 4654 2011-03-25 08:43:46Z sion $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

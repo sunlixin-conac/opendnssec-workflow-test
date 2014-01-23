@@ -1,5 +1,5 @@
 .TH "ods-hsmspeed" "1" "February 2010" "OpenDNSSEC" "OpenDNSSEC ods-hsmspeed"
-.\" $Id$
+.\" $Id: ods-hsmspeed.1.in 6560 2012-08-28 06:31:40Z rb $
 .SH "NAME"
 .LP
 .B ods\-hsmspeed

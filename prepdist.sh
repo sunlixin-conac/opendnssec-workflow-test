@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id$
+# $Id: prepdist.sh 7164 2013-06-19 10:41:17Z jerry $
 
 PREFIX=/tmp/opendnssec-release
 

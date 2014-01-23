@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--$Id$ -->
+<!--$Id: kasp2html.xsl 6002 2012-01-04 14:50:37Z jakob $ -->
 
 <!--
 

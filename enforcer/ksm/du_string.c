@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: du_string.c 5336 2011-07-15 12:53:09Z sion $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

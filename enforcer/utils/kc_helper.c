@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: kc_helper.c 7366 2013-10-21 10:41:16Z matthijs $
  *
  * Copyright (c) 2012 Nominet UK. All rights reserved.
  *

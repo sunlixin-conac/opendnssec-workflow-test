@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ksm.h 6969 2013-01-23 09:55:48Z sion $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

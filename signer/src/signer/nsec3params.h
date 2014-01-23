@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: nsec3params.h 6215 2012-03-20 13:30:51Z matthijs $
  *
  * Copyright (c) 2009 NLNet Labs. All rights reserved.
  *

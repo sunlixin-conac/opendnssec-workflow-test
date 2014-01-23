@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: engine.c 7586 2014-01-22 14:43:30Z matthijs $
  *
  * Copyright (c) 2009 NLNet Labs. All rights reserved.
  *
@@ -758,7 +758,7 @@ dnsconfig_zone(engine_type* engine, zone_type* zone)
     } else if (zone->xfrd) {
         netio_remove_handler(engine->xfrhandler->netio,
             &zone->xfrd->handler);
-        xfrd_cleanup(zone->xfrd);
+        xfrd_cleanup(zone->xfrd, 0);
         zone->xfrd = NULL;
     }
     if (zone->adoutbound->type == ADAPTER_DNS) {

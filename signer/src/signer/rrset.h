@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: rrset.h 6870 2012-11-27 13:01:48Z matthijs $
  *
  * Copyright (c) 2009 NLNet Labs. All rights reserved.
  *

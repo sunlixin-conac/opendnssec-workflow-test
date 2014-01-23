@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: hsm.c 7223 2013-08-20 10:31:08Z matthijs $
  *
  * Copyright (c) 2009 NLNet Labs. All rights reserved.
  *

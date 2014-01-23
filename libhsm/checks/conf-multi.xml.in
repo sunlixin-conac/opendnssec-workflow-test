@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- $Id$ -->
+<!-- $Id: conf-multi.xml.in 1904 2009-09-29 13:32:23Z jakob $ -->
 
 <Configuration>
 	<RepositoryList>

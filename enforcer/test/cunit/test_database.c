@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: test_database.c 6138 2012-02-03 14:58:00Z sion $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *

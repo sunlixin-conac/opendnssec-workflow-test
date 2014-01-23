@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Makefile.am 7534 2014-01-02 10:47:33Z jerry $
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -17,9 +17,12 @@ if ENABLE_SIGNER
 SUBDIRS += signer
 endif
 
+migrationdir = $(datadir)/opendnssec/migration
+
+dist_migration_DATA = MIGRATION
+
 EXTRA_DIST =	$(srcdir)/LICENSE \
 		$(srcdir)/KNOWN_ISSUES \
-		$(srcdir)/MIGRATION \
 		$(srcdir)/plugins/simple-dnskey-mailer/simple-dnskey-mailer.sh
 
 

@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: libhsm.c 7477 2013-12-09 10:47:44Z rb $ */
 
 /*
  * Copyright (c) 2009 .SE (The Internet Infrastructure Foundation).

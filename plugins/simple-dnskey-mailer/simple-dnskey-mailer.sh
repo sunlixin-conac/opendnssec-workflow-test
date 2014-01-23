@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Id$
+# $Id: simple-dnskey-mailer.sh 3162 2010-04-09 07:04:03Z pawal $
 #
 # Copyright (c) 2010 .SE (The Internet Infrastructure Foundation).
 # All rights reserved.

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: acx_libxml2.m4 2718 2010-01-26 11:47:05Z jakob $
 
 AC_DEFUN([ACX_LIBXML2],[
 	AC_ARG_WITH(libxml2,

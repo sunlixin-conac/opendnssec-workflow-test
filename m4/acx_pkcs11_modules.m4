@@ -1,4 +1,4 @@
-# $Id$
+# $Id: acx_pkcs11_modules.m4 5910 2011-11-24 14:38:20Z rb $
 
 AC_DEFUN([ACX_PKCS11_MODULES],[
 	AC_ARG_WITH(pkcs11-softhsm, 

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id$
+# $Id: autogen.sh 6304 2012-05-04 08:30:36Z jerry $
 
 VERSION=version.m4
 

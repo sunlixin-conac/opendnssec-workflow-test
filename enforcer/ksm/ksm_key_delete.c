@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: ksm_key_delete.c 731 2009-05-18 08:24:19Z sion $
  *
  * Copyright (c) 2008-2009 Nominet UK. All rights reserved.
  *
